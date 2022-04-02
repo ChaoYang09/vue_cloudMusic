@@ -7,9 +7,16 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "@better-scroll/mouse-wheel": "^2.4.2",
+    "@better-scroll/scroll-bar": "^2.4.2",
+    "axios": "^0.26.1",
+    "better-scroll": "^2.4.2",
     "core-js": "^3.8.3",
+    "element-ui": "^2.9.2",
+    "lyric-parser": "^1.0.1",
     "vue": "^2.6.14",
-    "vue-router": "^3.5.1"
+    "vue-router": "^3.5.1",
+    "vuex": "^3.6.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~5.0.0",

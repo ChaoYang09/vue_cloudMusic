@@ -1,0 +1,118 @@
+/* * {
+  box-sizing: border-box;
+} */
+body,
+hr,
+p,
+blockquote,
+dl,
+dt,
+dd,
+ul,
+ol,
+li,
+pre,
+form,
+fieldset,
+legend,
+button,
+input,
+textarea,
+th,
+td {
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  color: #373737;
+  font-family: -apple-system, BlinkMacSystemFont, 'Apple Color Emoji', 'SF Pro',
+    'SF Pro Icons', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+/* html,
+body {
+  height: 100%;
+} */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  /* color: #373737; */
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Apple Color Emoji', 'SF Pro',
+    'SF Pro Icons', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+ul li {
+  list-style: none;
+}
+a {
+  text-decoration: none !important;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+.router-link-active {
+  color: #606266;
+}
+.router-link-active:hover {
+  color: black;
+}
+.gray {
+  color: #7f7f88;
+}
+
+/* img {
+  display: block;
+} */
+/* 一行文本溢出隐藏： 需要添加width */
+.overHidden {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.el-button:active,
+.el-button:hover,
+.el-button:focus {
+  border: 1px solid #dadde0 !important;
+  background-color: #f2f2f2 !important;
+  color: black !important;
+}
+/* 播放按钮的css动画 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+/* 给父亲添加相对定位 */
+.position {
+  position: relative;
+}
+.el-radio__input.is-checked .el-radio__inner {
+  border-color: #ec4141 !important;
+  background-color: #ec4141 !important;
+}
+.el-radio__input.is-checked + .el-radio__label {
+  color: #606266 !important;
+}
+.el-radio__inner:hover,
+.el-input.is-active .el-input__inner,
+.el-input__inner:focus,
+.el-textarea__inner:focus {
+  border-color: #dcdfe6 !important;
+}
+/* svg通用样式 */
+.icon {
+  width: 1.5em;
+  height: 1.5em;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
+}
+.pointer {
+  cursor: pointer;
+}

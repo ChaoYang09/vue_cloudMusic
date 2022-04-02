@@ -1,32 +1,57 @@
 <template>
   <div id="app">
-    <nav>
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </nav>
-    <router-view/>
+    <!-- <el-card><div class="donut"></div></el-card> -->
+    <router-view></router-view>
   </div>
 </template>
-
+<script>
+export default {}
+</script>
 <style lang="less">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+::-webkit-scrollbar {
+  /*滚动条整体样式*/
+
+  width: 7px; /*高宽分别对应横竖滚动条的尺寸*/
+
+  height: 1px;
 }
 
-nav {
-  padding: 30px;
+::-webkit-scrollbar-thumb {
+  /*滚动条里面小方块*/
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
+  border-radius: 10px;
 
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+
+  background: #c2bfbf;
 }
+
+::-webkit-scrollbar-track {
+  /*滚动条里面轨道*/
+
+  -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+
+  border-radius: 10px;
+
+  background: #ededed;
+}
+
+// @keyframes donut-spin {
+//   0% {
+//     transform: rotate(0deg);
+//   }
+//   100% {
+//     transform: rotate(360deg);
+//   }
+// }
+
+// .donut {
+//   display: inline-block;
+//   border: 4px solid rgba(0, 0, 0, 0.1);
+//   border-left-color: #7983ff;
+//   border-radius: 50%;
+//   width: 30px;
+//   height: 30px;
+//   animation: donut-spin 1.2s linear infinite;
+// }
 </style>
