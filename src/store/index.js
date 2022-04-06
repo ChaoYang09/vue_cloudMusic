@@ -16,6 +16,8 @@ const store = new Vuex.Store({
     // 当前播放歌曲
     currentSong: {},
 
+    keyWords: '', //搜索关键词
+
     // 播放模式
     // playMode: playModeMap.sequence.code,
     // 播放列表显示

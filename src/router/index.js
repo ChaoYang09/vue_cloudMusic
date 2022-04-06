@@ -6,10 +6,14 @@ import Login from '../views/Login.vue'
 import Test from '../views/Test.vue'
 import SongLists from '../views/SongLists.vue'
 import Player from '../views/Player.vue'
+import Search from '../views/Search.vue'
 
+// 个人相关
 import Collect from '../views/user/Collect.vue'
 import UserInfo from '../views/user/UserInfo.vue'
 import EditUserInfo from '../views/user/EditUserInfo.vue'
+import MyDj from '../views/user/MyDj.vue'
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -44,6 +48,14 @@ const routes = [
       {
         path: '/editUserInfo',
         component: EditUserInfo,
+      },
+      {
+        path: '/myDj',
+        component: MyDj,
+      },
+      {
+        path: '/search/:keywords',
+        component: Search,
       },
     ],
   },

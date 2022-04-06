@@ -108,31 +108,17 @@ export default {
   watch: {
     data() {
       setTimeout(() => {
-        console.log(this.data)
+        // console.log(this.data)
         this.refresh()
       }, this.refreshDelay)
     },
     isPlayerShow() {
-      // if (!this.isPlayerShow) {
-      //   this.data.seek(Math.round(this.progress * 1000))
-      // }
       this.scroll.refresh()
-      // console.log('1111')
-
-      // if (!this.playing) {
-      //   this.data.togglePlay()
-      // }
     },
   },
   computed: {
-    ...mapState(['isPlayerShow', 'progress', 'playing']),
+    ...mapState(['isPlayerShow', 'playing']),
   },
-  // updated() {
-  //   if (this.$store.state.isPlayerShow) {
-  //     console.log('update')
-
-  //   }
-  // },
 }
 </script>
 

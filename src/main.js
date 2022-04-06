@@ -45,7 +45,7 @@ Vue.filter('timeFormat', function (originVal) {
   const ss = (date.getSeconds() + '').padStart(2, '0')
   return `${mm}:${ss}`
 })
-//美体播放量格式化
+//媒体播放量格式化
 Vue.filter('playCountFormat', function (originVal) {
   if (originVal > 100000) {
     return Math.floor(originVal / 10000) + '万'

@@ -231,11 +231,6 @@ export default {
         this.$refs.audioRef.play()
         this.setPlayingState(this.playing)
       }
-
-      // if(!this.playing){
-
-      // }
-      // console.log(this.progress)
     },
 
     // 点击左下图片 控制plyer的显示与隐藏
