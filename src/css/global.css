@@ -3,7 +3,22 @@
 } */
 
 html {
+  overflow-x: hidden;
+  overflow-y: scroll;
   box-sizing: border-box;
+}
+/* 歌词页面出现造成页面滚动 */
+/* :root {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+:root body {
+  position: absolute;
+} */
+body{
+  width: 100vw;
+  overflow: hidden;
+  padding-left: calc(100vw - 100%)
 }
 *,
 *:before,
@@ -31,7 +46,7 @@ th,
 td {
   margin: 0;
   padding: 0;
-  font-size: 14px;
+  font-size: 13px;
   color: #373737;
   font-family: Helvetica, Tahoma, Arial, 'PingFang SC', 'Hiragino Sans GB',
     'Heiti SC', 'Microsoft YaHei', 'WenQuanYi Micro Hei';
@@ -81,6 +96,13 @@ a:hover {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+/* 多行省略 */
+.overHidden-more{
+  overflow: hidden;
+-webkit-line-clamp: 4; 
+-webkit-box-orient: vertical;
+display: -webkit-box;
 }
 
 .el-button:active,
@@ -140,27 +162,26 @@ img {
 .el-tag--plain.el-tag--info {
   color: #373737 !important;
 }
-.el-table .cell {
-  /* line-height: 14px !important; */
-}
-.tittle {
-  font-size: 20px;
+
+.tittle-little {
+  font-size: 18px;
   font-weight: bold;
 }
 .tittle-max {
   font-size: 22px;
   font-weight: bold;
 }
-.el-popover {
-  /* overflow-y: auto; */
-  overflow: auto;
-  height: 430px;
-   padding: 0 !important;
+
+.el-pagination.is-background .el-pager li:not(.disabled).active{
+  background-color: #ec4141!important;
+}
+.icon-arrow {
+  font-size: 11px;
 }
 ::-webkit-scrollbar {
   /*滚动条整体样式*/
 
-  width: 7px; /*高宽分别对应横竖滚动条的尺寸*/
+  width: 5px; /*高宽分别对应横竖滚动条的尺寸*/
 
   height: 1px;
 }

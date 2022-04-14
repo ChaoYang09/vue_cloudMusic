@@ -9,7 +9,7 @@
             <img class="bannerImg" :src="item.pic" alt="" />
           </el-carousel-item>
         </el-carousel>
-        <div class="tittle">推荐歌单 <span class="gray">></span></div>
+        <div class="tittle-little">推荐歌单 <span class="gray">></span></div>
 
         <!-- 推荐歌单 -->
         <div class="playListBox">
@@ -19,7 +19,7 @@
             :key="i"
             @mouseenter="playShow = i"
             @mouseleave="playShow = null"
-            @click="toSongsList(item)"
+            @click="toSongsList(item.id)"
           >
             <img :src="item.coverImgUrl" alt="" />
             <span class="playName">{{ item.name }}</span>
@@ -68,14 +68,11 @@ export default {
     async getCatList() {
       const { data: res } = await this.$http.get('/top/playlist')
       this.playlist = res.playlists
-      // console.log(res)
+      // console.log(this.playlist)
     },
-    toSongsList(item) {
+    toSongsList(id) {
       this.$router.push({
-        path: '/songLists',
-        query: {
-          item,
-        },
+        path: `/songLists/${id}`,
       })
     },
   },
@@ -84,9 +81,13 @@ export default {
 
 <style lang="less" scoped>
 .main-Box {
-  padding: 20px;
+  position: relative;
+  padding: 15px 30px 0 30px;
 }
 .playlist-tittle {
+}
+.el-carousel {
+  margin-top: 40px;
 }
 .el-carousel-item {
   border-radius: 5px;
@@ -104,6 +105,7 @@ export default {
   flex-wrap: wrap;
   justify-content: space-between;
   width: 1000px;
+
   // height: 600px;
   .playlist {
     position: relative;
@@ -118,7 +120,6 @@ export default {
       display: block;
       width: 160px;
       height: 160px;
-      object-fit: cover;
     }
     .playName {
       margin-top: 7px;
@@ -188,5 +189,15 @@ export default {
 
   height: 4px;
   border-radius: 2px;
+}
+/deep/.el-tabs__nav-scroll {
+  overflow: hidden;
+  position: fixed;
+  z-index: 9;
+  background-color: #fff;
+  width: 100%;
+  height: 60px;
+  margin-top: -15px;
+  padding-top: 15px;
 }
 </style>

@@ -8,6 +8,9 @@ import SongLists from '../views/SongLists.vue'
 import Player from '../views/Player.vue'
 import Search from '../views/Search.vue'
 
+// 视频
+import Video from '../views/aside/video/Video.vue'
+import VideoPlayer from '../views/aside/video/VideoPlayer.vue'
 // 个人相关
 import Collect from '../views/user/Collect.vue'
 import UserInfo from '../views/user/UserInfo.vue'
@@ -30,7 +33,7 @@ const routes = [
         component: Test,
       },
       {
-        path: '/songLists',
+        path: '/songLists/:id',
         component: SongLists,
       },
       {
@@ -56,6 +59,14 @@ const routes = [
       {
         path: '/search/:keywords',
         component: Search,
+      },
+      {
+        path: '/video',
+        component: Video,
+      },
+      {
+        path: '/videoPlayer/:id',
+        component: VideoPlayer,
       },
     ],
   },

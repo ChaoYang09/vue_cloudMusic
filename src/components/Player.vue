@@ -28,15 +28,16 @@
           }"
         >
           <div class="cover">
-            <img src="../assets/images/coverTest.jpg" alt="" />
+            <img :src="music.picUrl" alt="" />
           </div>
         </div>
       </div>
 
       <div class="right">
         <header>
-          <span class="tittle">形容</span>
-          <span class="name gray">歌手: 沈以诚</span>
+          <span class="tittle">{{ music.name }}</span>
+          <span class="name gray">歌手: {{ music.arName }}</span>
+          <!-- {{ lrc }} -->
         </header>
 
         <!-- 歌词部分 -->
@@ -68,28 +69,42 @@ export default {
   components: { Scroll },
   data() {
     return {
-      lrc: '[00:00.000] 作词 : 沈以诚\n[00:01.000] 作曲 : 沈以诚\n[00:02.000] 编曲 : 李星宇\n[00:03.000] 制作人 : 李星宇\n[00:04.000] 企划 : 小粉\n[00:05.000] 统筹 : 黄鲲\n[00:06.000] 监制 : moonik蛛蛛\n[00:07.000] 吉他 : 陈卉\n[00:08.000] 鼓 : 刘星星\n[00:09.000] 和声编写 : 李星宇\n[00:10.000] 和声 : 沈以诚/李星宇\n[00:11.000] 吉他录音 : 刘晶晶（TTL）\n[00:12.000] 鼓录音 : 李马科（RC）\n[00:13.000] 人声录音 : 大伟（上声）\n[00:14.000] 混音/母带 : 李马科（RC）\n[00:15.000] 封面设计 : 武中奇\n[00:25.639]就像是那 灰色天空中的小雨\n[00:31.638]下下停停 不动声色淋湿土地\n[00:36.140]尽管总是阴晴不定\n[00:38.887]但偶尔也会闪出星星\n[00:42.137]这都是形容你的眼睛\n[00:48.888]就像是那 古老城堡里的油画\n[00:54.638]突然抬头 定格在黄昏的晚霞\n[00:59.386]远看一片苍苍蒹葭\n[01:02.387]近处抚摸软似棉花\n[01:05.138]这都是形容你的长发\n[01:11.388]原谅我不可自拔\n[01:13.388]可能不经意看你一眼\n[01:15.890]百米冲刺都会停下\n[01:17.888]只恨科技不够发达\n[01:19.888]逆着时光回去陪你从小长大\n[01:23.637]风里还没有细沙\n[01:28.637]不切实际的想法\n[01:34.637]\n[01:58.137]就像是那 错综复杂的小枝丫\n[02:04.138]过去未来 冥冥中对悠长宿命微妙地潜移默化\n[02:09.888]很细腻 不年轻\n[02:12.637]想轻轻把它抚平\n[02:15.638]这是形容你的手掌心\n[02:20.638]原谅我不可自拔\n[02:22.884]可能不经意看你一眼\n[02:25.137]心里石头都会落下\n[02:27.134]只恨科技不够发达\n[02:29.384]逆着时光回去陪你从小长大\n[02:33.138]风里还没有细沙\n[02:38.138]地球还没有老化\n[02:43.887]原谅我不可自拔\n[02:45.887]可能不经意看你一眼\n[02:48.385]心里石头都会落下\n[02:50.389]只恨科技不够发达\n[02:52.389]逆着时光回去陪你从小长大\n[02:56.139]风里还没有细沙\n[03:01.139]不切实际的想法\n[03:07.137]原谅我不可自拔\n[03:09.137]可能不经意看你一眼\n[03:11.637]百米冲刺都会停下\n[03:13.388]只恨科技不够发达\n[03:15.638]逆着时光回去陪你从小长大\n[03:19.137]风里还没有细沙\n[03:24.389]地球还没有老化\n[03:30.388]不切实际的想法\n[98:59.710]本歌曲来自〖网易音乐人〗\n[98:59.720]10亿现金激励，千亿流量扶持！\n[98:59.729]合作：st399@vip.163.com\n',
+      // lrc: '',
       currentLyric: {},
       currentLineNum: 0,
     }
   },
   computed: {
-    ...mapState(['playing', 'currentTime', 'progress', 'isPlayerShow']),
+    ...mapState([
+      'playing',
+      'currentTime',
+      'progress',
+      'isPlayerShow',
+      'music',
+      'lyric',
+    ]),
+    // lyric() {
+    // console.log('2')
+    // return this.getLyric()
+    // },
+    // lrcChange() {
+    //   return this.lyric
+    // },
   },
   mounted() {
     // 将playBarRef ref对象存入vuex中
     this.$store.state.playBarRef = this.$refs.playBarRef
 
     this.$store.state.coverRef = this.$refs.coverRef
+  },
+  created() {
+    // this.lrc = this.lyric
     this.getLyric()
   },
-  created() {},
   methods: {
     // 监听歌词变化
     getLyric() {
-      this.currentLyric = new Lyric(this.lrc, this.handleLyric)
-      // console.log('1')
-
+      this.currentLyric = new Lyric(this.lyric, this.handleLyric)
       // console.log(this.currentLyric)
     },
     // currentLyric的回调函数
@@ -107,25 +122,28 @@ export default {
     },
   },
   watch: {
+    lyric() {
+      // console.log(this.lyric)
+      // console.log('1')
+      if (this.currentLyric) {
+        this.currentLyric.stop()
+      }
+      this.$nextTick(() => {
+        this.getLyric()
+        this.currentLyric.play()
+      })
+    },
     // 歌词的滚动与暂停切换
     playing() {
+      // console.log('0000')
       if (this.currentLyric) {
-        // console.log(this.currentLyric)
-        // if (this.playing) {
         this.currentLyric.togglePlay()
-        // } else {
-        //   this.currentLyric.stop()
-        // }
       }
     },
     // 歌曲进度条改变时 对应的歌词滚动也会改变
     progress() {
       if (this.currentLyric) {
         this.currentLyric.seek(Math.round(this.progress * 1000))
-        // console.log(Math.round(this.progress * 1000))
-        // if (!this.playing) {
-        //   this.currentLyric.togglePlay()
-        // }
       }
     },
   },
@@ -137,10 +155,12 @@ export default {
   display: flex;
   justify-content: center;
   // padding: 0 20px;
-  position: absolute;
-  z-index: 10;
+  position: fixed;
+  z-index: 11;
   width: 100%;
-  height: 300%;
+  overflow: auto;
+
+  height: 100%;
   // margin-top: 200px;
   background-color: #ffffff;
 }
@@ -193,15 +213,21 @@ export default {
     margin: 80px 0 0 -150px;
     background-color: #2d2d2f;
     .cover {
+      // display: flex;
+      // justify-content: center;
+      // align-items: center;
       box-sizing: border-box;
-      border: 5px solid #010202;
+      border: 5px solid #313636;
       width: 205px;
       height: 205px;
       border-radius: 50%;
+
       overflow: hidden;
       img {
+        border-radius: 50%;
         width: 100%;
         height: 100%;
+        // transform: translate(-3%, -3%);
         object-fit: cover;
       }
     }
@@ -224,8 +250,7 @@ export default {
 
   .lyric {
     width: 100%;
-    // height: 2000px;
-    // background-color: cadetblue;
+
     .lyric-wrap {
       width: 100%;
       height: 380px;

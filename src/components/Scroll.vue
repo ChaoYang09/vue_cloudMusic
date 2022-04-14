@@ -115,6 +115,10 @@ export default {
     isPlayerShow() {
       this.scroll.refresh()
     },
+    playing() {
+      // console.log('playing')
+      this.refresh()
+    },
   },
   computed: {
     ...mapState(['isPlayerShow', 'playing']),

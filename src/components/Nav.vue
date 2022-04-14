@@ -3,28 +3,25 @@
     <div class="left">
       <img
         class="pointer"
-        src="../assets/images/2.jpg"
+        :src="music.picUrl"
         alt=""
         @mouseenter="expandShow"
         @mouseleave="expandHidden"
         ref="imgFilter"
         @click="isPlayerShow"
+        v-show="isCoverShow"
       />
-      <!-- <svg class="icon icon-open_in_full" aria-hidden="true" ref="expand">
-        <use xlink:href="#icon-open_in_full"></use>
-      </svg> -->
-      <img
-        src="../assets/images/expand.png"
-        alt=""
-        class="expand"
-        ref="expand"
-      />
-      <div><span>[沈以诚]</span><span>沈以诚合唱合集</span></div>
+
+      <div v-show="isCoverShow">
+        <span class="overHidden">{{ music.name }}</span
+        ><span>{{ music.arName }}</span>
+      </div>
     </div>
 
     <!-- 播放控件 -->
     <div class="middle">
-      <svg class="icon red" aria-hidden="true">
+      <!-- 上一首 -->
+      <svg class="icon red" aria-hidden="true" @click="previousSong">
         <use xlink:href="#icon-iov-pre"></use>
       </svg>
 
@@ -33,7 +30,7 @@
         <svg
           class="icon play"
           aria-hidden="true"
-          v-show="playIsShow"
+          v-show="!playing"
           @click="playSong"
         >
           <use xlink:href="#icon-play"></use>
@@ -43,20 +40,33 @@
         <svg
           class="icon pause"
           aria-hidden="true"
-          v-show="!playIsShow"
+          v-show="playing"
           @click="pauseSong"
         >
           <use xlink:href="#icon-pause"></use>
         </svg>
       </span>
-
-      <svg class="icon red" aria-hidden="true">
+      <!-- 下一首 -->
+      <svg class="icon red" aria-hidden="true" @click="nextSong">
         <use xlink:href="#icon-iov-next"></use>
       </svg>
     </div>
 
     <!-- 右侧控件 -->
     <div class="right">
+      <!-- 播放模式 -->
+      <el-tooltip class="item" effect="dark" content="顺序播放" placement="top">
+        <svg class="icon play-mode" aria-hidden="true">
+          <use xlink:href="#icon-playlist1-copy"></use>
+        </svg>
+      </el-tooltip>
+
+      <!-- <svg class="icon play-mode" aria-hidden="true">
+        <use xlink:href="#icon-Loop"></use>
+      </svg>
+      <svg class="icon play-mode" aria-hidden="true">
+        <use xlink:href="#icon-suijibofang"></use>
+      </svg> -->
       <!-- 音量播放控件 -->
       <svg
         class="icon volume"
@@ -83,9 +93,83 @@
         class="slider_volume"
         @change="volumeChange"
       ></el-slider>
-      <svg class="icon" aria-hidden="true">
-        <use xlink:href="#icon-zhankaimulu"></use>
-      </svg>
+
+      <!-- 播放列表 -->
+      <el-popover
+        placement="bottom"
+        width="350"
+        trigger="click"
+        content="这是一段内容,这是一段内容,这是一段内容,这是一段内容。"
+        popper-class="list-popover"
+      >
+        <div class="playlist-box">
+          <!-- 头部区域 -->
+          <header>
+            <div class="mode-history">
+              <span class="selected">播放列表</span><span>历史记录</span>
+            </div>
+            <div class="function">
+              <span class="light-gray">总共{{ playlist.length }}首</span>
+              <span class="clear-box" @click="clearPlaylist">
+                <svg class="icon clear" aria-hidden="true">
+                  <use xlink:href="#icon-shanchuDelete"></use>
+                </svg>
+                <span>清空</span>
+              </span>
+            </div>
+          </header>
+          <!-- 底部区域 -->
+          <footer>
+            <el-table
+              :data="playlist"
+              stripe
+              size="mini"
+              @row-dblclick="playMusic"
+            >
+              <el-table-column prop="name" width="180px" show-overflow-tooltip>
+              </el-table-column>
+              <!-- 歌手名字 -->
+              <el-table-column
+                prop="ar[0].name"
+                width="110px"
+                @click="toPlayer(val)"
+                show-overflow-tooltip
+              >
+                <template v-slot="scope">
+                  <router-link
+                    class="router-link-active"
+                    :to="{
+                      path: '/player',
+                      query: {
+                        id: scope.row.ar[0].id,
+                      },
+                    }"
+                    >{{ scope.row.ar[0].name }}</router-link
+                  >
+                </template>
+              </el-table-column>
+              <!-- 歌曲时间 -->
+              <el-table-column>
+                <template v-slot="scope">
+                  {{ scope.row.dt | timeFormat }}
+                </template>
+              </el-table-column>
+            </el-table>
+            <!-- 播放列表没有数据时显示 -->
+            <svg
+              class="icon nothing"
+              aria-hidden="true"
+              v-show="playlist.length === 0"
+            >
+              <use xlink:href="#icon-undraw_happy_music_g6wc "></use>
+            </svg>
+          </footer>
+        </div>
+        <!-- 播放列表图标 -->
+        <svg class="icon pointer" aria-hidden="true" slot="reference">
+          <use xlink:href="#icon-zhankaimulu"></use>
+        </svg>
+      </el-popover>
     </div>
     <!-- 音乐进度控件 -->
     <el-slider
@@ -98,7 +182,7 @@
 
     <!-- audio标签 -->
     <audio
-      src="https://music.163.com/song/media/outer/url?id=1336856864.mp3 "
+      :src="musicUrl"
       ref="audioRef"
       @canplay="init"
       @timeupdate="updateTime"
@@ -118,17 +202,32 @@ export default {
       song: {},
       volumeIsShow: true, //音量和静音svg的切换
       volumeRecord: 0,
-      playIsShow: true, //播放和暂停svg的切换
+      // playIsShow: true, //播放和暂停svg的切换
       duration: 0,
+      // currentSong: {}, //当前播放的歌曲
     }
   },
   created() {
     // this.getSong()
     // this.init()
+    // console.log(this.musicUrl)
   },
-
+  mounted() {
+    this.$store.state.audioRef = this.$refs.audioRef
+  },
   computed: {
-    ...mapState(['playing', 'currentTime', 'progress']),
+    ...mapState([
+      'playing',
+      'currentTime',
+      'progress',
+      'music',
+      'playlist',
+      'isCoverShow',
+      'currentSong',
+    ]),
+    musicUrl() {
+      return `https://music.163.com/song/media/outer/url?id=${this.music.id}.mp3`
+    },
   },
   methods: {
     ...mapMutations([
@@ -136,11 +235,13 @@ export default {
       'setCurrentTime',
       'setIsPlayerShow',
       'setProgress',
+      'setPlaylist',
+      'setMusicInfo',
+      'toggleCover',
+      'setCurrentSong',
     ]),
     init() {
       this.duration = this.$refs.audioRef.duration
-      // console.log()
-      // this.sliderVolume = this.$refs.audioRef.volume * 100
     },
     expandShow() {
       this.$refs.imgFilter.style.filter = 'blur(1px)'
@@ -163,11 +264,11 @@ export default {
     // 点击播放按钮
     playSong() {
       // this.clickPlayCount++
-      this.setPlayingState()
+      this.setPlayingState(true)
       // this.setClickPlayCount()
       // console.log(this.clickPlayCount)
       // 播放与暂停图标的切换
-      this.playIsShow = !this.playIsShow
+      // this.playIsShow = !this.playIsShow
       this.$refs.audioRef.play()
 
       // 留声机杠杆的旋转与动画
@@ -177,8 +278,8 @@ export default {
 
     // 点击暂停按钮
     pauseSong() {
-      this.setPlayingState()
-      this.playIsShow = !this.playIsShow
+      this.setPlayingState(false)
+      // this.playIsShow = !this.playIsShow
       this.$refs.audioRef.pause()
       this.$store.state.playBarRef.style.transform = 'rotate(-30deg)'
     },
@@ -239,14 +340,137 @@ export default {
       // this.$store.state.playing = !this.$store.state.playing
       this.setIsPlayerShow()
     },
+    // 前往歌手页面
+    toPlayer() {
+      // console.log('1')
+      this.$router.push({
+        path: '/player',
+        query: {
+          item,
+        },
+      })
+    },
+    // 点击删除 清空歌单列表所有数据
+    clearPlaylist() {
+      this.setPlaylist([])
+      this.toggleCover(false)
+    },
+    //双击播放音乐
+    playMusic(song) {
+      this.setCurrentSong(song)
+      // this.currentSong = song
+      // console.log(this.currentSong)
+      const musicObj = {
+        id: song.id, //歌曲id
+        name: song.name, //歌曲名字
+        arName: song.ar[0].name, //歌手名字
+        picUrl: song.al.picUrl, //歌曲封面
+      }
+      this.setMusicInfo(musicObj)
+      this.$store.dispatch('getLyric', song.id)
+      this.setPlayingState(true)
+      this.$nextTick(() => {
+        this.$store.state.audioRef.play()
+      })
+    },
+    // 上一首
+    previousSong() {
+      // console.log(111)
+      if (this.playlist.length === 0) return
+
+      if (this.currentSong.index === 1) {
+        this.playMusic(this.playlist[this.playlist.length])
+        return
+      }
+      this.playMusic(this.playlist[this.currentSong.index - 2])
+    },
+    // 下一首
+    nextSong() {
+      if (this.playlist.length === 0) return
+      if (this.currentSong.index === this.playlist.length) {
+        this.playMusic(this.playlist[0])
+        return
+      }
+      this.playMusic(this.playlist[this.currentSong.index + 1])
+    },
   },
 }
 </script>
+<style>
+.list-popover {
+  overflow: auto;
+  height: 500px;
+  /* overflow: hidden; */
+  padding: 0 !important;
+}
+</style>
 
 <style lang="less" scoped>
+.nothing {
+  margin: 40px 0 0 80px;
+  width: 200px;
+  height: 200px;
+}
+.playlist-box {
+  position: absolute;
+  font-size: 13px;
+  header {
+    width: 350px;
+    z-index: 2;
+    position: fixed;
+    padding: 20px 20px 10px 20px;
+    border-bottom: 1px solid rgb(237, 237, 237);
+    background-color: #ffffff;
+    .mode-history {
+      margin: 0 auto;
+      height: 30px;
+      width: 200px;
+      border: 1px solid #ccc;
+      border-radius: 20px;
+      display: flex;
+      // justify-content: space-around;
+      // overflow: hidden;
+      justify-items: center;
+      // align-items: center;
+      span {
+        cursor: pointer;
+        line-height: 28px;
+        height: 28px;
+        width: 100px;
+        border-radius: 20px;
+        text-align: center;
+      }
+      span:hover {
+        background-color: #f4f4f4;
+      }
+      .selected {
+        background-color: #bbbbbb;
+        color: #ffffff;
+      }
+    }
+    .function {
+      margin: 10px 0;
+      display: flex;
+      justify-content: space-between;
+      .clear-box {
+        cursor: pointer;
+        .clear {
+          font-size: 12px;
+          margin-right: 5px;
+        }
+        .clear:hover {
+          color: black;
+        }
+      }
+    }
+  }
+  footer {
+    // font-size: 10px;
+    // position: absolute;
+    margin-top: 70px;
+  }
+}
 .box {
-  // position: relative;
-
   min-width: 750px;
   height: 50px;
   display: flex;
@@ -319,6 +543,15 @@ export default {
   justify-content: end;
   align-items: center;
   width: 250px;
+  .play-mode {
+    cursor: pointer;
+    // font-size: 12px;
+    margin-right: 15px;
+  }
+  .play-mode:hover {
+    color: #ed6566;
+  }
+
   // background-color: bisque;
   .volume:hover {
     cursor: pointer;

@@ -31,7 +31,7 @@
               width="350"
               trigger="click"
               @after-leave="getSearchHistory"
-              class="popover-Box"
+              popper-class="my-popover"
             >
               <!-- <el-button slot="reference">click 激活</el-button> -->
               <input
@@ -186,7 +186,8 @@
           <ul class="content">
             <li><router-link to="/discovery">发现音乐</router-link></li>
             <li><router-link to="/search">搜索</router-link></li>
-
+            <li><router-link to="/video">视频</router-link></li>
+            <li><router-link to="/videoPlayer">视频播放器</router-link></li>
             <li><router-link to="/test">test</router-link></li>
             <li><router-link to="/songLists">songLists</router-link></li>
             <li><router-link to="/player">player</router-link></li>
@@ -194,21 +195,22 @@
             <li><router-link to="/userInfo">我的信息</router-link></li>
             <li><router-link to="/editUserInfo">编辑信息</router-link></li>
             <li><router-link to="/myDj">我的电台</router-link></li>
-            <li><router-link to="/editUserInfo">编辑信息</router-link></li>
-            <li><router-link to="/editUserInfo">编辑信息</router-link></li>
+
             <li><router-link to="/editUserInfo">编辑信息</router-link></li>
           </ul>
         </div>
       </el-aside>
+
       <!-- 右侧内容区域 -->
-      <el-container class="mainBox"><router-view></router-view></el-container>
+      <el-container class="right-box"><router-view></router-view></el-container>
     </el-container>
 
     <!-- 歌词页面 -->
-
+    <!-- <keep-alive> -->
     <transition name="slide-fade">
       <Player v-show="$store.state.isPlayerShow"></Player>
     </transition>
+    <!-- </keep-alive> -->
 
     <!-- 底部导航栏 -->
     <Nav class="nav"></Nav>
@@ -394,6 +396,11 @@ export default {
     },
     // 向localStorage中添加输入的搜索历史
     setSearchHistory(tag) {
+      // 进行搜索历史的重复判断
+      const isHas = this.historyTags.some((item) => {
+        return item === tag
+      })
+      if (isHas) return
       this.historyTags.push(tag)
       window.localStorage.setItem('searchHistory', this.historyTags.join())
       // console.log(this.HistoryTags)
@@ -415,7 +422,9 @@ export default {
     // 点击热搜榜对应的行 携带参数跳转到搜索成功的页面
     toHotSearch(val) {
       this.searchInput = val
+
       this.setSearchHistory(this.searchInput)
+
       this.searchPage()
     },
     toSearchHistory(tag) {
@@ -448,10 +457,16 @@ export default {
 }
 </script>
 
+<style>
+.my-popover {
+  overflow: auto;
+  height: 430px;
+  padding: 0 !important;
+}
+</style>
 <style lang="less" scoped>
-.mainBox {
+.right-box {
   margin-bottom: 50px;
-  // padding-right: 5px;
 }
 .suggest-search {
   padding: 10px;
@@ -536,11 +551,10 @@ export default {
 }
 .nav {
   padding: 0 20px;
-  box-sizing: border-box;
+  // margin-right: 5px;
   background-color: #f6f6f8;
-  // background-color: aquamarine;
   position: fixed;
-  z-index: 11;
+  z-index: 12;
   bottom: 0;
   width: 100%;
   height: 60px;

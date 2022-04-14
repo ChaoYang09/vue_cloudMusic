@@ -14,6 +14,12 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 Vue.use(ElementUI)
 
+// 注册全局组件
+import Collect from './components/button/Collect.vue'
+Vue.component('CollectButton', Collect)
+
+// import playMusic from './utils/playMusic.js'
+// Vue.prototype.$play = playMusic
 import { Message } from 'element-ui'
 Vue.prototype.$message = Message
 
@@ -60,3 +66,4 @@ new Vue({
   store,
   render: (h) => h(App),
 }).$mount('#app')
+export default Vue

@@ -1,76 +1,49 @@
 <template>
-  <div class="father">
-    <svg class="icon" aria-hidden="true">
-      <use xlink:href="#icon-iov-pre"></use>
+  <span class="button-collect">
+    <button class="btn">收藏(1444)</button>
+    <svg class="icon icon-collect" aria-hidden="true" v-if="iconShow">
+      <use xlink:href="#icon-Collections"></use>
     </svg>
-
-    <div ref="wrapper">
-      <slot></slot>
-    </div>
-  </div>
+    <svg class="icon icon-collect" aria-hidden="true" v-else>
+      <use xlink:href="#icon-yitianjia"></use>
+    </svg>
+  </span>
 </template>
 
 <script>
-// type="text/ecmascript-6"
-import BScroll from 'better-scroll'
-import MouseWheel from '@better-scroll/mouse-wheel'
-import ScrollBar from '@better-scroll/scroll-bar'
-
-BScroll.use(ScrollBar)
-BScroll.use(MouseWheel)
-
 export default {
-  props: {
-    data: {
-      type: Array,
-      default: null,
-    },
-  },
-  mounted() {
-    setTimeout(() => {
-      this._initScroll()
-    }, 20)
-  },
-  methods: {
-    _initScroll() {
-      if (!this.$refs.wrapper) {
-        return
-      }
-      this.scroll = new BScroll(this.$refs.wrapper, {
-        probeType: 3,
-
-        mouseWheel: true,
-        // {
-        //   speed: 20,
-        //   invert: false,
-        //   easeTime: 300,
-        // },
-        scrollY: true,
-        scrollbar: true,
-      })
-    },
-  },
-  watch: {
-    data() {
-      setTimeout(() => {
-        this.refresh()
-      }, this.refreshDelay)
-    },
+  data() {
+    return {
+      iconShow: true,
+    }
   },
 }
 </script>
 
 <style lang="less" scoped>
-.aa {
-  width: 100px;
-  height: 100px;
-  color: antiquewhite;
-}
-.icon {
-  width: 2em;
-  height: 2em;
-  vertical-align: -0.15em;
-  fill: currentColor;
-  overflow: hidden;
+.button-collect {
+  // margin-right: 15px;
+  display: inline-block;
+  position: relative;
+  .icon-collect {
+    position: absolute;
+    top: 6px;
+    left: 15px;
+  }
+  .btn {
+    cursor: pointer;
+    height: 32px;
+    width: 130px;
+    border-radius: 15px;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    font-size: 15px;
+    padding-left: 30px;
+    // padding-right: 20px;
+  }
+  .btn:hover {
+    color: black;
+    background-color: #f2f2f2;
+  }
 }
 </style>

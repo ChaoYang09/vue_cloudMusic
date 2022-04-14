@@ -1,6 +1,6 @@
 <template>
   <div class="main-Box">
-    <div class="header over-flow">
+    <div class="header">
       <div class="left">
         <img :src="playListInfo.coverImgUrl" alt="" />
       </div>
@@ -8,7 +8,7 @@
         <div class="tittle-max">{{ playListInfo.name }}</div>
 
         <!-- 按钮区域 -->
-        <div class="button">
+        <div class="button" @click="PlayFirstSong">
           <span class="button-play">
             <svg class="icon icon-play" aria-hidden="true">
               <use xlink:href="#icon-play"></use>
@@ -24,19 +24,34 @@
         </div>
         <!-- 标签区域 -->
         <div class="tags">
-          <span>标签 : {{ tags }}</span>
+          <span>歌曲 : {{ songsList.length }}</span>
           <span>播放 : {{ playListInfo.playCount | playCountFormat }}</span>
-          <span>简介 : {{ playListInfo.description }}</span>
+          <span
+            class="description"
+            style="
+              overflow: hidden;
+              -webkit-line-clamp: 3;
+              -webkit-box-orient: vertical;
+              display: -webkit-box;
+            "
+            >简介 : {{ playListInfo.description }}</span
+          >
         </div>
       </div>
       <!-- <div class="clear"></div> -->
     </div>
     <div class="bottom">
-      <el-table :data="songsList" stripe width="100" size="small">
+      <el-table
+        :data="songsList"
+        stripe
+        width="100"
+        size="small"
+        @row-dblclick="playMusic"
+      >
         <el-table-column type="index" label="#" align="center">
         </el-table-column>
 
-        <el-table-column prop="al.name" label="音乐标题" width="400px">
+        <el-table-column prop="name" label="音乐标题" width="400px">
         </el-table-column>
         <el-table-column prop="ar[0].name" label="歌手" @click="toPlayer(val)">
           <template v-slot="scope">
@@ -52,7 +67,8 @@
             >
           </template>
         </el-table-column>
-        <el-table-column prop="name" label="专辑"> </el-table-column>
+        <el-table-column prop="name" label="专辑" show-overflow-tooltip>
+        </el-table-column>
         <el-table-column prop="" label="时长">
           <template v-slot="scope">
             {{ scope.row.dt | timeFormat }}
@@ -77,27 +93,73 @@ export default {
     },
   },
   created() {
-    this.playListInfo = this.$route.query.item
+    this.getDetail()
+    // this.playListInfo = this.$route.query.item
     this.getSongsList()
+    // console.log(this.playMusic)
   },
   methods: {
+    // 获取歌单详情
+    async getDetail() {
+      const { data: res } = await this.$http.get('/playlist/detail', {
+        params: {
+          id: this.$route.params.id,
+        },
+      })
+      this.playListInfo = res.playlist
+      // console.log(this.songsList)
+    },
+    // 获取歌曲列表
     async getSongsList() {
       const { data: res } = await this.$http.get('/playlist/track/all', {
         params: {
-          id: this.playListInfo.id,
+          id: this.$route.params.id,
         },
       })
       this.songsList = res.songs
       // console.log(this.songsList)
     },
+    // 点击播放全部 将数据渲染到playlist上面
+    PlayFirstSong() {
+      this.playMusic(this.songsList[0])
+      this.toList()
+    },
+    // 点击播放全部 将数据渲染到playlist上面
+    toList() {
+      this.songsList.forEach((item, i) => {
+        item.index = i
+      })
+      this.$store.commit('setPlaylist', this.songsList)
+    },
     toPlayer() {
-      console.log('1')
+      // console.log('1')
       this.$router.push({
         path: '/player',
         query: {
           item,
         },
       })
+    },
+    playMusic(song) {
+      this.$store.commit('setCurrentSong', song)
+      this.toList()
+      // console.log(song)
+      const musicObj = {
+        id: song.id, //歌曲id
+        name: song.name, //歌曲名字
+        arName: song.ar[0].name, //歌手名字
+        picUrl: song.al.picUrl, //歌曲封面
+      }
+      this.$store.commit('setMusicInfo', musicObj)
+      this.$store.dispatch('getLyric', song.id)
+      this.$store.commit('setPlayingState', true)
+      this.$store.commit('toggleCover', true)
+      this.$nextTick(() => {
+        // console.log('1')
+        this.$store.state.audioRef.play()
+      })
+
+      // console.log(musicObj)
     },
   },
 }
@@ -107,27 +169,24 @@ export default {
 .main-Box {
 }
 .header {
-  padding: 30px;
+  padding: 20px 30px;
   display: flex;
   width: 100%;
-  // height: 200px;
-  // background-color: burlywood;
+
   .left {
-    // background-color: aquamarine;
     width: 220px;
     height: 220px;
     img {
       border-radius: 5px;
       width: 100%;
-      // height: 100%;
     }
   }
   .right {
     margin-left: 20px;
-    width: 800px;
+    width: 750px;
     height: 200px;
     .button {
-      margin-top: 10px;
+      margin: 10px 0 20px 0;
       span {
         margin-right: 15px;
         display: inline-block;
@@ -169,7 +228,6 @@ export default {
     }
     .tags {
       span {
-        display: block;
         margin: 10px 5px;
         font-size: 14px;
         color: rgb(99, 97, 97);
