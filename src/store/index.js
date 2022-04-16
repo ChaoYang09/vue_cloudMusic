@@ -11,25 +11,22 @@ const store = new Vuex.Store({
     currentTime: 0, // 当前播放时长
     playing: false, // 播放状态
     clickPlayCount: 0, //点击播放次数
-
     isPlayerShow: false, // 歌曲详情页显示
     progress: 0, //歌曲进度
-
     currentSong: {}, // 当前播放歌曲
-
     keyWords: '', //搜索关键词
     music: {
       id: 0, //歌曲id
       name: '', //歌曲名字
       arName: '', //歌手名字
       picUrl: '', //歌曲封面
-    }, //歌曲id
+    },
     lyric: '', //歌词
-    // 播放列表数据
-    playlist: [],
-
+    playlist: [], // 播放列表数据
     isCoverShow: false, //导航栏中左下角的img显示和隐藏
-    // 播放模式
+    playMode: 1, // 播放模式
+    loopPlay: false, //循环播放
+
     // playMode: playModeMap.sequence.code,
     // 播放列表显示
     isPlaylistShow: false,
@@ -51,8 +48,8 @@ const store = new Vuex.Store({
     setClickPlayCount(state) {
       state.clickPlayCount += 1
     },
-    setIsPlayerShow(state) {
-      state.isPlayerShow = !state.isPlayerShow
+    setIsPlayerShow(state, boolean) {
+      state.isPlayerShow = boolean
     },
     setProgress(state, progress) {
       state.progress = progress
@@ -73,6 +70,12 @@ const store = new Vuex.Store({
     },
     setCurrentSong(state, SongObj) {
       state.currentSong = SongObj
+    },
+    setPlayMode(state, mode) {
+      state.playMode = mode
+    },
+    setLoopPlay(state) {
+      state.loopPlay = !state.loopPlay
     },
   },
   actions: {

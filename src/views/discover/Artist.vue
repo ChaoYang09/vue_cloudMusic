@@ -3,6 +3,7 @@
     <el-main>
       <header>
         <img :src="playerDetail.artist.cover" alt="" />
+
         <div class="right">
           <h2>{{ playerDetail.artist.name }}</h2>
           <div class="btn">
@@ -22,7 +23,7 @@
       </header>
 
       <footer>
-        <img src="../assets/images/top50.png" alt="" />
+        <img src="@/assets/images/top50.png" alt="" />
         <el-table :data="hotSongs" stripe>
           <el-table-column type="index"></el-table-column>
           <el-table-column prop="name" width="400px"></el-table-column>
@@ -73,7 +74,7 @@ export default {
         },
       })
       this.hotSongs = res.songs
-      console.log(res)
+      // console.log(res)
     },
   },
 }
@@ -83,23 +84,23 @@ export default {
 header {
   display: flex;
   // justify-content: ;
+  // .img-box
+  //   width: 200px;
+  //   height: 200px;
   img {
     display: block;
     width: 200px;
     height: 200px;
-    // background-color: antiquewhite;
     border-radius: 5px;
     margin-right: 30px;
+    object-fit: cover;
     // overflow: hidden;
   }
+
   .right {
     min-width: 330px;
     height: 200px;
-    // background-color: cadetblue;
-    // .el-button {
-    //   padding: 8px;
-    //   font-size: 13px;
-    // }
+
     .btn {
       margin: 10px 0;
       .el-icon-folder-add,

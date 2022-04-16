@@ -53,7 +53,7 @@
 
         <el-table-column prop="name" label="音乐标题" width="400px">
         </el-table-column>
-        <el-table-column prop="ar[0].name" label="歌手" @click="toPlayer(val)">
+        <el-table-column prop="ar[0].name" label="歌手">
           <template v-slot="scope">
             <router-link
               class="router-link-active"
@@ -155,11 +155,8 @@ export default {
       this.$store.commit('setPlayingState', true)
       this.$store.commit('toggleCover', true)
       this.$nextTick(() => {
-        // console.log('1')
         this.$store.state.audioRef.play()
       })
-
-      // console.log(musicObj)
     },
   },
 }

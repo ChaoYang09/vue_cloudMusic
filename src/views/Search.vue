@@ -15,9 +15,19 @@
         </el-table-column>
 
         <!-- 收藏爱心 -->
-        <el-table-column width="40"
-          ><svg class="icon icon-love" aria-hidden="true">
-            <use xlink:href="#icon-icon_love_hover"></use></svg
+        <el-table-column width="40">
+          <template v-slot="scope"
+            ><svg
+              :class="{
+                icon: true,
+                'icon-love': true,
+                'like-love': like && scope.row.id === id,
+              }"
+              aria-hidden="true"
+              @click="likeMusic(scope.row.id)"
+            >
+              <use xlink:href="#icon-icon_love_hover"></use>
+            </svg> </template
         ></el-table-column>
 
         <!-- 标题 -->
@@ -31,7 +41,16 @@
           class-name="color-gray-deeper "
         >
           <template v-slot="scope">
-            {{ scope.row.ar[0].name }}
+            <router-link
+              class="router-link-active"
+              :to="{
+                path: '/player',
+                query: {
+                  id: scope.row.ar[0].id,
+                },
+              }"
+              >{{ scope.row.ar[0].name }}</router-link
+            >
           </template>
         </el-table-column>
 
@@ -82,6 +101,8 @@ export default {
       keywords: '',
       limit: 30,
       offset: 0,
+      like: false,
+      id: 0,
     }
   },
   computed: {},
@@ -104,10 +125,12 @@ export default {
     handleCurrentChange(val) {
       // console.log(val)
       this.offset = (val - 1) * 30
-      console.log(this.offset)
+      // console.log(this.offset)
       this.getSongsList()
     },
     playMusic(song) {
+      this.$store.commit('setCurrentSong', song)
+      // this.toList()
       // console.log(song)
       const musicObj = {
         id: song.id, //歌曲id
@@ -115,15 +138,37 @@ export default {
         arName: song.ar[0].name, //歌手名字
         picUrl: song.al.picUrl, //歌曲封面
       }
-      this.setMusicInfo(musicObj)
+      this.$store.commit('setMusicInfo', musicObj)
       this.$store.dispatch('getLyric', song.id)
-      this.setPlayingState(true)
+      this.$store.commit('setPlayingState', true)
+      this.$store.commit('toggleCover', true)
       this.$nextTick(() => {
-        // console.log('1')
         this.$store.state.audioRef.play()
       })
-
-      // console.log(musicObj)
+    },
+    toPlayer() {
+      // console.log('1')
+      this.$router.push({
+        path: '/artist',
+        query: {
+          item,
+        },
+      })
+    },
+    async likeMusic(id) {
+      // console.log(id)
+      const { data: res } = await this.$http.get('/like', {
+        params: {
+          id,
+        },
+      })
+      if (res.code === 200) {
+        this.like = true
+        this.id = id
+      }
+      // console.log(res)
+      // this.songs = res.result.songs
+      // this.songCount = res.result.songCount
     },
   },
 }
@@ -143,14 +188,15 @@ main {
   }
   .icon-love:hover {
     color: #ec4141;
-
-    // color: #000000;
+  }
+  .like-love {
+    color: #ec4141;
   }
 }
 footer {
   display: flex;
   justify-content: center;
-  margin-top: 20px;
+  margin: 20px 0 30px;
 }
 .mainBox {
   width: 100%;

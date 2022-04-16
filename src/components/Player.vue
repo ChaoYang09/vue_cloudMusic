@@ -36,7 +36,12 @@
       <div class="right">
         <header>
           <span class="tittle">{{ music.name }}</span>
-          <span class="name gray">歌手: {{ music.arName }}</span>
+          <span class="name gray"
+            >歌手 :
+            <span class="player-color" @click="toPlayer">{{
+              music.arName
+            }}</span>
+          </span>
           <!-- {{ lrc }} -->
         </header>
 
@@ -82,14 +87,8 @@ export default {
       'isPlayerShow',
       'music',
       'lyric',
+      'loopPlay',
     ]),
-    // lyric() {
-    // console.log('2')
-    // return this.getLyric()
-    // },
-    // lrcChange() {
-    //   return this.lyric
-    // },
   },
   mounted() {
     // 将playBarRef ref对象存入vuex中
@@ -120,6 +119,19 @@ export default {
         this.$refs.lyricList.scrollTo(0, 0, 1000)
       }
     },
+    // 前往歌手页面
+    toPlayer() {
+      this.$router.push({
+        path: '/artist',
+        query: {
+          id: this.$store.state.currentSong.ar[0].id,
+        },
+      })
+      this.$store.commit('setIsPlayerShow', false)
+    },
+    test() {
+      console.log('test')
+    },
   },
   watch: {
     lyric() {
@@ -145,6 +157,16 @@ export default {
       if (this.currentLyric) {
         this.currentLyric.seek(Math.round(this.progress * 1000))
       }
+    },
+    // 循环播放时重置歌词
+    loopPlay() {
+      if (this.currentLyric) {
+        this.currentLyric.stop()
+      }
+      this.$nextTick(() => {
+        this.getLyric()
+        this.currentLyric.play()
+      })
     },
   },
 }

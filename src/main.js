@@ -3,6 +3,11 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 
+Vue.prototype.$bus = new Vue()
+
+import VueLazyload from 'vue-lazyload'
+Vue.use(VueLazyload)
+
 import Scroll from './components/Scroll.vue'
 Vue.component('Scroll', Scroll)
 
@@ -31,18 +36,34 @@ import axios from 'axios'
 axios.defaults.baseURL = 'http://localhost:3000'
 // 使用withCredentials属性，当该属性为true时，会携带用户凭证
 axios.defaults.withCredentials = true
+import { Loading } from 'element-ui'
+
 Vue.prototype.$http = axios
-// axios.interceptors.request.use((config) => {
+let loadingInstance
 // NProgress.start()
 // console.log(config)
 // config.headers.Authorization = window.sessionStorage.getItem('token')
-// return config
-// })
-
-// axios.interceptors.response.use((config) => {
+axios.interceptors.request.use((config) => {
+  loadingInstance = Loading.service({
+    lock: true,
+    text: '载入中...',
+    spinner: 'el-icon-loading',
+    background: 'rgba(255,255,255,0)',
+  })
+  return config
+})
 //   NProgress.done()
-//   return config
-// })
+axios.interceptors.response.use((config) => {
+  // $nextTick(() => {
+  // 以服务的方式调用的 Loading 需要异步关闭
+  // setTimeout(() => {
+  loadingInstance.close()
+  // }, 1000)
+
+  // })
+
+  return config
+})
 
 // 媒体时间格式化
 Vue.filter('timeFormat', function (originVal) {
@@ -66,4 +87,4 @@ new Vue({
   store,
   render: (h) => h(App),
 }).$mount('#app')
-export default Vue
+// export default Vue

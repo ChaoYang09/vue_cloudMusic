@@ -8,13 +8,21 @@
         @mouseenter="expandShow"
         @mouseleave="expandHidden"
         ref="imgFilter"
-        @click="isPlayerShow"
+        @click="togglePlayerShow"
         v-show="isCoverShow"
       />
 
       <div v-show="isCoverShow">
-        <span class="overHidden">{{ music.name }}</span
-        ><span>{{ music.arName }}</span>
+        <span
+          class="overHidden"
+          style="width: 150px; font-weight: 600; font-size: 15px"
+          >{{ music.name }}</span
+        ><span
+          class="pointer overHidden"
+          style="width: 150px"
+          @click="toPlayer"
+          >{{ music.arName }}</span
+        >
       </div>
     </div>
 
@@ -55,18 +63,51 @@
     <!-- 右侧控件 -->
     <div class="right">
       <!-- 播放模式 -->
-      <el-tooltip class="item" effect="dark" content="顺序播放" placement="top">
-        <svg class="icon play-mode" aria-hidden="true">
-          <use xlink:href="#icon-playlist1-copy"></use>
-        </svg>
-      </el-tooltip>
+      <span @click="togglePlayMode">
+        <el-tooltip
+          class="item"
+          effect="dark"
+          content="顺序播放"
+          placement="top"
+        >
+          <svg
+            class="icon play-mode"
+            aria-hidden="true"
+            v-show="playMode === 1"
+          >
+            <use xlink:href="#icon-playlist1-copy"></use>
+          </svg>
+        </el-tooltip>
+        <el-tooltip
+          class="item"
+          effect="dark"
+          content="循环播放"
+          placement="top"
+        >
+          <svg
+            class="icon play-mode"
+            aria-hidden="true"
+            v-show="playMode === 2"
+          >
+            <use xlink:href="#icon-Loop"></use>
+          </svg>
+        </el-tooltip>
 
-      <!-- <svg class="icon play-mode" aria-hidden="true">
-        <use xlink:href="#icon-Loop"></use>
-      </svg>
-      <svg class="icon play-mode" aria-hidden="true">
-        <use xlink:href="#icon-suijibofang"></use>
-      </svg> -->
+        <el-tooltip
+          class="item"
+          effect="dark"
+          content="随机播放"
+          placement="top"
+        >
+          <svg
+            class="icon play-mode"
+            aria-hidden="true"
+            v-show="playMode === 3"
+          >
+            <use xlink:href="#icon-suijibofang"></use>
+          </svg> </el-tooltip
+      ></span>
+
       <!-- 音量播放控件 -->
       <svg
         class="icon volume"
@@ -99,18 +140,30 @@
         placement="bottom"
         width="350"
         trigger="click"
-        content="这是一段内容,这是一段内容,这是一段内容,这是一段内容。"
         popper-class="list-popover"
+        ref="popoverRef"
       >
         <div class="playlist-box">
           <!-- 头部区域 -->
           <header>
             <div class="mode-history">
-              <span class="selected">播放列表</span><span>历史记录</span>
+              <span
+                :class="{ selected: !isHistory, 'pointer-none': !isHistory }"
+                @click="isHistory = false"
+                >播放列表</span
+              ><span
+                :class="{ selected: isHistory, 'pointer-none': isHistory }"
+                @click="isHistory = true"
+                >历史记录</span
+              >
             </div>
             <div class="function">
-              <span class="light-gray">总共{{ playlist.length }}首</span>
-              <span class="clear-box" @click="clearPlaylist">
+              <span class="light-gray"
+                >总共 <span v-if="!isHistory">{{ playlist.length }}</span
+                ><span v-else>{{ historyList.length }}</span
+                >首</span
+              >
+              <span class="clear-box" @click="clearList">
                 <svg class="icon clear" aria-hidden="true">
                   <use xlink:href="#icon-shanchuDelete"></use>
                 </svg>
@@ -120,11 +173,13 @@
           </header>
           <!-- 底部区域 -->
           <footer>
+            <!-- 播放列表 -->
             <el-table
               :data="playlist"
               stripe
               size="mini"
               @row-dblclick="playMusic"
+              v-show="!isHistory"
             >
               <el-table-column prop="name" width="180px" show-overflow-tooltip>
               </el-table-column>
@@ -132,20 +187,19 @@
               <el-table-column
                 prop="ar[0].name"
                 width="110px"
-                @click="toPlayer(val)"
                 show-overflow-tooltip
               >
                 <template v-slot="scope">
                   <router-link
                     class="router-link-active"
                     :to="{
-                      path: '/player',
+                      path: '/artist',
                       query: {
                         id: scope.row.ar[0].id,
                       },
                     }"
-                    >{{ scope.row.ar[0].name }}</router-link
-                  >
+                    ><span @click="closeList">{{ scope.row.ar[0].name }}</span>
+                  </router-link>
                 </template>
               </el-table-column>
               <!-- 歌曲时间 -->
@@ -155,11 +209,52 @@
                 </template>
               </el-table-column>
             </el-table>
+
+            <!-- 历史记录 -->
+            <el-table
+              :data="historyList"
+              stripe
+              size="mini"
+              @row-dblclick="playMusic"
+              v-show="isHistory"
+            >
+              <el-table-column prop="name" width="160px" show-overflow-tooltip>
+              </el-table-column>
+              <!-- 歌手名字 -->
+              <el-table-column
+                prop="ar[0].name"
+                width="100px"
+                show-overflow-tooltip
+              >
+                <template v-slot="scope">
+                  <router-link
+                    class="router-link-active"
+                    :to="{
+                      path: '/artist',
+                      query: {
+                        id: scope.row.ar[0].id,
+                      },
+                    }"
+                    ><span @click="closeList">{{ scope.row.ar[0].name }}</span>
+                  </router-link>
+                </template>
+              </el-table-column>
+              <!-- 歌曲时间 -->
+              <el-table-column prop="time" width="90px">
+                <!-- <template v-slot="scope">
+                  {{ scope.row.dt | timeFormat }}
+                </template> -->
+              </el-table-column>
+              <!-- 播放列表没有数据时显示 -->
+            </el-table>
             <!-- 播放列表没有数据时显示 -->
             <svg
               class="icon nothing"
               aria-hidden="true"
-              v-show="playlist.length === 0"
+              v-show="
+                (playlist.length === 0 && isHistory === false) ||
+                (historyList.length === 0 && isHistory === true)
+              "
             >
               <use xlink:href="#icon-undraw_happy_music_g6wc "></use>
             </svg>
@@ -186,8 +281,9 @@
       ref="audioRef"
       @canplay="init"
       @timeupdate="updateTime"
+      @ended="ended"
+      @play="play"
     ></audio>
-    <!-- <button @click="up">up</button> -->
   </div>
 </template>
 
@@ -205,12 +301,17 @@ export default {
       // playIsShow: true, //播放和暂停svg的切换
       duration: 0,
       // currentSong: {}, //当前播放的歌曲
+      isLoop: false,
+      isHistory: false, //是否是历史模式
+      historyList: [], //历史歌曲列表
     }
   },
   created() {
-    // this.getSong()
-    // this.init()
-    // console.log(this.musicUrl)
+    const arr = window.localStorage.getItem('historyList')
+    if (arr) {
+      this.historyList = JSON.parse(arr)
+    }
+    // console.log(this.historyList)
   },
   mounted() {
     this.$store.state.audioRef = this.$refs.audioRef
@@ -224,6 +325,9 @@ export default {
       'playlist',
       'isCoverShow',
       'currentSong',
+      'isPlayerShow',
+      'playMode',
+      'loopPlay',
     ]),
     musicUrl() {
       return `https://music.163.com/song/media/outer/url?id=${this.music.id}.mp3`
@@ -239,6 +343,8 @@ export default {
       'setMusicInfo',
       'toggleCover',
       'setCurrentSong',
+      'setPlayMode',
+      'setLoopPlay',
     ]),
     init() {
       this.duration = this.$refs.audioRef.duration
@@ -260,17 +366,34 @@ export default {
       this.song = res.data
       // console.log(this.song)
     },
+    // 删除列表歌曲
+    clearList() {
+      this.toggleCover(false)
+      this.setPlayingState(false)
+      // this.$refs.audioRef.currentTime = 0
+      // this.$refs.audioRef.pause()
+      this.setCurrentSong({})
+      this.setMusicInfo({})
+      if (this.isHistory) {
+        // console.log(1111)
+        this.historyList = []
+        window.localStorage.removeItem('historyList')
+      } else {
+        this.setPlaylist([])
+      }
+    },
 
     // 点击播放按钮
     playSong() {
-      // this.clickPlayCount++
+      if (JSON.stringify(this.currentSong) === '{}') return
+
+      // if (this.playlist.length === 0) return
+      // setTimeout(() => {
       this.setPlayingState(true)
-      // this.setClickPlayCount()
-      // console.log(this.clickPlayCount)
+      // }, 200)
       // 播放与暂停图标的切换
       // this.playIsShow = !this.playIsShow
       this.$refs.audioRef.play()
-
       // 留声机杠杆的旋转与动画
       this.$store.state.playBarRef.style.transform = 'rotate(5deg)'
       this.$store.state.playBarRef.style.transition = 'all 0.5s ease'
@@ -278,7 +401,9 @@ export default {
 
     // 点击暂停按钮
     pauseSong() {
+      // setTimeout(() => {
       this.setPlayingState(false)
+      // }, 200)
       // this.playIsShow = !this.playIsShow
       this.$refs.audioRef.pause()
       this.$store.state.playBarRef.style.transform = 'rotate(-30deg)'
@@ -312,14 +437,67 @@ export default {
     },
     // audio的播放进度发生变化时会触发这个函数
     updateTime() {
-      // console.log(e)
       this.setCurrentTime(this.$refs.audioRef.currentTime)
-      // console.log(this.currentTime)
-
       this.sliderSong = Math.round((this.currentTime / this.duration) * 700)
-      // console.log(currentTime / this.duration)
+      if ((this, this.playing)) this.setPlayingState(true)
     },
 
+    // 切换播放模式
+    togglePlayMode() {
+      if (this.playMode === 3) {
+        // console.log(this.playMode)
+        this.setPlayMode(1)
+        return
+      }
+      let count = this.playMode + 1
+
+      // console.log(count++)
+      this.setPlayMode(count)
+    },
+    // audio  顺序播放 播放下一首
+    error() {
+      console.log('error')
+      // console.log('1');
+    },
+    // audio结束时的钩子
+    ended() {
+      if (this.playMode === 1) {
+        this.nextSong()
+      } else if (this.playMode === 2) {
+        this.setLoopPlay()
+        this.$refs.audioRef.play()
+      } else if (this.playMode === 3) {
+        this.randomPlay()
+      }
+    },
+    // 随机播放
+    randomPlay() {
+      // const history = []
+      const index = Math.floor(Math.random() * this.playlist.length)
+      // history.push(index)
+      this.playMusic(this.playlist[index])
+    },
+    // audio播放会触发这个函数
+    play() {
+      const res = this.historyList.some((item) => {
+        return this.currentSong.id === item.id
+      })
+      // console.log(res)
+      if (res) return
+      const date = new Date()
+      const y = date.getFullYear()
+      const m = (date.getMonth() + 1 + '').padStart(2, '0')
+      const d = (date.getDate() + '').padStart(2, '0')
+      let time = `${y}-${m}-${d}`
+      let song = this.currentSong
+      song.time = time
+      // console.log(song)
+      this.historyList.unshift(song)
+      window.localStorage.setItem(
+        'historyList',
+        JSON.stringify(this.historyList)
+      )
+    },
     // 歌曲进度改变触发这个函数
     songChange(val) {
       // console.log(val)
@@ -334,32 +512,48 @@ export default {
       }
     },
 
-    // 点击左下图片 控制plyer的显示与隐藏
-    isPlayerShow() {
+    // 点击左下图片 控制player的显示与隐藏
+    togglePlayerShow() {
       // console.log(this.playing)
       // this.$store.state.playing = !this.$store.state.playing
-      this.setIsPlayerShow()
+      // console.log(this.isPlayerShow)
+      if (!this.isPlayerShow) {
+        this.setIsPlayerShow(true)
+      } else {
+        this.setIsPlayerShow(false)
+      }
+    },
+    // playlist前往歌手页后关闭popover
+    closeList() {
+      // this.toPlayer()
+      this.$refs.popoverRef.doClose()
     },
     // 前往歌手页面
     toPlayer() {
-      // console.log('1')
       this.$router.push({
-        path: '/player',
+        path: '/artist',
         query: {
-          item,
+          id: this.$store.state.currentSong.ar[0].id,
         },
       })
+      this.$store.commit('setIsPlayerShow', false)
     },
-    // 点击删除 清空歌单列表所有数据
-    clearPlaylist() {
-      this.setPlaylist([])
-      this.toggleCover(false)
+
+    async checkMusic(id) {
+      // console.log(id)
+      const { data: res } = await this.$http.get('/check/music', {
+        params: {
+          id: id,
+        },
+      })
+      // console.log(res)
     },
     //双击播放音乐
     playMusic(song) {
+      // this.checkMusic(song.id)
       this.setCurrentSong(song)
       // this.currentSong = song
-      // console.log(this.currentSong)
+      // console.log(song)
       const musicObj = {
         id: song.id, //歌曲id
         name: song.name, //歌曲名字
@@ -375,19 +569,26 @@ export default {
     },
     // 上一首
     previousSong() {
-      // console.log(111)
-      if (this.playlist.length === 0) return
+      // if (JSON.stringify(this.currentSong) === '{}') return
 
-      if (this.currentSong.index === 1) {
-        this.playMusic(this.playlist[this.playlist.length])
+      if (this.playlist.length === 0) return
+      if (this.playing === false) this.setPlayingState(true)
+      if (this.playMode === 3) this.randomPlay()
+
+      if (this.currentSong.index === 0) {
+        this.playMusic(this.playlist[this.playlist.length - 1])
         return
       }
-      this.playMusic(this.playlist[this.currentSong.index - 2])
+      this.playMusic(this.playlist[this.currentSong.index - 1])
     },
     // 下一首
     nextSong() {
+      // if (JSON.stringify(this.currentSong) === '{}') return
       if (this.playlist.length === 0) return
-      if (this.currentSong.index === this.playlist.length) {
+      if (this.playing === false) this.setPlayingState(true)
+      if (this.playMode === 3) this.randomPlay()
+
+      if (this.currentSong.index === this.playlist.length - 1) {
         this.playMusic(this.playlist[0])
         return
       }
@@ -442,10 +643,14 @@ export default {
       }
       span:hover {
         background-color: #f4f4f4;
+        color: black;
       }
       .selected {
         background-color: #bbbbbb;
         color: #ffffff;
+      }
+      .pointer-none {
+        pointer-events: none;
       }
     }
     .function {

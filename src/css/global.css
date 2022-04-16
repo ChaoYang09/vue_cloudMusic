@@ -178,6 +178,24 @@ img {
 .icon-arrow {
   font-size: 11px;
 }
+.player-color {
+  cursor: pointer;
+  display: inline-block!important;
+  color: #507daf;
+}
+.player-color:hover {
+  color: #0b58b0;
+}
+.el-loading-spinner{
+  margin-left: 100px;
+}
+.el-loading-spinner .el-loading-text{
+  color: #ff4e4e !important;
+}
+.el-loading-spinner i {
+  color: #ff4e4e !important;
+
+}
 ::-webkit-scrollbar {
   /*滚动条整体样式*/
 
