@@ -2,10 +2,16 @@
   box-sizing: border-box;
 } */
 
+/* global */
+:root {
+  font-size: 13px;
+}
+
 html {
   overflow-x: hidden;
   overflow-y: scroll;
   box-sizing: border-box;
+  /* height: 100%; */
 }
 /* 歌词页面出现造成页面滚动 */
 /* :root {
@@ -16,8 +22,9 @@ html {
   position: absolute;
 } */
 body{
-  width: 100vw;
-  overflow: hidden;
+/* height: 100%; */
+  /* width: 100vw; */
+  /* overflow: hidden; */
   padding-left: calc(100vw - 100%)
 }
 *,
@@ -46,7 +53,6 @@ th,
 td {
   margin: 0;
   padding: 0;
-  font-size: 13px;
   color: #373737;
   font-family: Helvetica, Tahoma, Arial, 'PingFang SC', 'Hiragino Sans GB',
     'Heiti SC', 'Microsoft YaHei', 'WenQuanYi Micro Hei';
@@ -79,39 +85,28 @@ a:hover {
   text-decoration: underline;
 }
 
+img,
+embed,
+object,
+audio,
+video {
+    height: auto;
+    max-width: 100%
+}
+
+
+
+
+
+
 .router-link-active:hover {
   color: black;
 }
-.gray {
-  color: #7f7f88;
-}
-.light-gray {
-  color: #c9c9c9;
-}
-/* img {
-  display: block;
-} */
-/* 一行文本溢出隐藏： 需要添加width */
-.overHidden {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-/* 多行省略 */
-.overHidden-more{
-  overflow: hidden;
--webkit-line-clamp: 4; 
--webkit-box-orient: vertical;
-display: -webkit-box;
-}
 
-.el-button:active,
-.el-button:hover,
-.el-button:focus {
-  border: 1px solid #dadde0 !important;
-  background-color: #f2f2f2 !important;
-  color: black !important;
-}
+
+
+
+
 /* 播放按钮的css动画 */
 .fade-enter-active,
 .fade-leave-active {
@@ -120,23 +115,8 @@ display: -webkit-box;
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
 }
-/* 给父亲添加相对定位 */
-.position {
-  position: relative;
-}
-.el-radio__input.is-checked .el-radio__inner {
-  border-color: #ec4141 !important;
-  background-color: #ec4141 !important;
-}
-.el-radio__input.is-checked + .el-radio__label {
-  color: #606266 !important;
-}
-.el-radio__inner:hover,
-.el-input.is-active .el-input__inner,
-.el-input__inner:focus,
-.el-textarea__inner:focus {
-  border-color: #dcdfe6 !important;
-}
+
+
 /* svg通用样式 */
 .icon {
   width: 1.5em;
@@ -145,9 +125,7 @@ display: -webkit-box;
   fill: currentColor;
   overflow: hidden;
 }
-.pointer {
-  cursor: pointer;
-}
+
 /* 让图片更清晰 */
 img {
   image-rendering: -webkit-optimize-contrast;
@@ -156,12 +134,6 @@ img {
   color: #8db6df;
 }
 
-.el-tag {
-  border-radius: 15px !important;
-}
-.el-tag--plain.el-tag--info {
-  color: #373737 !important;
-}
 
 .tittle-little {
   font-size: 18px;
@@ -172,9 +144,7 @@ img {
   font-weight: bold;
 }
 
-.el-pagination.is-background .el-pager li:not(.disabled).active{
-  background-color: #ec4141!important;
-}
+
 .icon-arrow {
   font-size: 11px;
 }
@@ -186,16 +156,7 @@ img {
 .player-color:hover {
   color: #0b58b0;
 }
-.el-loading-spinner{
-  margin-left: 100px;
-}
-.el-loading-spinner .el-loading-text{
-  color: #ff4e4e !important;
-}
-.el-loading-spinner i {
-  color: #ff4e4e !important;
 
-}
 ::-webkit-scrollbar {
   /*滚动条整体样式*/
 

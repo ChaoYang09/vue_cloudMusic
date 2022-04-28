@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
+import { getLikeList } from '@/api/music'
 
 //挂载Vuex
 Vue.use(Vuex)
@@ -26,6 +27,8 @@ const store = new Vuex.Store({
     isCoverShow: false, //导航栏中左下角的img显示和隐藏
     playMode: 1, // 播放模式
     loopPlay: false, //循环播放
+    offset: 0, //分页
+    likeList: [], //我喜欢的音乐id
 
     // playMode: playModeMap.sequence.code,
     // 播放列表显示
@@ -77,6 +80,12 @@ const store = new Vuex.Store({
     setLoopPlay(state) {
       state.loopPlay = !state.loopPlay
     },
+    setOffset(state, offset) {
+      state.offset = offset
+    },
+    setLikeList(state, likeList) {
+      state.likeList = likeList
+    },
   },
   actions: {
     // 获取歌词
@@ -92,6 +101,12 @@ const store = new Vuex.Store({
       // state.lyric =
       // this.mv = res.data
       // console.log(state.lyric)
+    },
+    // 获取我的喜欢歌曲id
+    async getLikeList(context, uid) {
+      const res = await getLikeList(uid)
+      context.commit('setLikeList', res.ids)
+      // this.likeList = res.ids
     },
   },
   getters: {},

@@ -13,11 +13,10 @@
       />
 
       <div v-show="isCoverShow">
+        <div style="width: 150px">
+          <span class="overHidden bold font-15">{{ music.name }}</span>
+        </div>
         <span
-          class="overHidden"
-          style="width: 150px; font-weight: 600; font-size: 15px"
-          >{{ music.name }}</span
-        ><span
           class="pointer overHidden"
           style="width: 150px"
           @click="toPlayer"

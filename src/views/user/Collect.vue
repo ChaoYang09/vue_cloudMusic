@@ -47,7 +47,12 @@
             <el-button slot="append" icon="el-icon-search"></el-button>
           </el-input>
         </header>
-        <el-table :data="players" stripe>
+        <el-table
+          :data="players"
+          stripe
+          :row-class-name="rowClassName"
+          @row-click="toArtist"
+        >
           <el-table-column width="80px">
             <template v-slot="scope">
               <div class="playerImg">
@@ -78,12 +83,18 @@
           ></el-row
         >
         <div class="coverBox">
-          <div v-for="(item, i) in mv" :key="i" class="position">
+          <div
+            v-for="(item, i) in mv"
+            :key="i"
+            class="position cover-box"
+            @click="toPlayer(item)"
+          >
             <img :src="item.coverUrl" alt="" />
             <span class="tittle overHidden">{{ item.title }}</span>
             <span class="userName gray">by {{ item.creator[0].userName }}</span>
-            <span class="playCount"
-              ><i class="el-icon-caret-right"></i
+            <span class="playCount">
+              <svg class="icon icon-right-triangle" aria-hidden="true">
+                <use xlink:href="#icon-triangle"></use></svg
               >{{ item.playTime | playCountFormat }}</span
             >
             <span class="durations">{{ item.durationms | timeFormat }}</span>
@@ -381,7 +392,7 @@
 export default {
   data() {
     return {
-      activeName: 'first',
+      activeName: 'third',
       players: [],
       mv: [],
       album: [],
@@ -407,36 +418,31 @@ export default {
       const { data: res } = await this.$http.get('/album/sublist')
       this.album = res.data
     },
+    // 点击不同视频 跳转对应播放界面
+    toPlayer(item) {
+      if (item.type === 1) this.$router.push(`/videoPlayer/${item.vid}`)
+      if (item.type === 0) this.$router.push(`/mvPlayer/${item.vid}`)
+    },
+    rowClassName() {
+      return 'cursor: pointer'
+    },
+    toArtist(item) {
+      // console.log(val)
+      this.$router.push({
+        path: '/artist',
+        query: {
+          id: item.id,
+        },
+      })
+    },
   },
 }
 </script>
 
 <style lang="less" scoped>
-/deep/.el-tabs__item {
-  font-size: 18px;
-  color: #373737;
-}
-
-/deep/.el-tabs__item.is-active {
-  color: #373737;
-  font-size: 22px;
-  font-weight: 600;
-}
-/deep/.el-tabs__item:hover {
-  color: black;
-}
-/deep/.el-tabs__nav-wrap::after {
-  height: 0;
-}
-/deep/.el-tabs__active-bar {
-  background-color: #ec4141;
-  // left: 4px;
-  height: 4px;
-  border-radius: 2px;
-  // width: 44px !important;
-}
 .main-box {
   width: 100%;
+  height: 100%;
   padding: 20px 30px 0 30px;
 }
 .main {
@@ -456,6 +462,8 @@ export default {
 }
 
 .coverBox {
+  width: 100%;
+  // height: 100%;
   display: flex;
   flex-wrap: wrap;
   justify-content: start;
@@ -464,8 +472,9 @@ export default {
     border-radius: 5px;
     margin: 20px 15px 0 0;
     display: block;
-    width: 240px;
-    height: 150px;
+    width: 235px;
+
+    height: 130px;
     object-fit: cover;
     cursor: pointer;
   }
@@ -473,23 +482,25 @@ export default {
     display: block;
   }
   .tittle {
-    width: 240px;
-    font-size: 15px;
+    width: 235px;
+    // font-size: 13px;
     margin: 5px 0;
     cursor: pointer;
   }
   .userName {
-    font-size: 13px;
+    font-size: 12px;
   }
   .playCount {
+    display: flex;
+    align-items: center;
     position: absolute;
     color: #fff;
     top: 25px;
     right: 20px;
-    font-size: 14px;
+    font-size: 12px;
   }
   .durations {
-    font-size: 14px;
+    font-size: 12px;
     color: #fff;
     position: absolute;
     bottom: 50px;
@@ -507,5 +518,26 @@ export default {
   /deep/ .el-input {
     width: 250px;
   }
+}
+/deep/.el-tabs__item {
+  font-size: 18px;
+  color: #373737;
+}
+
+/deep/.el-tabs__item.is-active {
+  color: #373737;
+  font-size: 22px;
+  font-weight: 600;
+}
+/deep/.el-tabs__item:hover {
+  color: black;
+}
+/deep/.el-tabs__nav-wrap::after {
+  height: 0;
+}
+/deep/.el-tabs__active-bar {
+  background-color: #ec4141;
+  height: 4px;
+  border-radius: 2px;
 }
 </style>

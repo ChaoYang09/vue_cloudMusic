@@ -7,6 +7,13 @@
         <div class="right">
           <h2>{{ playerDetail.artist.name }}</h2>
           <div class="btn">
+            <Collect-Button
+              @click.native="handleCollect"
+              ref="collect"
+              :subCount="0"
+              :id="$route.query.id"
+              :type="'artist'"
+            ></Collect-Button>
             <el-button round size="small"
               ><i class="el-icon-folder-add"></i> 收藏</el-button
             ><el-button round size="small"
@@ -47,7 +54,7 @@ export default {
           cover: '',
         },
       },
-
+      // subCount: 100,
       hotSongs: [],
     }
   },
@@ -63,8 +70,6 @@ export default {
         },
       })
       this.playerDetail = res.data
-      // this.cover = res.data.artist.cover
-      // console.log(res)
     },
     // 获取歌手50首热歌
     async getHotSongs() {
@@ -75,6 +80,9 @@ export default {
       })
       this.hotSongs = res.songs
       // console.log(res)
+    },
+    handleCollect() {
+      this.$refs.collect.handleCollect()
     },
   },
 }

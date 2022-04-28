@@ -13,7 +13,8 @@ import Artist from '../views/discover/Artist.vue'
 // import Artist from '../views/discover/Artist.vue'
 // 视频
 import Video from '../views/aside/video/Video.vue'
-import VideoPlayer from '../views/aside/video/VideoPlayer.vue'
+import VideoPlayer from '../views/aside/video/VideoPLayer.vue'
+import MvPlayer from '../views/aside/video/MvPlayer.vue'
 // 个人相关
 import Collect from '../views/user/Collect.vue'
 import UserInfo from '../views/user/UserInfo.vue'
@@ -71,6 +72,10 @@ const routes = [
       {
         path: '/videoPlayer/:id',
         component: VideoPlayer,
+      },
+      {
+        path: '/mvPlayer/:id',
+        component: MvPlayer,
       },
     ],
   },

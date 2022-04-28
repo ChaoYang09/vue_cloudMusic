@@ -14,6 +14,8 @@ Vue.component('Scroll', Scroll)
 // import './plugins/element.js'
 // 引入全局样式
 import './css/global.css'
+import './css/customize.css'
+import './css/magic_element.css'
 
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
@@ -22,6 +24,8 @@ Vue.use(ElementUI)
 // 注册全局组件
 import Collect from './components/button/Collect.vue'
 Vue.component('CollectButton', Collect)
+import Comment from './components/comment/Comment_item.vue'
+Vue.component(Comment)
 
 // import playMusic from './utils/playMusic.js'
 // Vue.prototype.$play = playMusic
@@ -59,9 +63,7 @@ axios.interceptors.response.use((config) => {
   // setTimeout(() => {
   loadingInstance.close()
   // }, 1000)
-
   // })
-
   return config
 })
 
@@ -79,7 +81,14 @@ Vue.filter('playCountFormat', function (originVal) {
   }
   return originVal
 })
-
+// 媒体时间格式化
+Vue.filter('dateFormat', function (originVal) {
+  const date = new Date(originVal)
+  const yy = date.getFullYear()
+  const mm = (date.getMonth() + '').padStart(2, '0')
+  const dd = (date.getDate() + '').padStart(2, '0')
+  return `${yy}-${mm}-${dd}`
+})
 Vue.config.productionTip = false
 
 new Vue({

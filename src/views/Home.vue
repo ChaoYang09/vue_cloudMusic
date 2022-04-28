@@ -187,7 +187,7 @@
             <li><router-link to="/discovery">发现音乐</router-link></li>
             <li><router-link to="/search">搜索</router-link></li>
             <li><router-link to="/video">视频</router-link></li>
-            <li><router-link to="/videoPlayer">视频播放器</router-link></li>
+            <!-- <li><router-link to="/videoPlayer">视频播放器</router-link></li> -->
             <li><router-link to="/test">test</router-link></li>
             <li><router-link to="/songLists">songLists</router-link></li>
             <li><router-link to="/player">player</router-link></li>
@@ -466,7 +466,8 @@ export default {
 </style>
 <style lang="less" scoped>
 .right-box {
-  margin-bottom: 50px;
+  // height: 100%;
+  margin-bottom: 70px;
 }
 .suggest-search {
   padding: 10px;

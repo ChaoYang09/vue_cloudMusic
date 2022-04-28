@@ -7,15 +7,14 @@
             <svg class="icon icon-arrow" aria-hidden="true">
               <use xlink:href="#icon-arrowleft1"></use></svg
           ></span>
-          视频详情
+          MV详情
         </div>
-        <video :poster="detail.coverUrl" :src="url" controls="controls"></video>
+        <video :poster="detail.cover" :src="url" controls="controls"></video>
         <div class="function-box">
           <div class="desc-box">
             <!-- 标题区 -->
             <div class="tittle pointer">
-              <span class="tittle-max">{{ detail.title }}</span>
-              <!-- up down toggle按钮 -->
+              <span class="tittle-max">{{ detail.name }}</span>
               <svg
                 class="icon icon-down-up"
                 aria-hidden="true"
@@ -33,6 +32,7 @@
                 <use xlink:href="#icon-triangleupfill"></use>
               </svg>
             </div>
+
             <!-- detail -->
             <div>
               <!-- 发布日期 -->
@@ -41,25 +41,21 @@
               </span>
               <!-- 播放数量 -->
               <span class="play light-gray">
-                播放： {{ detail.playTime | playCountFormat }}
+                播放： {{ detail.playCount | playCountFormat }}
               </span>
             </div>
-            <!-- 标签 -->
-            <div class="tag-box">
-              <span v-for="(item, i) in tags" :key="i" @click="toVideo(item)">{{
-                item.name
-              }}</span>
-            </div>
-            <!-- 介绍 -->
+
+            <!-- 歌曲介绍 -->
             <p class="overHidden-more desc" v-show="!hidden">
-              {{ detail.title }}
+              {{ detail.desc }}
             </p>
+
             <Collect-Button
               @click.native="handleCollect"
               ref="collect"
               :subCount="subCount"
               :id="$route.params.id"
-              :type="'video'"
+              :type="'mv'"
             ></Collect-Button>
           </div>
         </div>
@@ -68,14 +64,8 @@
       <div class="right">
         <div class="tittle-little">相关推荐</div>
         <div class="mv-recommend">
-          <div
-            class="mv-box"
-            v-for="(item, i) in relatedVideo"
-            :key="i"
-            @click="playVideo(item)"
-          >
-            <div class="img-box"><img :src="item.coverUrl" alt="" /></div>
-
+          <div class="mv-box" v-for="(item, i) in mv" :key="i">
+            <img :src="item.cover" alt="" />
             <div>
               <span
                 style="
@@ -84,18 +74,16 @@
                   -webkit-box-orient: vertical;
                   display: -webkit-box;
                 "
-                >{{ item.title }}</span
+                >{{ item.name }}</span
               >
-              <span class="gray overHidden" style="font-size: 12px"
-                >by {{ item.creator[0].userName }}</span
-              >
+              <span class="gray overHidden">by{{ item.artistName }}</span>
             </div>
             <span class="playCount">
               <svg class="icon icon-right-triangle" aria-hidden="true">
-                <use xlink:href="#icon-triangle"></use></svg
-              >{{ item.playTime | playCountFormat }}</span
+                <use xlink:href="#icon-right-triangle"></use></svg
+              >{{ item.playCount | playCountFormat }}</span
             >
-            <span class="durations">{{ item.durationms | timeFormat }}</span>
+            <span class="durations">{{ item.duration | timeFormat }}</span>
           </div>
         </div>
       </div>
@@ -107,80 +95,56 @@
 export default {
   data() {
     return {
-      relatedVideo: [],
+      mv: [],
       detail: {},
       url: '',
       hidden: true,
       subCount: null, //收藏数量
-      videoName: '', //视频名字
-      id: this.$route.params.id,
-      tags: [],
+      mvName: '', //mv名字
+      mvid: '',
     }
   },
   created() {
-    this.getRelatedVideo()
-    this.getVideoDetail()
-    this.getVideoUrl()
+    this.getSimiMv()
+    this.getDetailMv()
+    this.getMvUrl()
   },
   mounted() {
     // this.$refs.collect.getIsCollect()
   },
-  watch: {
-    id() {
-      this.getRelatedVideo()
-      this.getVideoDetail()
-      this.getVideoUrl()
-    },
-  },
   methods: {
-    async getRelatedVideo() {
-      const { data: res } = await this.$http.get('/related/allvideo', {
+    async getSimiMv() {
+      const { data: res } = await this.$http.get('/simi/mv', {
         params: {
-          id: this.id,
+          mvid: this.$route.params.id,
         },
       })
-      this.relatedVideo = res.data
+      this.mv = res.mvs
       // console.log(this.mv)
     },
-    // 获取video详情信息
-    async getVideoDetail() {
-      const { data: res } = await this.$http.get('/video/detail', {
+    async getDetailMv() {
+      const { data: res } = await this.$http.get('/mv/detail', {
         params: {
-          id: this.id,
+          mvid: this.$route.params.id,
         },
       })
       this.detail = res.data
-      this.subCount = res.data.subscribeCount
-      this.videoName = res.data.tittle
-      this.tags = res.data.videoGroup
-      // this.id = this.$route.params.id
+      this.subCount = res.data.subCount
+      this.mvName = res.data.name
+      this.mvid = this.$route.params.id
       // console.log(this.mvName)
     },
-    // 获取video播放地址
-    async getVideoUrl() {
-      const { data: res } = await this.$http.get('/video/url', {
+    async getMvUrl() {
+      const { data: res } = await this.$http.get('/mv/url', {
         params: {
           id: this.$route.params.id,
         },
       })
-      this.url = res.urls[0].url
-      // console.log(this.mv)
+      this.url = res.data.url
     },
-    playVideo(item) {
-      // console.log(item)
-      this.id = item.vid
-    },
-    toVideo(item) {
-      this.$router.push({
-        path: '/video',
-        query: {
-          id: item.id,
-          tag: item.name,
-        },
-      })
-    },
+
     handleCollect() {
-      // console.log('1')
+      // console.log(1111)
       this.$refs.collect.handleCollect()
     },
   },
@@ -198,7 +162,7 @@ export default {
     background-color: #f7f7f7;
     padding: 5px 10px;
     border-radius: 20px;
-    margin: 0 10px 10px 0;
+    margin: 0 10px 20px 0;
     cursor: pointer;
   }
 }
@@ -211,8 +175,6 @@ main {
     margin-right: 5%;
     video {
       width: 100%;
-      height: 320px;
-      // object-fit: cover;
       margin-top: 20px;
       // width: 580px;
     }

@@ -4,12 +4,12 @@
       <!-- 个性推荐 -->
       <el-tab-pane label="个性推荐" name="first">
         <!-- 轮播图 -->
-        <el-carousel :interval="400000" type="card" height="230px">
+        <el-carousel :interval="400000" type="card" height="175px">
           <el-carousel-item v-for="(item, i) in banners" :key="i">
-            <img class="bannerImg" :src="item.pic" alt="" />
+            <img class="bannerImg" :src="item.imageUrl" alt="" />
           </el-carousel-item>
         </el-carousel>
-        <div class="tittle-little">
+        <div class="tittle-little pointer" @click="toIndependent">
           推荐歌单
           <span class="gray">
             <svg class="icon icon-arrow" aria-hidden="true">
@@ -21,18 +21,18 @@
         <div class="playListBox">
           <div
             class="playlist"
-            v-for="(item, i) in playlist"
+            v-for="(item, i) in recommend"
             :key="i"
             @mouseenter="playShow = i"
             @mouseleave="playShow = null"
             @click="toSongsList(item.id)"
           >
-            <img v-lazy="item.coverImgUrl" alt="" />
+            <img v-lazy="item.picUrl" alt="" />
             <span class="playName">{{ item.name }}</span>
             <span class="playCount">
               <svg class="icon icon-right-triangle" aria-hidden="true">
-                <use xlink:href="#icon-right-triangle"></use></svg
-              >{{ item.playCount | playCountFormat }}</span
+                <use xlink:href="#icon-triangle"></use></svg
+              >{{ item.playcount | playCountFormat }}</span
             >
             <transition name="fade">
               <span class="play-svg" v-show="playShow === i">
@@ -43,107 +43,337 @@
           </div>
         </div>
       </el-tab-pane>
-      <el-tab-pane label="歌单" name="second">222</el-tab-pane>
-      <el-tab-pane label="歌手" name="third">
+
+      <!-- 歌单区域 -->
+      <el-tab-pane label="歌单" name="playlist">
+        <div class="playlist-box">
+          <!-- 头部区域 -->
+          <header v-if="isCoverShow">
+            <div class="img-box">
+              <div class="img1">
+                <img :src="cover.coverImgUrl" alt="" />
+              </div>
+              <div class="content">
+                <img :src="cover.coverImgUrl" alt="" class="img2" />
+                <div class="right">
+                  <span class="high-playlist">
+                    <svg class="icon icon-crown" aria-hidden="true">
+                      <use xlink:href="#icon-crown"></use></svg
+                    >精品歌单</span
+                  >
+                  <p>{{ cover.name }}</p>
+                </div>
+              </div>
+            </div>
+          </header>
+          <!-- 中间区域 -->
+          <main>
+            <el-popover
+              placement="right"
+              width="800"
+              trigger="click"
+              popper-class="tag-popover"
+              ref="popoverRef"
+            >
+              <!-- 按钮 -->
+              <span class="type-btn" slot="reference">
+                <span v-show="tag === ''">全部歌单</span> {{ tag }}
+                <svg class="icon icon-arrow" aria-hidden="true">
+                  <use xlink:href="#icon-arrowright"></use>
+                </svg>
+              </span>
+
+              <div style="border-bottom: 1px solid #ccc; margin-bottom: 25px">
+                <span
+                  :class="{ 'all-playlist': true, selected: tag === '' }"
+                  @click="tag = ''"
+                  >全部歌单</span
+                >
+              </div>
+              <div class="all-box">
+                <!-- 语种 -->
+                <div class="language">
+                  <div class="aside light-gray">
+                    <svg class="icon icon-aside" aria-hidden="true">
+                      <use xlink:href="#icon-theearth2diqiu"></use>
+                    </svg>
+                    语种
+                  </div>
+                  <div class="tag">
+                    <div
+                      class="span-box"
+                      v-for="(item, i) in language"
+                      :key="i"
+                    >
+                      <span
+                        :class="{ selected: tag === item.name }"
+                        @click="tag = item.name"
+                        >{{ item.name
+                        }}<span class="hot" v-if="item.hot">HOT</span></span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <!-- 风格 -->
+                <div class="language">
+                  <div class="aside light-gray">
+                    <svg class="icon icon-aside" aria-hidden="true">
+                      <use xlink:href="#icon-iconfonticon-xitong"></use></svg
+                    >风格
+                  </div>
+                  <div class="tag">
+                    <div class="span-box" v-for="(item, i) in style" :key="i">
+                      <span
+                        :class="{ selected: tag === item.name }"
+                        @click="tag = item.name"
+                        >{{ item.name
+                        }}<span class="hot" v-if="item.hot">HOT</span></span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="language">
+                  <div class="aside light-gray">
+                    <svg class="icon icon-aside" aria-hidden="true">
+                      <use xlink:href="#icon-icon-test"></use></svg
+                    >场景
+                  </div>
+                  <div class="tag">
+                    <div class="span-box" v-for="(item, i) in scene" :key="i">
+                      <span
+                        :class="{ selected: tag === item.name }"
+                        @click="tag = item.name"
+                        >{{ item.name
+                        }}<span class="hot" v-if="item.hot">HOT</span></span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <!-- 情感 -->
+                <div class="language">
+                  <div class="aside light-gray">
+                    <svg class="icon icon-aside" aria-hidden="true">
+                      <use xlink:href="#icon-pa_happy"></use></svg
+                    >情感
+                  </div>
+                  <div class="tag">
+                    <div class="span-box" v-for="(item, i) in feeling" :key="i">
+                      <span
+                        :class="{ selected: tag === item.name }"
+                        @click="tag = item.name"
+                        >{{ item.name
+                        }}<span class="hot" v-if="item.hot">HOT</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <!-- 主题 -->
+                <div class="language">
+                  <div class="aside light-gray">
+                    <svg class="icon icon-aside" aria-hidden="true">
+                      <use xlink:href="#icon-041siyecao"></use></svg
+                    >主题
+                  </div>
+                  <div class="tag">
+                    <div class="span-box" v-for="(item, i) in theme" :key="i">
+                      <span
+                        :class="{ selected: tag === item.name }"
+                        @click="tag = item.name"
+                        >{{ item.name
+                        }}<span class="hot" v-if="item.hot">HOT</span></span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </el-popover>
+
+            <div class="type-box gray">
+              <span :class="{ selected: tag === '华语' }" @click="tag = '华语'"
+                >华语</span
+              >
+              <span :class="{ selected: tag === '流行' }" @click="tag = '流行'"
+                >流行</span
+              >
+              <span :class="{ selected: tag === '摇滚' }" @click="tag = '摇滚'"
+                >摇滚</span
+              >
+              <span :class="{ selected: tag === '民谣' }" @click="tag = '民谣'"
+                >民谣</span
+              >
+              <span :class="{ selected: tag === '电子' }" @click="tag = '电子'"
+                >电子</span
+              >
+              <span
+                :class="{ selected: tag === '另类/独立' }"
+                @click="tag = '另类/独立'"
+                >另类/独立</span
+              >
+              <span
+                :class="{ selected: tag === '轻音乐' }"
+                @click="tag = '轻音乐'"
+                >轻音乐</span
+              >
+              <span :class="{ selected: tag === '综艺' }" @click="tag = '综艺'"
+                >综艺</span
+              >
+              <span
+                :class="{ selected: tag === '影视原声' }"
+                @click="tag = '影视原声'"
+                >影视原声</span
+              >
+              <span :class="{ selected: tag === 'ACG' }" @click="tag = 'ACG'"
+                >ACG</span
+              >
+            </div>
+          </main>
+          <!-- 底部区域 -->
+          <footer>
+            <div class="playListBox">
+              <div
+                class="playlist"
+                v-for="(item, i) in topPlayList"
+                :key="i"
+                @mouseenter="playShow = i"
+                @mouseleave="playShow = null"
+                @click="toSongsList(item.id)"
+              >
+                <img v-lazy="item.coverImgUrl" alt="" />
+                <span
+                  class="playName"
+                  style="
+                    overflow: hidden;
+                    -webkit-line-clamp: 2;
+                    -webkit-box-orient: vertical;
+                    display: -webkit-box;
+                  "
+                  >{{ item.name }}</span
+                >
+                <span class="playCount">
+                  <svg class="icon icon-right-triangle" aria-hidden="true">
+                    <use xlink:href="#icon-triangle"></use></svg
+                  >{{ item.playCount | playCountFormat }}</span
+                >
+                <transition name="fade">
+                  <span class="play-svg" v-show="playShow === i">
+                    <svg class="icon icon-play" aria-hidden="true">
+                      <use xlink:href="#icon-play"></use></svg
+                  ></span>
+                </transition>
+              </div>
+            </div>
+          </footer>
+        </div>
+      </el-tab-pane>
+
+      <!-- 歌手区域 -->
+      <el-tab-pane label="歌手" name="artist">
         <div class="artist-box">
           <!-- 语种 -->
           <div class="area-box gray">
             <span class="total">语种：</span>
-            <span :class="{ select: area === -1 }" @click="area = -1">全部</span
+            <span :class="{ selected: area === -1 }" @click="area = -1"
+              >全部</span
             ><i>|</i
-            ><span :class="{ select: area === 7 }" @click="area = 7">华语</span
+            ><span :class="{ selected: area === 7 }" @click="area = 7"
+              >华语</span
             ><i>|</i
-            ><span :class="{ select: area === 96 }" @click="area = 96"
+            ><span :class="{ selected: area === 96 }" @click="area = 96"
               >欧美</span
             ><i>|</i
-            ><span :class="{ select: area === 8 }" @click="area = 8">日本</span
+            ><span :class="{ selected: area === 8 }" @click="area = 8"
+              >日本</span
             ><i>|</i
-            ><span :class="{ select: area === 16 }" @click="area = 16"
+            ><span :class="{ selected: area === 16 }" @click="area = 16"
               >韩国</span
             ><i>|</i
-            ><span :class="{ select: area === 0 }" @click="area = 0">其他</span>
+            ><span :class="{ selected: area === 0 }" @click="area = 0"
+              >其他</span
+            >
           </div>
           <!-- 分类 -->
           <div class="area-box gray">
             <span class="total">分类：</span>
-            <span :class="{ select: type === -1 }" @click="type = -1">全部</span
+            <span :class="{ selected: type === -1 }" @click="type = -1"
+              >全部</span
             ><i>|</i
-            ><span :class="{ select: type === 1 }" @click="type = 1"
+            ><span :class="{ selected: type === 1 }" @click="type = 1"
               >男歌手</span
             ><i>|</i
-            ><span :class="{ select: type === 2 }" @click="type = 2"
+            ><span :class="{ selected: type === 2 }" @click="type = 2"
               >女歌手</span
             ><i>|</i
-            ><span :class="{ select: type === 3 }" @click="type = 3"
+            ><span :class="{ selected: type === 3 }" @click="type = 3"
               >乐队组合</span
             >
           </div>
           <!-- 筛选 -->
           <div class="area-box screen-box gray">
             <span class="total">筛选：</span>
-            <span :class="{ select: initial === -1 }" @click="initial = -1"
+            <span :class="{ selected: initial === -1 }" @click="initial = -1"
               >热门</span
             ><i>|</i
-            ><span :class="{ select: initial === 'a' }" @click="initial = 'a'"
+            ><span :class="{ selected: initial === 'a' }" @click="initial = 'a'"
               >A</span
             ><i>|</i
-            ><span :class="{ select: initial === 'b' }" @click="initial = 'b'"
+            ><span :class="{ selected: initial === 'b' }" @click="initial = 'b'"
               >B</span
             ><i>|</i
-            ><span :class="{ select: initial === 'c' }" @click="initial = 'c'"
+            ><span :class="{ selected: initial === 'c' }" @click="initial = 'c'"
               >C</span
             ><i>|</i
-            ><span :class="{ select: initial === 'd' }" @click="initial = 'd'"
+            ><span :class="{ selected: initial === 'd' }" @click="initial = 'd'"
               >D</span
             ><i>|</i
-            ><span :class="{ select: initial === 'e' }" @click="initial = 'e'"
+            ><span :class="{ selected: initial === 'e' }" @click="initial = 'e'"
               >E</span
             ><i>|</i
-            ><span :class="{ select: initial === 'f' }" @click="initial = 'f'"
+            ><span :class="{ selected: initial === 'f' }" @click="initial = 'f'"
               >F</span
             ><i>|</i
-            ><span :class="{ select: initial === 'g' }" @click="initial = 'g'"
+            ><span :class="{ selected: initial === 'g' }" @click="initial = 'g'"
               >G</span
             ><i>|</i
-            ><span :class="{ select: initial === 'h' }" @click="initial = 'h'"
+            ><span :class="{ selected: initial === 'h' }" @click="initial = 'h'"
               >H</span
             ><i>|</i
-            ><span :class="{ select: initial === 'i' }" @click="initial = 'i'"
+            ><span :class="{ selected: initial === 'i' }" @click="initial = 'i'"
               >I</span
             ><i>|</i
-            ><span :class="{ select: initial === 'j' }" @click="initial = 'j'"
+            ><span :class="{ selected: initial === 'j' }" @click="initial = 'j'"
               >J</span
             ><i>|</i
-            ><span :class="{ select: initial === 'k' }" @click="initial = 'k'"
+            ><span :class="{ selected: initial === 'k' }" @click="initial = 'k'"
               >K</span
             ><i>|</i
-            ><span :class="{ select: initial === 'l' }" @click="initial = 'l'"
+            ><span :class="{ selected: initial === 'l' }" @click="initial = 'l'"
               >L</span
             ><i>|</i
-            ><span :class="{ select: initial === 'm' }" @click="initial = 'm'"
+            ><span :class="{ selected: initial === 'm' }" @click="initial = 'm'"
               >M</span
             ><i>|</i>
-            <span :class="{ select: initial === 'n' }" @click="initial = 'n'"
+            <span :class="{ selected: initial === 'n' }" @click="initial = 'n'"
               >N</span
             ><i>|</i
-            ><span :class="{ select: initial === 'o' }" @click="initial = 'o'"
+            ><span :class="{ selected: initial === 'o' }" @click="initial = 'o'"
               >O</span
             ><i>|</i
-            ><span :class="{ select: initial === 'p' }" @click="initial = 'p'"
+            ><span :class="{ selected: initial === 'p' }" @click="initial = 'p'"
               >P</span
             ><i>|</i
-            ><span :class="{ select: initial === 'q' }" @click="initial = 'q'"
+            ><span :class="{ selected: initial === 'q' }" @click="initial = 'q'"
               >Q</span
-            ><span :class="{ select: initial === 'r' }" @click="initial = 'r'"
+            ><i>|</i
+            ><span :class="{ selected: initial === 'r' }" @click="initial = 'r'"
               >R</span
             ><i>|</i
-            ><span :class="{ select: initial === 's' }" @click="initial = 's'"
+            ><span :class="{ selected: initial === 's' }" @click="initial = 's'"
               >S</span
             ><i>|</i
-            ><span :class="{ select: initial === 't' }" @click="initial = 't'"
+            ><span :class="{ selected: initial === 't' }" @click="initial = 't'"
               >T</span
             ><i>|</i
-            ><span :class="{ select: initial === 'u' }" @click="initial = 'u'"
+            ><span :class="{ selected: initial === 'u' }" @click="initial = 'u'"
               >U</span
             ><i>|</i
             ><span :class="{ select: initial === 'v' }" @click="initial = 'v'"
@@ -185,20 +415,40 @@ export default {
     return {
       banners: [],
       playlist: [],
+      recommend: [], //每日推荐歌单
       playShow: null,
-      activeName: 'third',
+      activeName: 'first',
       artistList: [],
       type: -1, //分类
       area: -1, //语种
       initial: -1, //字母索引
       // loading: true,
+      tag: '',
+      topPlayList: [],
+      cover: {},
+      isCoverShow: true,
+      highPlayList: [],
+      language: [], //语种
+      scene: [], //场景
+      style: [], //风格
+      feeling: [], //情感
+      theme: [], //主题
     }
   },
   computed: {},
   created() {
-    this.getDisCovery()
+    if (this.$route.query.tag !== undefined) {
+      // console.log(this.$route.query.tag)
+      this.activeName = 'playlist'
+      this.tag = this.$route.query.tag
+    }
+    this.getBanners()
     this.getCatList()
     this.getArtistList()
+    this.getTopPlayList()
+    this.getHighPlayList()
+    this.getTags()
+    this.getRecommendPlaylist()
   },
   watch: {
     area() {
@@ -210,12 +460,16 @@ export default {
     initial() {
       this.getArtistList()
     },
+    tag() {
+      this.getTopPlayList()
+      this.getHighPlayList()
+    },
   },
   methods: {
-    async getDisCovery() {
-      const { data: res } = await this.$http.get('/homepage/block/page')
+    async getBanners() {
+      const { data: res } = await this.$http.get('/banner')
       // console.log(res)
-      this.banners = res.data.blocks[0].extInfo.banners
+      this.banners = res.banners
       // console.log(this.banners)
     },
     async getCatList() {
@@ -223,6 +477,52 @@ export default {
       this.playlist = res.playlists
       // console.log(this.playlist)
     },
+    // 获取精选歌单
+    async getRecommendPlaylist() {
+      const { data: res } = await this.$http.get('/recommend/resource')
+      this.recommend = res.recommend
+      this.recommend.splice(15)
+      // console.log()
+    },
+    // 获取精选歌单
+    async getTopPlayList() {
+      const { data: res } = await this.$http.get('/top/playlist', {
+        params: {
+          cat: this.tag,
+        },
+      })
+      this.topPlayList = res.playlists
+    },
+    // 获取精品歌单
+    async getHighPlayList() {
+      const { data: res } = await this.$http.get('/top/playlist/highquality', {
+        params: {
+          cat: this.tag,
+        },
+      })
+      this.$refs.popoverRef.doClose()
+      if (res.playlists.length === 0) {
+        this.isCoverShow = false
+      } else {
+        this.isCoverShow = true
+        this.cover = res.playlists[0]
+      }
+    },
+    // 获取歌单tag
+    async getTags() {
+      const { data: res } = await this.$http.get('/playlist/catlist')
+      const tags = res.sub
+      tags.forEach((item) => {
+        if (item.category === 0) this.language.push(item)
+        if (item.category === 1) this.style.push(item)
+        if (item.category === 2) this.scene.push(item)
+        if (item.category === 3) this.feeling.push(item)
+        if (item.category === 4) this.theme.push(item)
+      })
+      // console.log(this.style)
+      // this.topPlayList = res.playlists
+    },
+
     // 获取歌手封面信息
     async getArtistList() {
       const { data: res } = await this.$http.get('/artist/list', {
@@ -239,6 +539,7 @@ export default {
       // })
       // console.log(this.playlist)
     },
+
     toSongsList(id) {
       this.$router.push({
         path: `/songLists/${id}`,
@@ -253,22 +554,196 @@ export default {
         },
       })
     },
+    toIndependent() {
+      this.activeName = 'playlist'
+      this.tag = '华语'
+    },
   },
 }
 </script>
-
+<style>
+.tag-popover {
+  top: 283px !important;
+  left: 228px !important;
+  z-index: 9 !important;
+}
+</style>
 <style lang="less" scoped>
+.hot {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: bold;
+  color: #ec4141;
+  position: relative;
+  left: -3px;
+  top: -2px;
+  padding: 0 !important;
+  transform: scale(0.7);
+}
+.all-playlist {
+  cursor: pointer;
+  display: block;
+  padding-left: 20px;
+  margin-bottom: 10px;
+  width: 78px;
+  // height: 30px;
+}
+
+.all-box {
+  // font-size: 13px;
+  .language {
+    width: 100%;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: left;
+    // align-items: center;
+    align-items: flex-start;
+    .aside {
+      width: 10%;
+      display: flex;
+      // justify-content: center;
+      align-items: center;
+      margin-right: 50px;
+      .icon-aside {
+        margin-right: 10px;
+      }
+    }
+    .tag {
+      width: 90%;
+      display: flex;
+      flex-wrap: wrap;
+      align-content: center;
+      .span-box {
+        display: inline-block;
+        width: 102px;
+        margin: 0 6px 25px 0;
+        span {
+          padding: 3px 10px;
+          cursor: pointer;
+        }
+        span:hover {
+          color: #ec4141;
+        }
+      }
+    }
+  }
+}
+
+.selected {
+  // width: 0;
+  border-radius: 15px;
+  padding: 3px 10px;
+  background-color: #fdf5f5;
+  color: #ec4141;
+}
+.selected:hover {
+  background-color: #fdeded;
+  color: #ec4141 !important;
+}
+.playlist-box {
+  width: 100%;
+  margin-top: 40px;
+  header {
+    cursor: pointer;
+    width: 100%;
+    .img-box {
+      position: relative;
+      .img1 {
+        height: 160px;
+        border-radius: 5px;
+        overflow: hidden;
+        img {
+          width: 100%;
+          filter: blur(30px);
+          height: 120%;
+          object-fit: none;
+        }
+      }
+      .content {
+        position: absolute;
+        left: 15px;
+        top: 15px;
+        display: flex;
+        justify-content: left;
+        .img2 {
+          border-radius: 3px;
+          width: 130px;
+          height: 130px;
+          // position: absolute;
+        }
+        .right {
+          margin-left: 15px;
+          .high-playlist {
+            margin-top: 20px;
+            display: block;
+            // text-align: center;
+            // line-height: 30px;
+            border: 1px solid #dca55a;
+            border-radius: 20px;
+            width: 110px;
+            height: 30px;
+            color: #dca55a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            .icon-crown {
+              margin-right: 5px;
+            }
+          }
+          p {
+            margin-top: 20px;
+            color: #ffffff;
+            font-size: 16px;
+          }
+        }
+      }
+    }
+  }
+  main {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    .type-btn {
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      // display: inline-block;
+      text-align: center;
+      width: 100px;
+      border-radius: 20px;
+      height: 30px;
+      border: 1px solid #bbb;
+      .icon-arrow {
+        margin-left: 5px;
+        font-size: 9px;
+      }
+    }
+    .type-btn:hover {
+      background-color: #f2f2f2;
+    }
+    .type-box {
+      display: flex;
+      align-items: center;
+      span {
+        padding: 3px 10px;
+        cursor: pointer;
+        margin: 0 3px;
+      }
+      span:hover {
+        color: #373737;
+      }
+    }
+  }
+}
+
 .artist-box {
   margin-top: 40px;
   .area-box {
     // margin-bottom: 15px;
     span {
-      line-height: 20px;
-      text-align: center;
+      padding: 3px 10px;
       display: inline-block;
-      width: 55px;
-      height: 22px;
-      // padding: 3px 13px;
       margin: 0 5px 10px 5px;
       cursor: pointer;
     }
@@ -284,15 +759,6 @@ export default {
       color: #eee;
       margin: 0 5px;
     }
-  }
-
-  .select {
-    border-radius: 15px;
-    color: #ec4141;
-    background-color: #fdf5f5;
-  }
-  .select:hover {
-    color: #ec4141 !important;
   }
 }
 .pic-box {
@@ -322,11 +788,13 @@ export default {
   }
 }
 .main-Box {
+  min-width: 900px;
+
+  width: 100%;
   position: relative;
   padding: 15px 30px 0 30px;
 }
-.playlist-tittle {
-}
+
 .el-carousel {
   margin-top: 40px;
 }
@@ -345,29 +813,24 @@ export default {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  width: 1000px;
-
-  // height: 600px;
+  width: 100%;
   .playlist {
     position: relative;
-    margin: 15px;
-    width: 160px;
-    height: 200px;
+    margin: 15px 10px;
+    width: 18%;
+    // height: 200px;
     cursor: pointer;
-    // background-color: antiquewhite;
     img {
       border-radius: 5px;
-      // overflow: hidden;
       display: block;
-      width: 160px;
-      height: 160px;
+      width: 100%;
     }
     .playName {
       margin-top: 7px;
       display: block;
-      font-size: 14px;
-      width: 160px;
-      height: 40px;
+      // font-size: 14px;
+      width: 100%;
+      // height: 40px;
     }
 
     .play-svg {
@@ -375,7 +838,7 @@ export default {
       position: absolute;
       font-size: 11px;
       right: 8px;
-      top: 110px;
+      bottom: 50px;
       color: #ec4141;
       display: flex;
       justify-content: center;
@@ -389,16 +852,14 @@ export default {
       }
     }
     .playCount {
+      display: flex;
       position: absolute;
       color: #fff;
       top: 5px;
       right: 8px;
-      font-size: 14px;
+      font-size: 12px;
       .icon-right-triangle {
-        // position: absolute;
-        // left: 20px;
-        // margin-right: 30px;
-        font-size: 10px;
+        font-size: 12px;
       }
     }
   }

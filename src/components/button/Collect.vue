@@ -1,7 +1,10 @@
 <template>
-  <span class="button-collect">
-    <button class="btn">
-      <span v-if="iconShow">已</span>收藏({{ subCount }})
+  <span class="button-wrap">
+    <button class="btn-content">
+      <span v-show="iconShow">已</span>收藏<span v-show="subCounts !== 0"
+        >({{ subCounts }})</span
+      >
+      <!-- {{ subCount }} -->
     </button>
     <!-- 已收藏 -->
     <svg class="icon icon-collect" aria-hidden="true" v-if="iconShow">
@@ -11,66 +14,177 @@
     <svg class="icon icon-collect" aria-hidden="true" v-else>
       <use xlink:href="#icon-Collections"></use>
     </svg>
-
-    <!-- {{ mvName }} -->
   </span>
 </template>
 
 <script>
 export default {
-  props: ['subCount', 'mvName', 'mvid'],
+  props: ['subCount', 'id', 'type'],
   data() {
     return {
       iconShow: null,
       t: null,
+      subCounts: this.subCount,
     }
   },
-  mounted() {},
+  created() {
+    if (this.type === 'video' || this.type === 'mv') this.getMediaIsCollect()
+    else if (this.type === 'playlist') this.getPlaylistIsCollect()
+    else if (this.type === 'artist') this.getArtistIsCollect()
+
+    // console.log(this.subCounts)
+  },
+  watch: {
+    subCount(newVal) {
+      this.subCounts = newVal
+    },
+  },
 
   methods: {
     // 点击收藏按钮 进行收藏和取消收藏操作
-
     async handleCollect() {
-      if (this.iconShow) {
-        this.t = 0
-      } else {
-        this.t = 1
+      if (this.type === 'video') this.collectVideo()
+      else if (this.type === 'mv') this.collectMv()
+      else if (this.type === 'playlist') this.collectPlaylist()
+      else if (this.type === 'artist') this.collectArtist()
+    },
+    // 收藏视频
+    async collectVideo() {
+      {
+        const { data: res } = await this.$http.get('/video/sub', {
+          params: {
+            id: this.id,
+            t: -this.t,
+          },
+        })
+        if (res.code !== 200) return this.$message.error('取消收藏失败')
+        this.$message.success(res.message)
+        if (res.message === '取消收藏成功') {
+          this.iconShow = false
+          this.t = -1
+          this.subCounts--
+        }
+        if (res.message === '收藏成功') {
+          this.iconShow = true
+          this.t = 1
+          this.subCounts++
+        }
+        // console.log(res)
       }
-      console.log(this.t)
-      const { data: res } = await this.$http.get('/mv/sub', {
+    },
+    // 收藏MV
+    async collectMv() {
+      {
+        const { data: res } = await this.$http.get('/mv/sub', {
+          params: {
+            mvid: this.id,
+            t: -this.t,
+          },
+        })
+        if (res.code !== 200) return this.$message.error('取消收藏失败')
+        this.$message.success(res.message)
+        if (res.message === '取消收藏成功') {
+          this.iconShow = false
+          this.t = -1
+          this.subCounts--
+        }
+        if (res.message === '收藏成功') {
+          this.iconShow = true
+          this.t = 1
+          this.subCounts++
+        }
+        // console.log(res)
+      }
+    },
+    // 收藏歌单
+    async collectPlaylist() {
+      {
+        const { data: res } = await this.$http.get('/playlist/subscribe', {
+          params: {
+            id: this.id,
+            t: -this.t,
+          },
+        })
+        if (res.code !== 200) return this.$message.error('收藏操作失败')
+
+        if (this.t === 1) {
+          this.$message.success('取消收藏成功')
+          this.iconShow = false
+          this.t = -1
+          this.subCounts--
+        } else if (this.t === -1) {
+          this.$message.success('收藏成功')
+          this.iconShow = true
+          this.t = 1
+          this.subCounts++
+        }
+        // console.log(res)
+      }
+    },
+    // 收藏歌手
+    async collectArtist() {
+      {
+        const { data: res } = await this.$http.get('/artist/sub', {
+          params: {
+            id: this.id,
+            t: -this.t,
+          },
+        })
+        if (res.code !== 200) return this.$message.error('收藏操作失败')
+
+        if (this.t === 1) {
+          this.$message.success('取消收藏成功')
+          this.iconShow = false
+          this.t = -1
+          // this.subCounts--
+        } else if (this.t === -1) {
+          this.$message.success('收藏成功')
+          this.iconShow = true
+          this.t = 1
+          // this.subCounts++
+        }
+        // console.log(res)
+      }
+    },
+    // 判断歌单是否收藏
+    async getPlaylistIsCollect() {
+      const { data: res } = await this.$http.get('/user/playlist', {
         params: {
-          mvid: this.mvid,
-          t: this.t,
+          uid: 297835213,
         },
       })
-      this.getIsCollect()
-      // if (res.code !== 200) this.$message.error('取消收藏失败')
-      // this.$message.success('收藏成功')
-      // this.iconShow = !this.iconShow
+      this.iconShow = res.playlist.some((item) => {
+        return item.id === this.id
+      })
+      if (this.iconShow) this.t = 1
+      else this.t = -1
     },
-    // 判断mv是否收藏
-    async getIsCollect() {
-      // console.log('1')
-      // console.log(this.mvName)
+    // 判断mv和视频是否收藏
+    async getMediaIsCollect() {
       const { data: res } = await this.$http.get('/mv/sublist')
       this.iconShow = res.data.some((item) => {
-        // console.log(item.title)
-        return item.title === this.mvName
+        return item.vid === this.id
       })
       // console.log(this.iconShow)
+      if (this.iconShow) this.t = 1
+      else this.t = -1
     },
-  },
-  watch: {
-    mvName() {
-      this.getIsCollect()
+    // 判断歌手是否收藏
+    async getArtistIsCollect() {
+      const { data: res } = await this.$http.get('/artist/sublist')
+      this.iconShow = res.data.some((item) => {
+        return item.id === this.id
+      })
+      if (this.iconShow) this.t = 1
+      else this.t = -1
     },
   },
 }
 </script>
 
 <style lang="less" scoped>
-.button-collect {
-  // margin-right: 15px;
+.button-wrap {
+  margin-top: 10px;
   display: inline-block;
   position: relative;
   .icon-collect {
@@ -78,18 +192,17 @@ export default {
     top: 6px;
     left: 15px;
   }
-  .btn {
+  .btn-content {
     cursor: pointer;
     height: 33px;
-    // width: 140px;
     border-radius: 15px;
     background-color: #ffffff;
     border: 1px solid #ccc;
-    font-size: 15px;
+    font-size: 14px;
     padding-left: 40px;
-    padding-right: 10px;
+    padding-right: 15px;
   }
-  .btn:hover {
+  .btn-content:hover {
     color: black;
     background-color: #f2f2f2;
   }

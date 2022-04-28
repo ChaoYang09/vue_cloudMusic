@@ -2,7 +2,84 @@
   <div class="main-box">
     <el-tabs v-model="activeName">
       <!-- 个性推荐 -->
-      <el-tab-pane label="视频" name="first"> </el-tab-pane>
+      <el-tab-pane label="视频" name="first">
+        <main>
+          <el-popover
+            placement="bottom"
+            width="700"
+            trigger="click"
+            popper-class="tag-popover"
+            ref="popoverRef"
+          >
+            <!-- 按钮 -->
+            <span class="type-btn" slot="reference">
+              <span v-show="tag === ''">全部视频</span>
+              {{ tag }}
+              <svg class="icon icon-arrow" aria-hidden="true">
+                <use xlink:href="#icon-arrowright"></use>
+              </svg>
+            </span>
+
+            <div style="border-bottom: 1px solid #ccc; margin-bottom: 25px">
+              <span
+                :class="{ 'all-playlist': true, selected: tag === '' }"
+                @click="getAllVideos"
+                >全部视频</span
+              >
+            </div>
+
+            <!-- group -->
+            <div class="group-box">
+              <div class="tag">
+                <div class="span-box" v-for="(item, i) in group" :key="i">
+                  <span
+                    :class="{ selected: id === item.id }"
+                    @click="videoId(item)"
+                    >{{ item.name }}</span
+                  >
+                </div>
+                <div class="slot-div"></div>
+              </div>
+            </div>
+          </el-popover>
+          <!-- category区域 -->
+          <div class="type-box gray">
+            <span
+              v-for="(item, i) in category"
+              :key="i"
+              :class="{ selected: id === item.id }"
+              @click="videoId(item)"
+              >{{ item.name }}</span
+            >
+          </div>
+        </main>
+        <!-- Video区域 -->
+        <footer>
+          <div class="mv-box">
+            <div
+              class="cover-box"
+              v-for="(item, i) in videos"
+              :key="i"
+              @click="toVideoPlayer(item.data.vid)"
+            >
+              <img :src="item.data.coverUrl" alt="" />
+              <span class="overHidden">{{ item.data.title }}</span>
+              <span class="light-gray"
+                >by {{ item.data.creator.nickname }}</span
+              >
+              <span class="playCount">
+                <svg class="icon icon-right-triangle" aria-hidden="true">
+                  <use xlink:href="#icon-triangle"></use></svg
+                >{{ item.data.playTime | playCountFormat }}</span
+              >
+              <span class="durations">{{
+                item.data.durationms | timeFormat
+              }}</span>
+            </div>
+          </div>
+        </footer>
+      </el-tab-pane>
+      <!-- MV区域 -->
       <el-tab-pane label="MV" name="second">
         <div class="tittle-box">
           <!-- 头部区域 -->
@@ -17,24 +94,24 @@
             <div class="area-box gray">
               <span
                 @click="areaSelected(1, '内地')"
-                :class="{ select: areaIndex === 1 }"
+                :class="{ selected: areaIndex === 1 }"
                 :v-model="area"
                 >内地</span
               ><span
                 @click="areaSelected(2, '港台')"
-                :class="{ select: areaIndex === 2 }"
+                :class="{ selected: areaIndex === 2 }"
                 >港台</span
               ><span
                 @click="areaSelected(3, '欧美')"
-                :class="{ select: areaIndex === 3 }"
+                :class="{ selected: areaIndex === 3 }"
                 >欧美</span
               ><span
                 @click="areaSelected(4, '日本')"
-                :class="{ select: areaIndex === 4 }"
+                :class="{ selected: areaIndex === 4 }"
                 >日本</span
               ><span
                 @click="areaSelected(5, '韩国')"
-                :class="{ select: areaIndex === 5 }"
+                :class="{ selected: areaIndex === 5 }"
                 >韩国</span
               >
             </div>
@@ -47,14 +124,14 @@
                 class="cover-box"
                 v-for="(item, i) in mv.slice(1, mv.length)"
                 :key="i"
-                @click="toMvPage(item.id)"
+                @click="toMvPlayer(item.id)"
               >
                 <img :src="item.cover" alt="" />
                 <span>{{ item.name }}</span>
                 <span>{{ item.artistName }}</span>
                 <span class="playCount">
                   <svg class="icon icon-right-triangle" aria-hidden="true">
-                    <use xlink:href="#icon-right-triangle"></use></svg
+                    <use xlink:href="#icon-triangle"></use></svg
                   >{{ item.playCount | playCountFormat }}</span
                 >
               </div>
@@ -70,25 +147,81 @@
 export default {
   data() {
     return {
-      activeName: 'second',
+      activeName: 'first',
       areaIndex: 1,
       mv: [],
       area: '',
+      group: [], //视频标签
+      category: [], //视频分类
+      id: '',
+      tag: '',
+      videos: [],
     }
   },
   created() {
+    // this.id =
     this.getNewMv()
+    this.getVideoGroup()
+    this.getVideoCategory()
+    this.getAllVideos()
+    if (this.$route.query.id !== undefined) {
+      this.id = Number(this.$route.query.id)
+      this.tag = this.$route.query.tag
+      // console.log(this.$route.query.tag)
+    }
+  },
+  mounted() {},
+  watch: {
+    id() {
+      this.getVideos()
+    },
   },
   methods: {
+    // 获取视频标签
+    async getVideoGroup() {
+      const { data: res } = await this.$http.get('/video/group/list')
+      this.group = res.data
+      // console.log(this.group)
+    },
+    // 获取视频分类
+    async getVideoCategory() {
+      const { data: res } = await this.$http.get('/video/category/list')
+      this.category = res.data
+      // console.log(this.category)
+    },
+    // 获取视频
+    async getVideos() {
+      const { data: res } = await this.$http.get('/video/group', {
+        params: {
+          id: this.id,
+        },
+      })
+      this.videos = res.datas
+      this.$refs.popoverRef.doClose()
+      // console.log(this.category)
+    },
+    // 将video的id和name储存到状态中
+    videoId(item) {
+      this.id = item.id
+      this.tag = item.name
+    },
+    // 获取全部视频
+    async getAllVideos() {
+      const { data: res } = await this.$http.get('/video/timeline/all')
+      this.videos = res.datas
+      if (this.$route.query.id === undefined) this.tag = ''
+      this.$refs.popoverRef.doClose()
+      // console.log(this.category)
+    },
+    // 获取Mv
     async getNewMv() {
       const { data: res } = await this.$http.get('/mv/first', {
         params: {
-          limit: 7,
+          limit: 31,
           area: this.area,
         },
       })
       this.mv = res.data
-      // console.log(res)
     },
     // 点击对应的低于获取不同地区的MV
     areaSelected(index, area) {
@@ -97,30 +230,120 @@ export default {
       this.area = area
       this.getNewMv()
     },
-    toMvPage(id) {
+    toVideoPlayer(id) {
       this.$router.push({
-        path: `videoPlayer/${id}`,
+        path: `/videoPlayer/${id}`,
+      })
+      // console.log(111111)
+    },
+    toMvPlayer(id) {
+      this.$router.push({
+        path: `/mvPlayer/${id}`,
       })
     },
   },
 }
 </script>
 
+<style>
+.tag-popover {
+  overflow: auto;
+  height: 500px;
+  top: 105px !important;
+  left: 240px !important;
+  z-index: 9 !important;
+}
+</style>
 <style lang="less" scoped>
+.all-playlist {
+  cursor: pointer;
+  display: block;
+  padding-left: 20px;
+  margin-bottom: 10px;
+  width: 78px;
+  // height: 30px;
+}
+
+.group-box {
+  width: 100%;
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: center;
+  .tag {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    .span-box {
+      display: inline-block;
+      width: 102px;
+      margin: 0 6px 25px 0;
+      span {
+        padding: 3px 10px;
+        cursor: pointer;
+      }
+      span:hover {
+        color: #ec4141;
+      }
+    }
+    .slot-div {
+      display: inline-block;
+      width: 102px;
+      margin: 0 6px 25px 0;
+    }
+  }
+}
+
+main {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 50px;
+  .type-btn {
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 100px;
+    border-radius: 20px;
+    height: 30px;
+    border: 1px solid #bbb;
+    .icon-arrow {
+      margin-left: 5px;
+      font-size: 9px;
+    }
+  }
+  .type-btn:hover {
+    background-color: #f2f2f2;
+  }
+  .type-box {
+    display: flex;
+    align-items: center;
+    span {
+      padding: 3px 10px;
+      cursor: pointer;
+      margin: 0 3px;
+    }
+    span:hover {
+      color: #373737;
+    }
+  }
+}
 .main-box {
+  min-width: 900px;
   padding: 20px 30px 0 30px;
   width: 100%;
 }
 .tittle-box {
-  // width: 100%;
   margin-top: 50px;
 }
-.select {
+.selected {
   border-radius: 15px;
+  padding: 3px 10px;
+  background-color: #fdf5f5;
   color: #ec4141;
-  background-color: #fcebeb;
 }
-.select:hover {
+.selected:hover {
+  background-color: #fdeded;
   color: #ec4141 !important;
 }
 header {
@@ -141,19 +364,21 @@ footer {
   .mv-box {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
-    // align-items: center;
-    // width: 100%;
+    justify-content: start;
     .cover-box {
       position: relative;
       cursor: pointer;
-      width: 32%;
-      // height: 30%;
-      margin: 20px 0 10px 0;
+      width: 31%;
+      height: 80%;
+      // object-fit: cover;
+
+      margin: 20px 2% 10px 0;
       overflow: hidden;
       img {
+        border-radius: 5px;
         width: 100%;
-        // height: 100%;
+        height: 80%;
+        object-fit: cover;
       }
       span {
         margin-top: 5px;
@@ -161,17 +386,22 @@ footer {
       }
       span:nth-child(3) {
         font-size: 12px;
-        color: #7f7f88;
       }
       .playCount {
+        display: flex;
+        align-items: center;
         position: absolute;
         color: #fff;
         top: 0px;
         right: 8px;
-        font-size: 14px;
-        .icon-right-triangle {
-          font-size: 10px;
-        }
+        font-size: 12px;
+      }
+      .durations {
+        font-size: 12px;
+        color: #ffffff;
+        position: absolute;
+        bottom: 50px;
+        right: 8px;
       }
     }
   }
@@ -206,7 +436,7 @@ footer {
   background-color: #fff;
   width: 100%;
   height: 60px;
-  margin-top: -15px;
+  margin-top: -20px;
   padding-top: 15px;
 }
 </style>

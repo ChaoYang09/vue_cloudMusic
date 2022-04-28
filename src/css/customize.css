@@ -1,0 +1,167 @@
+/* 灰色 */
+.gray {
+  color: #a0a0a0;
+}
+.light-gray {
+  color: #cfcfcf;
+}
+.deep-gray{
+   color: #7c7c7c;
+}
+.deep-gray:hover{
+  color: #000;
+}
+/* 网易红 */
+.netEase-red{
+  color: #ec4141;
+}
+/* 按钮 */
+.btn {
+  display: inline-block;
+  cursor: pointer;
+  box-sizing: content-box;
+  text-align: center;
+  padding: 4px 13px;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+}
+.btn:hover {
+  background-color: #f2f2f2;
+}
+
+/* 字体加粗 */
+.bold {
+  font-weight: bold;
+}
+
+/* 字体大小 */
+.font-12 {
+  font-size: 12px;
+}
+.font-13 {
+  font-size: 13px;
+}
+.font-14 {
+  font-size: 14px;
+}
+.font-15 {
+  font-size: 15px;
+}
+.font-16 {
+  font-size: 16px;
+}
+.font-18 {
+  font-size: 18px;
+}
+.font-20 {
+  font-size: 20px;
+}
+
+/* 圆角 */
+.rounded-5 {
+  border-radius: 5px;
+}
+.round-50 {
+  border-radius: 50%;
+}
+/* 跳转链接颜色 */
+.link {
+  cursor: pointer;
+  color: #5091ca;
+}
+.link:hover {
+  color: #0b58b7;
+}
+/* 居中 */
+.flex-center {
+  display: flex;
+  justify-content: center;
+}
+.align-center {
+  display: flex;
+  align-items: center;
+}
+.wrap{
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* 手指 */
+.pointer {
+  cursor: pointer;
+  
+}
+.default{
+  cursor:default;
+}
+
+/* 给父亲添加相对定位 */
+.position {
+  position: relative;
+}
+
+/* display */
+.inline-block {
+  display: inline-block;
+}
+.block {
+  display: block;
+}
+
+/* 内边距 */
+.px-20 {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+.py-30 {
+  padding-top: 30px;
+}
+/* 外边距 */
+.mt-2{
+margin-top: 2px;
+}
+.mt-10 {
+  margin-top: 10px;
+}
+.mt-20 {
+  margin-top: 20px;
+}
+.-ml-1{
+margin-left: -1px;
+}
+.ml-5 {
+  margin-left: 5px;
+}
+.ml-10 {
+  margin-left: 10px;
+}
+.ml-30 {
+  margin-left: 20px;
+}
+.mb-10 {
+  margin-bottom: 10px;
+}
+.my-5 {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.my-10 {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+/* 一行文本溢出隐藏： 需要添加width */
+.overHidden {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* 多行省略 */
+.hidden-2 {
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
+}
+.center{
+  margin: 0 auto;
+}
