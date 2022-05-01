@@ -28,7 +28,7 @@
             <el-popover
               ref="popoverRef"
               placement="right"
-              width="350"
+              width="300"
               trigger="click"
               @after-leave="getSearchHistory"
               popper-class="my-popover"
@@ -459,6 +459,7 @@ export default {
 
 <style>
 .my-popover {
+  font-size: 12px !important;
   overflow: auto;
   height: 430px;
   padding: 0 !important;

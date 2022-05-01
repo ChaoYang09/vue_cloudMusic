@@ -55,9 +55,15 @@
       </el-table-column>
 
       <!-- 标题 -->
-      <el-table-column min-width="300" label="音乐标题">
+      <el-table-column min-width="350" label="音乐标题">
         <template v-slot="scope">
           <span class="default">{{ scope.row.name }}</span>
+          <!-- style="
+              width: 30%;
+              margin-bottom: -8px;
+              white-space: nowrap;
+              overflow: hidden;
+            " -->
 
           <span class="gray default" v-if="scope.row.alia.length !== 0">
             &nbsp;({{ scope.row.alia[0] }})</span
@@ -90,10 +96,12 @@
       </el-table-column>
 
       <!-- 歌手 -->
-      <el-table-column min-width="180" label="歌手" show-overflow-tooltip>
+      <el-table-column min-width="160" label="歌手" show-overflow-tooltip>
         <template v-slot="scope">
           <span class="artist-list" v-for="(item, i) in scope.row.ar" :key="i">
-            <span class="pointer deep-gray">{{ item.name }}</span>
+            <span class="pointer deep-gray" @click="common.toArtist(item.id)">{{
+              item.name
+            }}</span>
           </span>
         </template>
       </el-table-column>
@@ -123,6 +131,7 @@
         :page-size="30"
         :current-page="currentPage"
         @current-change="handleCurrentChange"
+        v-if="songs.length !== 0"
       ></el-pagination>
     </div>
   </div>
@@ -167,7 +176,7 @@ export default {
     handleCurrentChange(val) {
       this.currentPage = val
       this.setOffset((val - 1) * 30)
-      this.$parent.getSongsList()
+      this.$parent.getSongsLists()
       // this.getSongsList()
     },
 

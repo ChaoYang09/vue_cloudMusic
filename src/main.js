@@ -3,6 +3,10 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 
+/* 引入公共js*/
+import common from '@/utils/common'
+Vue.prototype.common = common
+
 Vue.prototype.$bus = new Vue()
 
 import VueLazyload from 'vue-lazyload'

@@ -13,12 +13,16 @@
             <el-button slot="append" icon="el-icon-search"></el-button>
           </el-input>
         </header>
+
         <el-table :data="album" stripe>
-          <el-table-column width="80px">
+          <el-table-column>
             <template v-slot="scope">
-              <div class="playerImg">
-                <img :src="scope.row.picUrl" alt="" />
-              </div>
+              <img
+                :src="scope.row.picUrl"
+                class="rounded-5 block"
+                style="width: 55px; height: 55px"
+                alt=""
+              />
             </template>
           </el-table-column>
           <el-table-column prop="name" width="450px"> </el-table-column>
@@ -392,7 +396,7 @@
 export default {
   data() {
     return {
-      activeName: 'third',
+      activeName: 'first',
       players: [],
       mv: [],
       album: [],

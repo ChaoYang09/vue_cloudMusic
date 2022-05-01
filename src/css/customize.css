@@ -61,7 +61,7 @@
 .rounded-5 {
   border-radius: 5px;
 }
-.round-50 {
+.rounded-50 {
   border-radius: 50%;
 }
 /* 跳转链接颜色 */
@@ -135,7 +135,7 @@ margin-left: -1px;
 .ml-10 {
   margin-left: 10px;
 }
-.ml-30 {
+.ml-20 {
   margin-left: 20px;
 }
 .mb-10 {

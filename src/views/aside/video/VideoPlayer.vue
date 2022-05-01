@@ -86,9 +86,10 @@
                 "
                 >{{ item.title }}</span
               >
-              <span class="gray overHidden" style="font-size: 12px"
-                >by {{ item.creator[0].userName }}</span
-              >
+              <span class="overHidden mt-20 block font-12"
+                ><span class="gray">by </span
+                ><span class="deep-gray">{{ item.creator[0].userName }}</span>
+              </span>
             </div>
             <span class="playCount">
               <svg class="icon icon-right-triangle" aria-hidden="true">
@@ -207,7 +208,7 @@ main {
   display: flex;
   justify-content: flex-start;
   .left {
-    width: 620px;
+    width: 580px;
     margin-right: 5%;
     video {
       width: 100%;
@@ -248,19 +249,9 @@ main {
         align-items: center;
         margin-bottom: 20px;
         img {
-          margin-right: 20px;
+          margin-right: 10px;
           border-radius: 5px;
           width: 150px;
-        }
-        span {
-          display: block;
-        }
-        span:nth-child(1) {
-          // font-size: 18px;
-          margin-bottom: 20px;
-        }
-        span:nth-child(2):hover {
-          color: #373737;
         }
       }
     }

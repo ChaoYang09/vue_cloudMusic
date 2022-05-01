@@ -55,27 +55,25 @@
         </main>
         <!-- Video区域 -->
         <footer>
-          <div class="mv-box">
-            <div
-              class="cover-box"
+          <div class="video-wrap">
+            <Video
+              class="video"
               v-for="(item, i) in videos"
               :key="i"
-              @click="toVideoPlayer(item.data.vid)"
+              :count="item.data.playTime"
+              :duration="item.data.durationms"
+              :url="item.data.coverUrl"
+              :name="item.data.title"
+              @click.native="common.toVideoPlayer(item.data.vid)"
             >
-              <img :src="item.data.coverUrl" alt="" />
-              <span class="overHidden">{{ item.data.title }}</span>
-              <span class="light-gray"
-                >by {{ item.data.creator.nickname }}</span
-              >
-              <span class="playCount">
-                <svg class="icon icon-right-triangle" aria-hidden="true">
-                  <use xlink:href="#icon-triangle"></use></svg
-                >{{ item.data.playTime | playCountFormat }}</span
-              >
-              <span class="durations">{{
-                item.data.durationms | timeFormat
-              }}</span>
-            </div>
+              <template #author>
+                <div class="overHidden">
+                  <span class="pointer deep-gray">{{
+                    item.data.creator.nickname
+                  }}</span>
+                </div>
+              </template>
+            </Video>
           </div>
         </footer>
       </el-tab-pane>
@@ -118,23 +116,34 @@
           </header>
 
           <!-- MV区域 -->
+
           <footer>
-            <div class="mv-box">
-              <div
-                class="cover-box"
+            <div class="video-wrap">
+              <Video
+                class="video"
                 v-for="(item, i) in mv.slice(1, mv.length)"
                 :key="i"
-                @click="toMvPlayer(item.id)"
+                :count="item.playCount"
+                :url="item.cover"
+                :name="item.name"
+                @click.native="common.toMvPlayer(item.id)"
               >
-                <img :src="item.cover" alt="" />
-                <span>{{ item.name }}</span>
-                <span>{{ item.artistName }}</span>
-                <span class="playCount">
-                  <svg class="icon icon-right-triangle" aria-hidden="true">
-                    <use xlink:href="#icon-triangle"></use></svg
-                  >{{ item.playCount | playCountFormat }}</span
-                >
-              </div>
+                <template #author>
+                  <div class="overHidden">
+                    <span
+                      class="artist-list"
+                      v-for="(item, i) in item.artists"
+                      :key="i"
+                    >
+                      <span
+                        class="pointer deep-gray"
+                        @click.stop="common.toArtist(item.id)"
+                        >{{ item.name }}</span
+                      >
+                    </span>
+                  </div>
+                </template>
+              </Video>
             </div>
           </footer>
         </div>
@@ -144,7 +153,11 @@
 </template>
 
 <script>
+import Video from '@/components/video/Video.vue'
 export default {
+  components: {
+    Video,
+  },
   data() {
     return {
       activeName: 'first',
@@ -197,6 +210,7 @@ export default {
         },
       })
       this.videos = res.datas
+      // console.log(this.videos)
       this.$refs.popoverRef.doClose()
       // console.log(this.category)
     },
@@ -230,23 +244,13 @@ export default {
       this.area = area
       this.getNewMv()
     },
-    toVideoPlayer(id) {
-      this.$router.push({
-        path: `/videoPlayer/${id}`,
-      })
-      // console.log(111111)
-    },
-    toMvPlayer(id) {
-      this.$router.push({
-        path: `/mvPlayer/${id}`,
-      })
-    },
   },
 }
 </script>
 
 <style>
 .tag-popover {
+  font-size: 12px !important;
   overflow: auto;
   height: 500px;
   top: 105px !important;
@@ -361,48 +365,13 @@ header {
   }
 }
 footer {
-  .mv-box {
+  .video-wrap {
     display: flex;
     flex-wrap: wrap;
-    justify-content: start;
-    .cover-box {
-      position: relative;
-      cursor: pointer;
-      width: 31%;
-      height: 80%;
-      // object-fit: cover;
-
-      margin: 20px 2% 10px 0;
-      overflow: hidden;
-      img {
-        border-radius: 5px;
-        width: 100%;
-        height: 80%;
-        object-fit: cover;
-      }
-      span {
-        margin-top: 5px;
-        display: block;
-      }
-      span:nth-child(3) {
-        font-size: 12px;
-      }
-      .playCount {
-        display: flex;
-        align-items: center;
-        position: absolute;
-        color: #fff;
-        top: 0px;
-        right: 8px;
-        font-size: 12px;
-      }
-      .durations {
-        font-size: 12px;
-        color: #ffffff;
-        position: absolute;
-        bottom: 50px;
-        right: 8px;
-      }
+    // justify-content: space-between;
+    .video {
+      width: 32%;
+      margin-right: 1%;
     }
   }
 }

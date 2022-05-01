@@ -13,7 +13,7 @@ import Artist from '../views/discover/Artist.vue'
 // import Artist from '../views/discover/Artist.vue'
 // 视频
 import Video from '../views/aside/video/Video.vue'
-import VideoPlayer from '../views/aside/video/VideoPLayer.vue'
+import VideoPlayer from '@/views/aside/video/VideoPlayer.vue'
 import MvPlayer from '../views/aside/video/MvPlayer.vue'
 // 个人相关
 import Collect from '../views/user/Collect.vue'
