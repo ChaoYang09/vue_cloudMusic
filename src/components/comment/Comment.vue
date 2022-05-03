@@ -53,16 +53,14 @@ export default {
     CommentItem,
   },
   props: {
-    /* 滚动条所在元素 */
-    scrollDom: {
-      type: String,
+    id: {
+      type: [Number, String],
       require: true,
-      default: 'body',
     },
-    /* 滚动的偏移量 */
-    scrollOffset: {
-      type: Number,
-      default: 10,
+
+    type: {
+      type: [Number, String],
+      require: true,
     },
   },
   data() {
@@ -74,14 +72,14 @@ export default {
       newComments: [], //最新评论
       totalCount: null,
       hotInfo: {
-        id: 3136952023,
+        id: this.id,
         limit: 10,
-        type: 2,
+        type: this.type,
       },
       newInfo: {
-        id: 3136952023,
+        id: this.id,
         limit: 20,
-        type: 2,
+        type: this.type,
         offset: 0,
       },
     }
@@ -108,28 +106,6 @@ export default {
       this.currentPage = val
       this.newInfo.offset = (val - 1) * 20
       this.getNewComment()
-      // this.toTopAnimation(
-      //   this.$refs.newRef.offsetTop - this.scrollOffset,
-      //   document.querySelector('.right-box'),
-      //   600
-      // )
-    },
-    /* 滚动条由下至上的动画js动画 */
-    toTopAnimation(target, scrollDom, ms = 500) {
-      let start
-      let begin = scrollDom.scrollTop
-      let size = (begin - target) / ms
-      const step = (timestamp) => {
-        if (start === undefined) start = timestamp
-        const elapsed = timestamp - start
-        /* 防止上滑过头 */
-        scrollDom.scrollTop = Math.max(begin - size * elapsed, target)
-        if (elapsed < ms) {
-          // 在ms毫秒后停止动画
-          window.requestAnimationFrame(step)
-        }
-      }
-      window.requestAnimationFrame(step)
     },
   },
 }

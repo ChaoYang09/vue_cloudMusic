@@ -11,6 +11,9 @@
 .deep-gray:hover{
   color: #000;
 }
+.deeper-gray{
+  color:#676767;
+}
 /* 网易红 */
 .netEase-red{
   color: #ec4141;
@@ -64,12 +67,21 @@
 .rounded-50 {
   border-radius: 50%;
 }
+/* 边框线 */
+.border-line{
+  border: 0.01rem solid #ddd
+}
+
 /* 跳转链接颜色 */
 .link {
   cursor: pointer;
   color: #5091ca;
 }
-.link:hover {
+.deep-link{
+  cursor: pointer;
+  color: #507daf;
+}
+.deep-link:hover, .link:hover {
   color: #0b58b7;
 }
 /* 居中 */
@@ -120,11 +132,20 @@
 .mt-2{
 margin-top: 2px;
 }
+.mt-5 {
+  margin-top: 5px;
+}
 .mt-10 {
   margin-top: 10px;
 }
 .mt-20 {
   margin-top: 20px;
+}
+.mr-10{
+  margin-right: 10px;
+}
+.mr-20{
+  margin-right: 20px;
 }
 .-ml-1{
 margin-left: -1px;
@@ -148,6 +169,10 @@ margin-left: -1px;
 .my-10 {
   margin-top: 10px;
   margin-bottom: 10px;
+}
+.my-20 {
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 /* 一行文本溢出隐藏： 需要添加width */
 .overHidden {

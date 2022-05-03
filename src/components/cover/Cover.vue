@@ -7,7 +7,7 @@
       @mouseleave="playShow = null"
     >
       <div class="img-wrap position">
-        <img class="rounded-5" v-lazy="url" alt="" />
+        <img class="rounded-5 border-line" v-lazy="url" alt="" />
         <transition name="fade">
           <span class="play-svg" v-show="playShow === i">
             <svg class="icon icon-play" aria-hidden="true">
@@ -88,8 +88,8 @@ export default {
     align-items: center;
     position: absolute;
     color: #fff;
-    top: 5px;
-    right: 8px;
+    top: 2px;
+    right: 6px;
     font-size: 12px;
   }
 }

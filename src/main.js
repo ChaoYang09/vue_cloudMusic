@@ -80,7 +80,7 @@ Vue.filter('timeFormat', function (originVal) {
 })
 //媒体播放量格式化
 Vue.filter('playCountFormat', function (originVal) {
-  if (originVal > 100000) {
+  if (originVal > 10000) {
     return Math.floor(originVal / 10000) + '万'
   }
   return originVal

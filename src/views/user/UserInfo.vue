@@ -8,7 +8,7 @@
 
       <!-- 顶部右侧区域 -->
       <div class="right">
-        <div class="font-20 bold">{{ userInfo.profile.nickname }}</div>
+        <div class="font-20 bold default">{{ userInfo.profile.nickname }}</div>
         <div class="levelBox">
           <div>
             <span class="level">Lv{{ userInfo.level }}</span>
@@ -19,49 +19,75 @@
           >
         </div>
 
-        <div class="infoBox">
-          <div class="info_header">
+        <div class="info-wrap default">
+          <div class="info-content">
             <div>
               <span class="font-18">{{ userInfo.profile.eventCount }}</span
-              ><span class="gray">动态</span>
+              ><span class="deep-gray pointer">动态</span>
             </div>
             <div class="second">
               <span class="font-18">{{ userInfo.profile.follows }}</span
-              ><span class="gray">关注</span>
+              ><span class="deep-gray pointer">关注</span>
             </div>
             <div>
               <span class="font-18">{{ userInfo.profile.followeds }}</span
-              ><span class="gray">粉丝</span>
+              ><span class="deep-gray pointer">粉丝</span>
             </div>
           </div>
-          <div>所在地区: <span class="gray">河南省 郑州市</span></div>
-          <div class="my-10">社交网络: <i class="el-icon-eleme"></i></div>
-          <div>
-            个人介绍: <span class="gray">{{ userInfo.profile.signature }}</span>
+          <div>所在地区 : <span class="deeper-gray">河南省 郑州市</span></div>
+          <div class="my-10">
+            社交网络 : <span class="deeper-gray">未绑定</span>
+          </div>
+          <div v-if="userInfo.profile.signature ? true : false">
+            个人介绍 :
+            <span class="deeper-gray">{{ userInfo.profile.signature }}</span>
           </div>
         </div>
       </div>
     </header>
 
-    <!-- 我创建的歌单 -->
     <footer>
+      <!-- 我创建的歌单 -->
       <div>
         <span class="font-16 bold">我创建的歌单</span
-        ><span class="gray"> ({{ playlist.length }})</span>
-      </div>
+        ><span class="gray"> ({{ createdList.length }})</span>
 
-      <div class="cover-wrap">
-        <Cover
-          class="cover"
-          v-for="(item, i) in playlist"
-          :key="i"
-          :count="item.playCount"
-          :url="`${item.picUrl ? item.picUrl : item.coverImgUrl}?param=300y300`"
-          :name="item.name"
-          :i="i"
-        >
-          <span class="gray block">{{ item.trackCount }}首</span>
-        </Cover>
+        <div class="cover-wrap">
+          <Cover
+            class="cover"
+            v-for="(item, i) in createdList"
+            :key="i"
+            :count="item.playCount"
+            :url="`${
+              item.picUrl ? item.picUrl : item.coverImgUrl
+            }?param=400y400`"
+            :name="item.name"
+            :i="i"
+            @click.native="common.toSongsList(item.id)"
+          >
+            <span class="gray block">{{ item.trackCount }}首</span>
+          </Cover>
+        </div>
+      </div>
+      <!-- 收藏的歌单 -->
+      <div class="mt-20">
+        <span class="font-16 bold">收藏</span
+        ><span class="gray"> ({{ playlist.length }})</span>
+
+        <div class="cover-wrap">
+          <Cover
+            class="cover"
+            v-for="(item, i) in playlist"
+            :key="i"
+            :count="item.playCount"
+            :url="item.picUrl ? item.picUrl : item.coverImgUrl"
+            :name="item.name"
+            :i="i"
+            @click.native="common.toSongsList(item.id)"
+          >
+            <span class="gray block">{{ item.trackCount }}首</span>
+          </Cover>
+        </div>
       </div>
     </footer>
   </div>
@@ -72,7 +98,7 @@ import {
   getUserDetail,
   getAccountInfo,
   getUserInfo,
-  getPlaylist,
+  getUserPlaylist,
 } from '@/api/user'
 import Cover from '@/components/cover/Cover.vue'
 import Gender from '@/components/gender/Gender.vue'
@@ -85,9 +111,16 @@ export default {
     return {
       accountInfo: {}, // 账户信息
       uid: 0, //用户uid
-      userInfo: {}, // 用户信息
-      playlist: [], // 歌单
+      userInfo: {
+        profile: {},
+      }, // 用户信息
+      createdList: [], //创建的歌单
+      playlist: [], // 收藏的歌单
       playShow: null,
+      count: 0,
+      id: this.$route.params.id,
+      limit: 999,
+      offset: 0,
     }
   },
   created() {
@@ -98,9 +131,9 @@ export default {
   },
   methods: {
     async getUserDetail() {
-      const res = await getUserDetail(3268026640)
+      const res = await getUserDetail(this.id)
       this.userInfo = res
-      console.log(this.userInfo)
+      // console.log(this.userInfo)
     },
     async getAccountInfo() {
       const res = await getAccountInfo()
@@ -115,10 +148,24 @@ export default {
     },
     async getPlaylist() {
       // console.log(this.uid)
-      const res = await getPlaylist(3268026640)
-      this.playlist = res.playlist
-      // console.log(this.playList)
+      const res = await getUserPlaylist({
+        uid: this.id,
+        limit: this.limit,
+        offset: 0,
+      })
+      // console.log(res)
+      res.playlist.forEach((item) => {
+        if (item.creator.userId == this.id) this.count++
+      })
+      this.createdList = res.playlist.splice(0, this.count)
+      this.playlist = res.playlist.splice(this.count)
     },
+    // 分页的钩子
+    // handleCurrentChange(val) {
+    //   this.currentPage = val
+    //   this.newInfo.offset = (val - 1) * 20
+    //   this.getNewComment()
+    // },
     to_EditUserInfo() {
       this.$router.push({
         path: '/editUserInfo',
@@ -136,7 +183,7 @@ header {
   display: flex;
   justify-content: start;
   .left {
-    width: 200px;
+    width: 180px;
     img {
       width: 100%;
       border-radius: 50%;
@@ -150,11 +197,11 @@ header {
     .levelBox {
       display: flex;
       justify-content: space-between;
-      // width: 50rem;
       .level {
+        cursor: default;
         margin-top: 10px;
         display: inline-block;
-        font-size: 14px;
+        font-size: 12px;
         padding: 2px 10px;
         border-radius: 10px;
         background-color: #f0f0f0;
@@ -162,14 +209,13 @@ header {
     }
   }
 }
-.infoBox {
+.info-wrap {
   margin-top: 10px;
   border-top: 1px #eee solid;
-  .info_header {
+  .info-content {
     text-align: center;
     display: flex;
     margin: 10px 0;
-    justify-content: start;
     .second {
       padding: 0 30px;
       margin: 0 30px;
@@ -182,22 +228,15 @@ header {
   }
 }
 
-.el-icon-eleme {
-  padding: 2px;
-  border-radius: 50%;
-  color: #fff;
-  background-color: #bcbcc2;
-}
-
 footer {
   margin: 30px 0;
   .cover-wrap {
+    margin-top: 10px;
     display: flex;
-    justify-content: space-between;
     flex-wrap: wrap;
     .cover {
-      // margin: 20px 35px 0 0;
-      width: 23%;
+      margin-right: 2%;
+      width: 18%;
     }
   }
 }

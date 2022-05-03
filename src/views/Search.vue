@@ -18,7 +18,7 @@
     <footer>
       <!-- 单曲 -->
       <section v-if="type === 1">
-        <Music-List :songs="songs" :count="count">
+        <Music-List :songs="songs" :count="count" :offset="offset">
           <!-- 热度 -->
           <el-table-column label="热度">
             <template v-slot="scope">
@@ -30,21 +30,33 @@
             </template>
           </el-table-column>
         </Music-List>
+        <div class="flex-center mt-20">
+          <el-pagination
+            small
+            background
+            layout="prev, pager, next"
+            :total="count"
+            :page-size="30"
+            :current-page="currentPage"
+            @current-change="handleCurrentChange"
+            v-if="songs.length !== 0"
+          ></el-pagination>
+        </div>
       </section>
 
       <!-- 歌手 -->
-      <section v-else-if="type === 100">
+      <section v-show="type === 100">
         <Table :tableData="artists" :count="count" :type="type"> </Table>
       </section>
 
       <!-- 专辑 -->
-      <section v-else-if="type === 10">
+      <section v-show="type === 10">
         <Table :tableData="albums" :count="count" :type="type">
           <!-- <template #album> </template> -->
         </Table>
       </section>
       <!-- 视频 -->
-      <section v-else-if="type === 1014">
+      <section v-show="type === 1014">
         <div class="video-wrap">
           <Video
             class="video"
@@ -54,7 +66,7 @@
             :duration="item.durationms"
             :url="item.coverUrl"
             :name="item.title"
-            @click.native="toVideo(item.type, item.vid)"
+            @click.native="common.toMediaPlayer(item.type, item.vid)"
           >
             <Label v-if="item.type === 0 ? true : false" :small="true"
               >MV</Label
@@ -78,11 +90,11 @@
         </div>
       </section>
       <!-- 歌单 -->
-      <section v-else-if="type === 1000">
+      <section v-show="type === 1000">
         <Table :tableData="playlists" :count="count" :type="type"> </Table>
       </section>
       <!-- 主播电台 -->
-      <section v-else-if="type === 1009">
+      <section v-show="type === 1009">
         <Table :tableData="djRadios" :count="count" :type="type"> </Table>
       </section>
     </footer>
@@ -115,6 +127,8 @@ export default {
       count: null, //单曲数量
       type: 1,
       likeList: [], //喜欢音乐的id
+      currentPage: 1,
+      offset: 0,
       tag: {
         1: '单曲',
         100: '歌手',
@@ -123,6 +137,7 @@ export default {
         1000: '歌单',
         1009: '电台',
       },
+      keywords: this.$route.params.keywords,
     }
   },
   computed: {},
@@ -163,9 +178,9 @@ export default {
         this.likeList = res.ids
       })
       await getCloudSearch({
-        keywords: this.$route.params.keywords,
+        keywords: this.keywords,
         limit: 30,
-        offset: this.$store.state.offset,
+        offset: this.offset,
         type: this.type,
       }).then((res) => {
         let songs = res.result.songs
@@ -179,9 +194,9 @@ export default {
     // 获取歌手
     async getArtists() {
       const res = await getCloudSearch({
-        keywords: this.$route.params.keywords,
+        keywords: this.keywords,
         limit: 30,
-        offset: this.$store.state.offset,
+        offset: this.offset,
         type: this.type,
       })
       this.artists = res.result.artists
@@ -190,9 +205,9 @@ export default {
     // 获取专辑
     async getAlbums() {
       const res = await getCloudSearch({
-        keywords: this.$route.params.keywords,
+        keywords: this.keywords,
         limit: 30,
-        offset: this.$store.state.offset,
+        offset: this.offset,
         type: this.type,
       })
       this.albums = res.result.albums
@@ -202,21 +217,21 @@ export default {
     // 获取视频
     async getVideos() {
       const res = await getCloudSearch({
-        keywords: this.$route.params.keywords,
+        keywords: this.keywords,
         limit: 30,
-        offset: this.$store.state.offset,
+        offset: this.offset,
         type: this.type,
       })
       this.videos = res.result.videos
-      // console.log(this.videos)
+      console.log(this.videos)
       this.count = res.result.videoCount
     },
     // 获取歌单
     async getPlaylists() {
       const res = await getCloudSearch({
-        keywords: this.$route.params.keywords,
+        keywords: this.keywords,
         limit: 30,
-        offset: this.$store.state.offset,
+        offset: this.offset,
         type: this.type,
       })
       this.playlists = res.result.playlists
@@ -225,18 +240,21 @@ export default {
     // 获取电台
     async getDjRadios() {
       const res = await getCloudSearch({
-        keywords: this.$route.params.keywords,
+        keywords: this.keywords,
         limit: 30,
-        offset: this.$store.state.offset,
+        offset: this.offset,
         type: this.type,
       })
       this.djRadios = res.result.djRadios
       this.count = res.result.djRadiosCount
     },
-    toVideo(type, id) {
-      if (type === 0) this.common.toMvPlayer(id)
-      else if (type === 1) this.common.toVideoPlayer(id)
-      else return
+
+    // 分页的回调函数
+    handleCurrentChange(val) {
+      this.currentPage = val
+      this.offset = (val - 1) * 30
+      this.getSongsLists()
+      // this.getSongsList()
     },
   },
 }

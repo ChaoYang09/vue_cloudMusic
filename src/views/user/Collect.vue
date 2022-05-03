@@ -1,57 +1,25 @@
 <template>
-  <div class="main-box">
+  <div class="userCollect-wrap">
     <el-tabs v-model="activeName">
       <!-- 专辑 -->
-      <el-tab-pane label="专辑" name="first">
-        <header class="header">
-          <div class="left">
-            <span class="main">收藏的专辑</span
-            ><span class="gray"> ({{ album.length }})</span>
-          </div>
+      <el-tab-pane label="专辑" name="album">
+        <div class="mb-10">
+          <span class="bold">收藏的专辑</span
+          ><span class="gray"> ({{ albums.length }})</span>
+        </div>
 
-          <el-input placeholder="搜索我收藏的歌手" clearable>
-            <el-button slot="append" icon="el-icon-search"></el-button>
-          </el-input>
-        </header>
-
-        <el-table :data="album" stripe>
-          <el-table-column>
-            <template v-slot="scope">
-              <img
-                :src="scope.row.picUrl"
-                class="rounded-5 block"
-                style="width: 55px; height: 55px"
-                alt=""
-              />
-            </template>
-          </el-table-column>
-          <el-table-column prop="name" width="450px"> </el-table-column>
-          <el-table-column>
-            <template v-slot="scope">
-              <span class="gray"> {{ scope.row.artists[0].name }} </span>
-            </template>
-          </el-table-column>
-          <el-table-column>
-            <template v-slot="scope"
-              ><span class="gray">{{ scope.row.size }}首</span>
-            </template>
-          </el-table-column>
-        </el-table>
+        <Table :tableData="albums" :type="10" :pagination="false"> </Table>
       </el-tab-pane>
 
       <!-- 歌手 -->
-      <el-tab-pane label="歌手" name="second">
-        <header class="header">
-          <div class="left">
-            <span class="main">收藏的歌手</span
-            ><span class="gray"> ({{ players.length }})</span>
-          </div>
+      <el-tab-pane label="歌手" name="artist">
+        <div class="mb-10">
+          <span class="bold">收藏的歌手</span
+          ><span class="gray"> ({{ artists.length }})</span>
+        </div>
+        <Table :tableData="artists" :pagination="false" :type="100"> </Table>
 
-          <el-input placeholder="搜索我收藏的歌手" clearable>
-            <el-button slot="append" icon="el-icon-search"></el-button>
-          </el-input>
-        </header>
-        <el-table
+        <!-- <el-table
           :data="players"
           stripe
           :row-class-name="rowClassName"
@@ -75,34 +43,47 @@
               ><span class="gray">MV：{{ scope.row.mvSize }}</span>
             </template>
           </el-table-column>
-        </el-table>
+        </el-table> -->
       </el-tab-pane>
 
       <!-- 视频 -->
-      <el-tab-pane label="视频" name="third">
+      <el-tab-pane label="视频" name="video">
         <el-row>
           <el-col>
             <span class="main">收藏的视频</span
-            ><span class="gray"> ({{ mv.length }})</span></el-col
+            ><span class="gray"> ({{ videos.length }})</span></el-col
           ></el-row
         >
-        <div class="coverBox">
-          <div
-            v-for="(item, i) in mv"
+        <div class="video-wrap">
+          <Video
+            class="video"
+            v-for="(item, i) in videos"
             :key="i"
-            class="position cover-box"
-            @click="toPlayer(item)"
+            :count="item.playTime"
+            :duration="item.durationms"
+            :url="item.coverUrl + '?param=600y340'"
+            :name="item.title"
+            @click.native="common.toMediaPlayer(item.type, item.vid)"
           >
-            <img :src="item.coverUrl" alt="" />
-            <span class="tittle overHidden">{{ item.title }}</span>
-            <span class="userName gray">by {{ item.creator[0].userName }}</span>
-            <span class="playCount">
-              <svg class="icon icon-right-triangle" aria-hidden="true">
-                <use xlink:href="#icon-triangle"></use></svg
-              >{{ item.playTime | playCountFormat }}</span
+            <Label v-if="item.type === 0 ? true : false" :small="true"
+              >MV</Label
             >
-            <span class="durations">{{ item.durationms | timeFormat }}</span>
-          </div>
+            <template #author>
+              <div class="overHidden">
+                <span
+                  class="artist-list"
+                  v-for="(v, i) in item.creator"
+                  :key="i"
+                >
+                  <span
+                    class="pointer deep-gray"
+                    @click.stop="common.toArtist(v.userId)"
+                    >{{ v.userName }}</span
+                  >
+                </span>
+              </div>
+            </template>
+          </Video>
         </div>
       </el-tab-pane>
       <el-tab-pane label="专栏" name="fourth">
@@ -393,136 +374,71 @@
 </template>
 
 <script>
+import { getArtistSubList } from '@/api/artist'
+import { getMediaSubList } from '@/api/mv'
+import Video from '@/components/video/Video.vue'
+import Table from '@/components/table/Table.vue'
+import Label from '@/components/label/Label.vue'
 export default {
+  components: {
+    Table,
+    Video,
+    Label,
+  },
   data() {
     return {
-      activeName: 'first',
-      players: [],
-      mv: [],
-      album: [],
+      activeName: 'album',
+      artists: [],
+      videos: [],
+      albums: [],
     }
   },
   created() {
-    this.getPlayers()
+    this.getArtist()
     this.getMv()
     this.getAlbum()
   },
   methods: {
-    async getPlayers() {
-      const { data: res } = await this.$http.get('/artist/sublist')
-      this.players = res.data
-      // console.log(this.players)
+    async getArtist() {
+      const res = await getArtistSubList()
+      this.artists = res.data
+      // console.log(this.artists)
     },
     async getMv() {
-      const { data: res } = await this.$http.get('/mv/sublist')
-      this.mv = res.data
-      // console.log(this.mv)
+      const res = await getMediaSubList()
+      this.videos = res.data
+      console.log(this.videos)
     },
     async getAlbum() {
       const { data: res } = await this.$http.get('/album/sublist')
-      this.album = res.data
-    },
-    // 点击不同视频 跳转对应播放界面
-    toPlayer(item) {
-      if (item.type === 1) this.$router.push(`/videoPlayer/${item.vid}`)
-      if (item.type === 0) this.$router.push(`/mvPlayer/${item.vid}`)
-    },
-    rowClassName() {
-      return 'cursor: pointer'
-    },
-    toArtist(item) {
-      // console.log(val)
-      this.$router.push({
-        path: '/artist',
-        query: {
-          id: item.id,
-        },
-      })
+      this.albums = res.data
     },
   },
 }
 </script>
 
 <style lang="less" scoped>
-.main-box {
+.userCollect-wrap {
   width: 100%;
   height: 100%;
   padding: 20px 30px 0 30px;
 }
-.main {
-  font-weight: 600;
-  color: #373737;
-}
-.playerImg {
-  width: 60px;
-  height: 60px;
-  border-radius: 5px;
-  overflow: hidden;
-  img {
-    width: 100%;
-    height: 100%;
-    // background-size: 35px 35px;
-  }
-}
 
-.coverBox {
-  width: 100%;
-  // height: 100%;
+.video-wrap {
   display: flex;
   flex-wrap: wrap;
-  justify-content: start;
-
-  img {
-    border-radius: 5px;
-    margin: 20px 15px 0 0;
-    display: block;
-    width: 235px;
-
-    height: 130px;
-    object-fit: cover;
-    cursor: pointer;
-  }
-  span {
-    display: block;
-  }
-  .tittle {
-    width: 235px;
-    // font-size: 13px;
-    margin: 5px 0;
-    cursor: pointer;
-  }
-  .userName {
-    font-size: 12px;
-  }
-  .playCount {
-    display: flex;
-    align-items: center;
-    position: absolute;
-    color: #fff;
-    top: 25px;
-    right: 20px;
-    font-size: 12px;
-  }
-  .durations {
-    font-size: 12px;
-    color: #fff;
-    position: absolute;
-    bottom: 50px;
-    right: 20px;
+  // justify-content: space-between;
+  .video {
+    width: 31%;
+    margin-right: 2%;
   }
 }
 
-/deep/.el-table td,
-.el-table th {
-  padding: 5px 0;
-}
 .header {
   display: flex;
   justify-content: space-between;
-  /deep/ .el-input {
-    width: 250px;
-  }
 }
+
 /deep/.el-tabs__item {
   font-size: 18px;
   color: #373737;

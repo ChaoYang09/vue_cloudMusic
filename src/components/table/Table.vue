@@ -27,6 +27,7 @@
         <template v-slot="scope">
           <span
             class="deep-gray"
+            v-if="scope.row.artist"
             @click="common.toArtist(scope.row.artist.id)"
             >{{ scope.row.artist.name }}</span
           >
@@ -35,9 +36,11 @@
       <!-- 主播电台 -->
       <el-table-column min-width="200" v-if="type === 1009">
         <template v-slot="scope">
-          <span class="deep-gray"
+          <span class="deep-gray" v-if="scope.row.dj"
             ><span class="light-gray">by </span
-            >{{ scope.row.dj.nickname }}</span
+            ><span @click="common.toUser(scope.row.dj.userId)">{{
+              scope.row.dj.nickname
+            }}</span></span
           >
         </template>
       </el-table-column>
@@ -49,9 +52,11 @@
       </el-table-column>
       <el-table-column min-width="250" v-if="type === 1000">
         <template v-slot="scope">
-          <span class="deep-gray"
+          <span class="deep-gray" v-if="scope.row.creator"
             ><span class="light-gray">by </span
-            >{{ scope.row.creator.nickname }}</span
+            ><span @click="common.toUser(scope.row.creator.userId)">{{
+              scope.row.creator.nickname
+            }}</span></span
           >
         </template>
       </el-table-column>
@@ -66,7 +71,7 @@
         :page-size="30"
         :current-page="currentPage"
         @current-change="handleCurrentChange"
-        v-if="tableData.length !== 0"
+        v-if="pagination"
       ></el-pagination>
     </div>
   </div>
@@ -84,11 +89,12 @@ export default {
     },
     count: {
       type: Number,
-      require: true,
     },
     type: {
-      type: Number,
-      require: true,
+      type: [Number, String],
+    },
+    pagination: {
+      type: Boolean,
     },
   },
   data() {
@@ -135,7 +141,7 @@ export default {
           this.common.toArtist(row.id)
           break
         case 1000:
-          this.getPlaylists()
+          this.common.toSongsList(row.id)
           break
         case 1002:
           this.getUsers()

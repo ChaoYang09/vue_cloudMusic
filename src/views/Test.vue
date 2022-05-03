@@ -1,47 +1,37 @@
 <template>
-  <div class="video-wrap">
-    <img class="rounded-5" :src="video.coverUrl" alt="" />
-    <span class="overHidden">{{ video.title }}</span>
-    <span class="light-gray">by {{ video.creator.nickname }}</span>
-    <span class="count">
-      <svg class="icon icon-right-triangle" aria-hidden="true">
-        <use xlink:href="#icon-triangle"></use></svg
-      >{{ video.playTime | playCountFormat }}</span
-    >
-    <span class="durations">{{ video.durationms | timeFormat }}</span>
-  </div>
+  <!-- 序号 -->
+  <el-table-column align="center" width="45" class-name="color-gray">
+    <template v-slot="scope">
+      <span v-if="scope.row.id === $store.state.music.id">
+        <svg
+          class="icon netEase-red align-center center"
+          aria-hidden="true"
+          v-if="$store.state.playing"
+        >
+          <use xlink:href="#icon-volume-up-fill" />
+        </svg>
+        <svg
+          class="icon netEase-red align-center center font-14"
+          aria-hidden="true"
+          v-else
+        >
+          <use xlink:href="#icon-md-volume-mute"></use>
+        </svg>
+      </span>
+      <span class="light-gray" v-else>
+        {{
+              scope.$index + 1 + offset &lt; 10
+                ? '0' + (scope.$index + 1 + offset)
+                : scope.$index + 1 + offset
+        }}
+      </span>
+    </template>
+  </el-table-column>
 </template>
 <script>
 export default {
-  props: {
-    video: {
-      type: Object,
-      require: true,
-    },
-  },
+  props: {},
 }
 </script>
 
-<style lang="less" scoped>
-.video-wrap {
-  margin: 5px 0;
-  position: relative;
-  cursor: pointer;
-  .count {
-    display: flex;
-    align-items: center;
-    position: absolute;
-    color: #fff;
-    top: 0px;
-    right: 8px;
-    font-size: 12px;
-  }
-  .durations {
-    font-size: 12px;
-    color: #ffffff;
-    position: absolute;
-    bottom: 50px;
-    right: 8px;
-  }
-}
-</style>
+<style lang="less" scoped></style>

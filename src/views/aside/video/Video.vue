@@ -154,6 +154,7 @@
 
 <script>
 import Video from '@/components/video/Video.vue'
+import { getNewMv } from '@/api/mv'
 export default {
   components: {
     Video,
@@ -229,11 +230,9 @@ export default {
     },
     // 获取Mv
     async getNewMv() {
-      const { data: res } = await this.$http.get('/mv/first', {
-        params: {
-          limit: 31,
-          area: this.area,
-        },
+      const res = await getNewMv({
+        limit: 31,
+        area: this.area,
       })
       this.mv = res.data
     },

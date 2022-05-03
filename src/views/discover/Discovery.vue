@@ -540,11 +540,6 @@ export default {
       // console.log(this.playlist)
     },
 
-    toSongsList(id) {
-      this.$router.push({
-        path: `/songLists/${id}`,
-      })
-    },
     // 前往歌手页面
     toArtist(id) {
       this.$router.push({
@@ -807,7 +802,7 @@ export default {
 .bannerImg {
   border-radius: 10px;
   width: 100%;
-  height: 87%;
+  height: 89%;
 }
 .playListBox {
   display: flex;

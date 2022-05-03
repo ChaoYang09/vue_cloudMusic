@@ -34,9 +34,9 @@ export default {
   border-radius: 2px;
 }
 .large {
-  width: 40px;
-  height: 20px;
-  line-height: 20px;
+  width: 33px;
+  height: 17px;
+  line-height: 17px;
 }
 .small {
   // width: 22px;

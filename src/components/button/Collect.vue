@@ -2,7 +2,7 @@
   <span class="button-wrap">
     <button class="btn-content">
       <span v-show="iconShow">已</span>收藏<span v-show="subCounts !== 0"
-        >({{ subCounts }})</span
+        >({{ subCounts | playCountFormat }})</span
       >
       <!-- {{ subCount }} -->
     </button>
@@ -18,6 +18,9 @@
 </template>
 
 <script>
+import { getMediaSubList } from '@/api/mv'
+import { getArtistIsCollect, collectArtist } from '@/api/artist'
+import { getPlaylist } from '@/api/user'
 export default {
   props: ['subCount', 'id', 'type'],
   data() {
@@ -28,11 +31,11 @@ export default {
     }
   },
   created() {
-    if (this.type === 'video' || this.type === 'mv') this.getMediaIsCollect()
+    if (this.type === 'video' || this.type === 'mv') this.getMediaSublist()
     else if (this.type === 'playlist') this.getPlaylistIsCollect()
-    else if (this.type === 'artist') this.getArtistIsCollect()
-
-    // console.log(this.subCounts)
+    else if (this.type === 'artist') {
+      this.getArtistIsCollect()
+    }
   },
   watch: {
     subCount(newVal) {
@@ -124,11 +127,9 @@ export default {
     // 收藏歌手
     async collectArtist() {
       {
-        const { data: res } = await this.$http.get('/artist/sub', {
-          params: {
-            id: this.id,
-            t: -this.t,
-          },
+        const res = await collectArtist({
+          id: this.id,
+          t: -this.t,
         })
         if (res.code !== 200) return this.$message.error('收藏操作失败')
 
@@ -143,37 +144,31 @@ export default {
           this.t = 1
           // this.subCounts++
         }
-        // console.log(res)
       }
     },
     // 判断歌单是否收藏
     async getPlaylistIsCollect() {
-      const { data: res } = await this.$http.get('/user/playlist', {
-        params: {
-          uid: 297835213,
-        },
-      })
+      const res = await getPlaylist(297835213)
       this.iconShow = res.playlist.some((item) => {
-        return item.id === this.id
+        return item.id == this.id
       })
       if (this.iconShow) this.t = 1
       else this.t = -1
     },
     // 判断mv和视频是否收藏
-    async getMediaIsCollect() {
-      const { data: res } = await this.$http.get('/mv/sublist')
+    async getMediaSubList() {
+      const res = await getMediaSubList()
       this.iconShow = res.data.some((item) => {
         return item.vid === this.id
       })
-      // console.log(this.iconShow)
       if (this.iconShow) this.t = 1
       else this.t = -1
     },
     // 判断歌手是否收藏
     async getArtistIsCollect() {
-      const { data: res } = await this.$http.get('/artist/sublist')
+      const res = await getArtistIsCollect()
       this.iconShow = res.data.some((item) => {
-        return item.id === this.id
+        return item.id == this.id
       })
       if (this.iconShow) this.t = 1
       else this.t = -1

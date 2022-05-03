@@ -61,8 +61,8 @@ export default {
     align-items: center;
     position: absolute;
     color: #fff;
-    top: 4px;
-    right: 8px;
+    top: 2px;
+    right: 6px;
     font-size: 12px;
   }
   .durations {

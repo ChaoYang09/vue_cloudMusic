@@ -56,3 +56,8 @@
 .el-table__body tr.current-row>td{
   background-color: #e5e5e5!important;
 }
+
+/* el-backtop */
+.el-backtop{
+color:#ec4141!important;
+}

@@ -50,7 +50,7 @@ const routes = [
         component: Collect,
       },
       {
-        path: '/userInfo',
+        path: '/userInfo/:id',
         component: UserInfo,
       },
       {

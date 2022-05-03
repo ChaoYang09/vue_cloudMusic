@@ -202,7 +202,12 @@
       </el-aside>
 
       <!-- 右侧内容区域 -->
-      <el-container class="right-box"><router-view></router-view></el-container>
+      <el-container class="right-box">
+        <!-- <transition name="el-fade-in-linear"> -->
+        <router-view></router-view>
+        <!-- </transition> -->
+        <el-backtop :bottom="80" :right="20"></el-backtop>
+      </el-container>
     </el-container>
 
     <!-- 歌词页面 -->
