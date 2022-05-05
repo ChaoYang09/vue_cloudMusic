@@ -17,168 +17,8 @@
             <span v-if="userInfo.nickname">{{ userInfo.nickname }}</span>
             <span v-else>未登录</span>
           </div>
-
           <!-- 搜索框区域 -->
-          <div class="searchBox">
-            <!-- 搜索图标 -->
-            <svg class="icon icon-search" aria-hidden="true">
-              <use xlink:href="#icon-search"></use>
-            </svg>
-            <!-- 弹框 -->
-            <el-popover
-              ref="popoverRef"
-              placement="right"
-              width="300"
-              trigger="click"
-              @after-leave="getSearchHistory"
-              popper-class="my-popover"
-            >
-              <!-- <el-button slot="reference">click 激活</el-button> -->
-              <input
-                slot="reference"
-                type="text"
-                class="search"
-                placeholder="搜索"
-                onfocus="this.placeholder=''"
-                onblur="this.placeholder='搜索'"
-                v-model.trim="searchInput"
-                @keydown="toSearchPage"
-              />
-
-              <!-- 搜索历史和建议区域 -->
-              <div v-show="toggleSearch">
-                <!-- 搜索历史 -->
-                <section class="searchHistory-Box">
-                  <div v-if="historyTags.length !== 0">
-                    <span>搜索历史</span>
-                    <svg
-                      class="icon icon-delete"
-                      aria-hidden="true"
-                      @click="removeSearchHistory"
-                    >
-                      <use xlink:href="#icon-shanchuDelete"></use>
-                    </svg>
-                  </div>
-
-                  <div class="tag-Box">
-                    <el-tag
-                      v-for="(item, i) in historyTags"
-                      :key="i"
-                      class="tag"
-                      size="medium"
-                      effect="plain"
-                      type="info"
-                      closable
-                      @close="handleClose(item)"
-                      @click="toSearchHistory(item)"
-                    >
-                      {{ item }}</el-tag
-                    >
-                  </div>
-                </section>
-
-                <!-- 热搜榜 -->
-                <section class="hotSearch-Box">
-                  <span class="hot-tittle">热搜榜</span>
-                  <div>
-                    <p
-                      v-for="(item, i) in hotSearch"
-                      :key="i"
-                      @click="toHotSearch(item.searchWord)"
-                    >
-                      <span class="hot-index">{{ i + 1 }}</span>
-                      <span class="searchWord">{{ item.searchWord }}</span
-                      ><span class="score light-gray">{{ item.score }}</span>
-                    </p>
-                  </div>
-                </section>
-              </div>
-
-              <!-- 搜索建议区域 -->
-              <div class="suggestBox" v-show="!toggleSearch">
-                <div class="suggest-search">
-                  搜"<span class="blue">{{ searchInput }}</span
-                  >"相关的结果 >
-                </div>
-
-                <!-- 单曲 -->
-                <div class="songsBox">
-                  <div class="search-tittle">
-                    <svg class="icon icon-search" aria-hidden="true">
-                      <use xlink:href="#icon-musicnot"></use>
-                    </svg>
-                    单曲
-                  </div>
-                  <div class="content">
-                    <p
-                      v-for="(item, i) in suggestionInfo.songs"
-                      :key="i"
-                      class="overHidden"
-                    >
-                      {{ item.name }} - {{ item.artists[0].name }}
-                    </p>
-                  </div>
-                </div>
-
-                <!-- 歌手 -->
-                <div class="artistsBox">
-                  <div class="search-tittle">
-                    <svg class="icon icon-search" aria-hidden="true">
-                      <use xlink:href="#icon-User"></use>
-                    </svg>
-                    歌手
-                  </div>
-                  <div class="content">
-                    <p
-                      v-for="(item, i) in suggestionInfo.artists"
-                      :key="i"
-                      class="overHidden"
-                    >
-                      {{ item.name }}
-                    </p>
-                  </div>
-                </div>
-
-                <!-- 专辑 -->
-                <div class="albumsBox">
-                  <div class="search-tittle">
-                    <svg class="icon icon-search" aria-hidden="true">
-                      <use xlink:href="#icon-music-albums"></use>
-                    </svg>
-                    专辑
-                  </div>
-                  <div class="content">
-                    <p
-                      v-for="(item, i) in suggestionInfo.albums"
-                      :key="i"
-                      class="overHidden"
-                    >
-                      {{ item.name }} - {{ item.artist.name }}
-                    </p>
-                  </div>
-                </div>
-
-                <!-- 歌单 -->
-                <div class="playlistsBox">
-                  <div class="search-tittle">
-                    <svg class="icon icon-search" aria-hidden="true">
-                      <use xlink:href="#icon-playlist2"></use>
-                    </svg>
-                    歌单
-                  </div>
-                  <div class="content">
-                    <p
-                      v-for="(item, i) in suggestionInfo.playlists"
-                      :key="i"
-                      class="overHidden"
-                    >
-                      {{ item.name }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </el-popover>
-          </div>
+          <Search></Search>
         </header>
 
         <!-- 左侧功能栏 -->
@@ -267,7 +107,7 @@
 <script>
 import Scroll from '@/components/Scroll.vue'
 // import BScroll from 'better-scroll'
-
+import Search from '@/components/search/Search.vue'
 import Nav from '../components/Nav.vue'
 import Player from '../components/Player.vue'
 export default {
@@ -310,17 +150,6 @@ export default {
           { validator: checkPassword, trigger: 'blur' },
         ],
       },
-      searchInput: '', //搜索框
-      suggestionInfo: {
-        albums: [], //专辑
-        artists: [], //歌手
-        songs: [], //单曲
-        playlists: [], //歌单
-      },
-      timer: null, //定时器
-      hotSearch: [], //热搜榜
-      historyTags: [], //搜索历史
-      toggleSearch: true,
     }
   },
   mounted() {
@@ -330,11 +159,8 @@ export default {
     } else {
       this.$message.error('获取头像失败，请重新登陆！')
     }
-    this.getSearchHistory() //获取搜索历史
   },
-  created() {
-    this.getHotSearch() //请求热搜榜数据
-  },
+  created() {},
   methods: {
     //点击登录界面的登录按钮
     login() {
@@ -360,202 +186,18 @@ export default {
         this.loginVisible = false
       })
     },
-    // 请求搜索建议数据
-    async getSuggestionInfo() {
-      const { data: res } = await this.$http.get('/search/suggest', {
-        params: {
-          keywords: this.searchInput,
-        },
-      })
-      this.suggestionInfo.songs = res.result.songs
-      this.suggestionInfo.artists = res.result.artists
-      this.suggestionInfo.albums = res.result.albums
-      this.suggestionInfo.playlists = res.result.playlists
-
-      // console.log(this.suggestionInfo)
-    },
-    // 请求热搜榜数据
-    async getHotSearch() {
-      const { data: res } = await this.$http.get('/search/hot/detail')
-      this.hotSearch = res.data
-    },
-    // 点击tag标签里面的删除，对应的标签会被移除
-    handleClose(tag) {
-      this.historyTags.splice(this.historyTags.indexOf(tag), 1)
-      window.localStorage.setItem('searchHistory', this.historyTags.join())
-    },
-    // 调用后将输入框中的数据保存到localStorage中 并跳转到搜索成功的界面
-    searchPage() {
-      this.$refs.popoverRef.doClose()
-
-      this.$router.push({
-        path: `search/${this.searchInput}`,
-      })
-    },
-    // 在搜索框中输入后按回车 跳转
-    toSearchPage(e) {
-      if (e.keyCode == 13 && this.searchInput) {
-        this.setSearchHistory(this.searchInput)
-        this.searchPage()
-      }
-    },
-    // 向localStorage中添加输入的搜索历史
-    setSearchHistory(tag) {
-      // 进行搜索历史的重复判断
-      const isHas = this.historyTags.some((item) => {
-        return item === tag
-      })
-      if (isHas) return
-      this.historyTags.push(tag)
-      window.localStorage.setItem('searchHistory', this.historyTags.join())
-      // console.log(this.HistoryTags)
-    },
-    // 获取localStore中的搜索历史
-    getSearchHistory() {
-      // console.log()
-      if (window.localStorage.getItem('searchHistory'))
-        this.historyTags = window.localStorage
-          .getItem('searchHistory')
-          .split(',')
-    },
-    // 点击垃圾桶图标 删除全部搜索历史
-    removeSearchHistory() {
-      window.localStorage.removeItem('searchHistory')
-      // this.getSearchHistory()
-      this.historyTags = []
-    },
-    // 点击热搜榜对应的行 携带参数跳转到搜索成功的页面
-    toHotSearch(val) {
-      this.searchInput = val
-
-      this.setSearchHistory(this.searchInput)
-
-      this.searchPage()
-    },
-    toSearchHistory(tag) {
-      // console.log(tag)
-      this.searchInput = tag
-      this.searchPage()
-    },
   },
 
-  watch: {
-    // 监听input值的变化
-    searchInput(newVal, oldVal) {
-      this.toggleSearch = false
-      if (newVal === '') {
-        // console.log(newVal, oldVal)
-        this.toggleSearch = true
-        return
-      }
-      // console.log('1')
-      // clearTimeout(timer)
-      if (this.timer) {
-        clearTimeout(this.timer)
-      }
-      this.timer = setTimeout(() => {
-        this.getSuggestionInfo()
-      }, 500)
-    },
-  },
-  components: { Nav, Player, Scroll },
+  components: { Nav, Player, Scroll, Search },
 }
 </script>
 
-<style>
-.my-popover {
-  font-size: 12px !important;
-  overflow: auto;
-  height: 430px;
-  padding: 0 !important;
-}
-</style>
 <style lang="less" scoped>
 .right-box {
   // height: 100%;
   margin-bottom: 70px;
 }
-.suggest-search {
-  padding: 10px;
-  // margin-bottom: 6px;
-}
-.songsBox,
-.artistsBox,
-.albumsBox,
-.playlistsBox {
-  .search-tittle {
-    padding-left: 20px;
-    display: flex;
-    align-items: center;
-    height: 30px;
-    // text-align: center;
-    line-height: 30px;
-    background-color: #f5f5f7;
-  }
-  .content {
-    p {
-      line-height: 30px;
-      height: 30px;
-      cursor: pointer;
-      padding-left: 20px;
-      // margin: 6px 0;
-    }
-    p:hover {
-      background-color: #f2f2f2;
-    }
-  }
-}
 
-.searchHistory-Box {
-  padding-left: 12px;
-  .tag-Box {
-    margin-bottom: 20px;
-    .tag {
-      cursor: pointer;
-      margin: 10px 10px 0 0;
-    }
-    .tag:hover {
-      background-color: #f2f2f2;
-    }
-  }
-}
-.hotSearch-Box {
-  // margin-top: 20px;
-
-  .hot-tittle {
-    font-size: 16px;
-    display: block;
-    margin-bottom: 30px;
-    padding-left: 12px;
-  }
-  p {
-    height: 50px;
-    line-height: 50px;
-    padding-left: 12px;
-
-    // margin-left: -1px;
-    cursor: pointer;
-    .searchWord {
-      margin: 0 10px 0 30px;
-    }
-    .score {
-      font-size: 10px;
-    }
-  }
-  p:nth-child(-n + 3) .hot-index {
-    color: #ff3a3a;
-    font-size: 17px;
-  }
-  p:nth-child(-n + 3) .searchWord {
-    font-weight: bold;
-  }
-  p:nth-child(n + 4) .hot-index {
-    color: #c9c9c9;
-  }
-  p:hover {
-    background-color: #f3f3f3;
-  }
-}
 .nav {
   padding: 0 20px;
   // margin-right: 5px;
@@ -653,41 +295,9 @@ export default {
     background-color: #c72e2e !important;
   }
 }
-.searchBox {
-  margin-top: 20px;
-  position: relative;
-
-  .search {
-    // box-sizing: border-box;
-
-    width: 170px;
-    height: 30px;
-    border-radius: 15px;
-    border: 1px solid #eee;
-    outline: none;
-    padding-left: 30px;
-    background-color: #f6f6f7;
-  }
-  .icon-search {
-    top: 4px;
-    left: 10px;
-    position: absolute;
-  }
-}
 
 header {
   position: fixed;
-}
-.icon-search {
-  margin-right: 10px;
-}
-.icon-delete {
-  margin: 5px 0 0 15px;
-  font-size: 11px;
-  cursor: pointer;
-}
-.icon-delete:hover {
-  color: #000000;
 }
 
 .slide-fade-enter-active {

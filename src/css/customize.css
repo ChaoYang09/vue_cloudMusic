@@ -22,16 +22,20 @@
 .btn {
   display: inline-block;
   cursor: pointer;
-  box-sizing: content-box;
+  font-size: 15px;
+  /* box-sizing: content-box; */
   text-align: center;
-  padding: 4px 13px;
+  padding: 6px 16px;
   border: 1px solid #ccc;
-  border-radius: 15px;
+  border-radius: 17px;
 }
 .btn:hover {
   background-color: #f2f2f2;
 }
-
+.icon-common{
+  font-size: 12px;
+margin-right: 3px;
+}
 /* 字体加粗 */
 .bold {
   font-weight: bold;
@@ -93,6 +97,10 @@
   display: flex;
   align-items: center;
 }
+.center{
+  margin: 0 auto;
+}
+
 .wrap{
   display: flex;
   flex-wrap: wrap;
@@ -186,7 +194,4 @@ margin-left: -1px;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   display: -webkit-box;
-}
-.center{
-  margin: 0 auto;
 }

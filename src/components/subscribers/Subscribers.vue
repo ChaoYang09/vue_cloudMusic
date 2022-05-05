@@ -1,15 +1,16 @@
 <template>
   <div class="subscribers-wrap">
-    <div v-if="subscribers.length !== 0">
+    <div class="subscribers-box" v-if="subscribers.length !== 0">
       <div
         class="subscribers-content pointer"
         v-for="(item, i) in subscribers"
         :key="i"
+        @click="common.toUser(item.userId)"
       >
         <img class="rounded-50 border-line" :src="item.avatarUrl" alt="" />
         <div class="info-wrap ml-10">
-          <span class="nickname"
-            >{{ item.nickname }}<Gender :gender="item.gender"></Gender
+          <span class="nickname">
+            {{ item.nickname }}<Gender :gender="item.gender"></Gender
           ></span>
           <span
             class="block mt-10 overHidden font-12 block"
@@ -56,7 +57,8 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.subscribers-wrap {
+.subscribers-box {
+  // width: 100%;
   min-width: 750px;
   display: flex;
   justify-content: space-between;

@@ -74,7 +74,7 @@ axios.interceptors.response.use((config) => {
 // 媒体时间格式化
 Vue.filter('timeFormat', function (originVal) {
   const date = new Date(originVal)
-  const mm = (date.getMinutes() + '').padStart(2, '0')
+  const mm = (date.getMinutes() + 1 + '').padStart(2, '0')
   const ss = (date.getSeconds() + '').padStart(2, '0')
   return `${mm}:${ss}`
 })
@@ -89,7 +89,7 @@ Vue.filter('playCountFormat', function (originVal) {
 Vue.filter('dateFormat', function (originVal) {
   const date = new Date(originVal)
   const yy = date.getFullYear()
-  const mm = (date.getMonth() + '').padStart(2, '0')
+  const mm = (date.getMonth() + 1 + '').padStart(2, '0')
   const dd = (date.getDate() + '').padStart(2, '0')
   return `${yy}-${mm}-${dd}`
 })

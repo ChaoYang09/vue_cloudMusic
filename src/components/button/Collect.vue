@@ -1,25 +1,26 @@
 <template>
-  <span class="button-wrap">
-    <button class="btn-content">
-      <span v-show="iconShow">已</span>收藏<span v-show="subCounts !== 0"
+  <span class="button-wrap btn">
+    <span class="align-center">
+      <!-- 已收藏 -->
+      <svg class="icon icon-common" aria-hidden="true" v-if="iconShow">
+        <use xlink:href="#icon-yitianjia"></use>
+      </svg>
+      <!-- 收藏 -->
+      <svg class="icon icon-common" aria-hidden="true" v-else>
+        <use xlink:href="#icon-Collections"></use>
+      </svg>
+      <span v-show="iconShow">已</span>收藏
+      <span style="margin-top: 3px" v-show="subCounts !== 0"
         >({{ subCounts | playCountFormat }})</span
       >
       <!-- {{ subCount }} -->
-    </button>
-    <!-- 已收藏 -->
-    <svg class="icon icon-collect" aria-hidden="true" v-if="iconShow">
-      <use xlink:href="#icon-yitianjia"></use>
-    </svg>
-    <!-- 收藏 -->
-    <svg class="icon icon-collect" aria-hidden="true" v-else>
-      <use xlink:href="#icon-Collections"></use>
-    </svg>
+    </span>
   </span>
 </template>
 
 <script>
 import { getMediaSubList } from '@/api/mv'
-import { getArtistIsCollect, collectArtist } from '@/api/artist'
+import { getArtistSubList, collectArtist } from '@/api/artist'
 import { getPlaylist } from '@/api/user'
 export default {
   props: ['subCount', 'id', 'type'],
@@ -31,10 +32,10 @@ export default {
     }
   },
   created() {
-    if (this.type === 'video' || this.type === 'mv') this.getMediaSublist()
+    if (this.type === 'video' || this.type === 'mv') this.getMediaSubList()
     else if (this.type === 'playlist') this.getPlaylistIsCollect()
     else if (this.type === 'artist') {
-      this.getArtistIsCollect()
+      this.getArtistSubList()
     }
   },
   watch: {
@@ -165,8 +166,8 @@ export default {
       else this.t = -1
     },
     // 判断歌手是否收藏
-    async getArtistIsCollect() {
-      const res = await getArtistIsCollect()
+    async getArtistSubList() {
+      const res = await getArtistSubList()
       this.iconShow = res.data.some((item) => {
         return item.id == this.id
       })
@@ -177,29 +178,4 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
-.button-wrap {
-  margin-top: 10px;
-  display: inline-block;
-  position: relative;
-  .icon-collect {
-    position: absolute;
-    top: 6px;
-    left: 15px;
-  }
-  .btn-content {
-    cursor: pointer;
-    height: 33px;
-    border-radius: 15px;
-    background-color: #ffffff;
-    border: 1px solid #ccc;
-    font-size: 14px;
-    padding-left: 40px;
-    padding-right: 15px;
-  }
-  .btn-content:hover {
-    color: black;
-    background-color: #f2f2f2;
-  }
-}
-</style>
+<style lang="less" scoped></style>

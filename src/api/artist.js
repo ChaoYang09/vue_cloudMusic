@@ -13,3 +13,5 @@ export const getSimiArtists = (id) => get('/simi/artist', { id })
 export const getTopSongs = (id) => get('/artist/top/song', { id })
 // 收藏歌手
 export const collectArtist = ({ id, t }) => get('/artist/sub', { id, t })
+// 歌手描述
+export const getArtistDesc = (id) => get('/artist/desc', { id })

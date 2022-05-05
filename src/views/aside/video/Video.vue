@@ -8,7 +8,7 @@
             placement="bottom"
             width="700"
             trigger="click"
-            popper-class="tag-popover"
+            popper-class="video-popover"
             ref="popoverRef"
           >
             <!-- 按钮 -->
@@ -248,10 +248,10 @@ export default {
 </script>
 
 <style>
-.tag-popover {
-  font-size: 12px !important;
+.video-popover {
+  font-size: 13px !important;
   overflow: auto;
-  height: 500px;
+  /* height: 500px; */
   top: 105px !important;
   left: 240px !important;
   z-index: 9 !important;

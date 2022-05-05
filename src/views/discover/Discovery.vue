@@ -4,7 +4,7 @@
       <!-- 个性推荐 -->
       <el-tab-pane label="个性推荐" name="first">
         <!-- 轮播图 -->
-        <el-carousel :interval="400000" type="card" height="175px">
+        <el-carousel :interval="3000" type="card" height="201px">
           <el-carousel-item v-for="(item, i) in banners" :key="i">
             <img class="bannerImg" :src="item.imageUrl" alt="" />
           </el-carousel-item>
@@ -18,29 +18,19 @@
         </div>
 
         <!-- 推荐歌单 -->
-        <div class="playListBox">
-          <div
-            class="playlist"
+        <div class="cover-wrap">
+          <Cover
+            class="cover"
             v-for="(item, i) in recommend"
             :key="i"
-            @mouseenter="playShow = i"
-            @mouseleave="playShow = null"
-            @click="toSongsList(item.id)"
+            :count="item.playcount"
+            :url="item.picUrl ? item.picUrl : item.coverImgUrl"
+            :name="item.name"
+            :i="i"
+            @click.native="common.toSongsList(item.id)"
           >
-            <img v-lazy="item.picUrl" alt="" />
-            <span class="playName">{{ item.name }}</span>
-            <span class="playCount">
-              <svg class="icon icon-right-triangle" aria-hidden="true">
-                <use xlink:href="#icon-triangle"></use></svg
-              >{{ item.playcount | playCountFormat }}</span
-            >
-            <transition name="fade">
-              <span class="play-svg" v-show="playShow === i">
-                <svg class="icon icon-play" aria-hidden="true">
-                  <use xlink:href="#icon-play"></use></svg
-              ></span>
-            </transition>
-          </div>
+            <!-- <span class="gray block">{{ item.trackCount }}首</span> -->
+          </Cover>
         </div>
       </el-tab-pane>
 
@@ -229,38 +219,18 @@
           </main>
           <!-- 底部区域 -->
           <footer>
-            <div class="playListBox">
-              <div
-                class="playlist"
+            <div class="cover-wrap">
+              <Cover
+                class="cover"
                 v-for="(item, i) in topPlayList"
                 :key="i"
-                @mouseenter="playShow = i"
-                @mouseleave="playShow = null"
-                @click="toSongsList(item.id)"
+                :count="item.playCount"
+                :url="item.picUrl ? item.picUrl : item.coverImgUrl"
+                :name="item.name"
+                :i="i"
+                @click.native="common.toSongsList(item.id)"
               >
-                <img v-lazy="item.coverImgUrl" alt="" />
-                <span
-                  class="playName"
-                  style="
-                    overflow: hidden;
-                    -webkit-line-clamp: 2;
-                    -webkit-box-orient: vertical;
-                    display: -webkit-box;
-                  "
-                  >{{ item.name }}</span
-                >
-                <span class="playCount">
-                  <svg class="icon icon-right-triangle" aria-hidden="true">
-                    <use xlink:href="#icon-triangle"></use></svg
-                  >{{ item.playCount | playCountFormat }}</span
-                >
-                <transition name="fade">
-                  <span class="play-svg" v-show="playShow === i">
-                    <svg class="icon icon-play" aria-hidden="true">
-                      <use xlink:href="#icon-play"></use></svg
-                  ></span>
-                </transition>
-              </div>
+              </Cover>
             </div>
           </footer>
         </div>
@@ -398,9 +368,9 @@
             class="pic"
             v-for="(item, i) in artistList"
             :key="i"
-            @click="toArtist(item.id)"
+            @click="common.toArtist(item.id)"
           >
-            <img v-lazy="item.img1v1Url" alt="" />
+            <img class="border-line" v-lazy="item.img1v1Url" alt="" />
             <span>{{ item.name }}</span>
           </div>
         </div>
@@ -410,7 +380,11 @@
 </template>
 
 <script>
+import Cover from '@/components/cover/Cover.vue'
 export default {
+  components: {
+    Cover,
+  },
   data() {
     return {
       banners: [],
@@ -540,15 +514,6 @@ export default {
       // console.log(this.playlist)
     },
 
-    // 前往歌手页面
-    toArtist(id) {
-      this.$router.push({
-        path: '/artist',
-        query: {
-          id,
-        },
-      })
-    },
     toIndependent() {
       this.activeName = 'playlist'
       this.tag = '华语'
@@ -561,6 +526,7 @@ export default {
   top: 283px !important;
   left: 228px !important;
   z-index: 9 !important;
+  font-size: 13px !important;
 }
 </style>
 <style lang="less" scoped>
@@ -625,7 +591,6 @@ export default {
 }
 
 .selected {
-  // width: 0;
   border-radius: 15px;
   padding: 3px 10px;
   background-color: #fdf5f5;
@@ -649,7 +614,7 @@ export default {
         overflow: hidden;
         img {
           width: 100%;
-          filter: blur(30px);
+          filter: blur(40px);
           height: 120%;
           object-fit: none;
         }
@@ -764,7 +729,7 @@ export default {
   flex-wrap: wrap;
   .pic {
     cursor: pointer;
-    width: 18%;
+    width: 14.6%;
     margin-right: 2%;
     margin-bottom: 2%;
     img {
@@ -783,7 +748,7 @@ export default {
   }
 }
 .main-Box {
-  min-width: 900px;
+  min-width: 770px;
 
   width: 100%;
   position: relative;
@@ -802,68 +767,17 @@ export default {
 .bannerImg {
   border-radius: 10px;
   width: 100%;
-  height: 89%;
+  height: 90%;
 }
-.playListBox {
+
+.cover-wrap {
+  margin-top: 10px;
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
-  width: 100%;
-  .playlist {
-    position: relative;
-    margin: 15px 10px;
+  .cover {
+    margin-right: 2%;
     width: 18%;
-    // height: 200px;
-    cursor: pointer;
-    img {
-      border-radius: 5px;
-      display: block;
-      width: 100%;
-    }
-    .playName {
-      margin-top: 7px;
-      display: block;
-      // font-size: 14px;
-      width: 100%;
-      // height: 40px;
-    }
-
-    .play-svg {
-      // display: none;
-      position: absolute;
-      font-size: 11px;
-      right: 8px;
-      bottom: 50px;
-      color: #ec4141;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: #ebebed;
-      .icon-play {
-        margin-left: 3px;
-      }
-    }
-    .playCount {
-      display: flex;
-      position: absolute;
-      color: #fff;
-      top: 5px;
-      right: 8px;
-      font-size: 12px;
-      .icon-right-triangle {
-        font-size: 12px;
-      }
-    }
   }
-}
-.playlist:nth-child(5n + 1) {
-  margin-left: 0;
-}
-.playlist:nth-child(5n) {
-  margin-right: 0;
 }
 /deep/.el-tabs__item {
   font-size: 18px;

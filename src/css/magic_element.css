@@ -35,23 +35,16 @@
 .el-textarea__inner:focus {
   border-color: #dcdfe6 !important;
 }
-.el-button:active,
-.el-button:hover,
-.el-button:focus {
-  border: 1px solid #dadde0 !important;
-  background-color: #f2f2f2 !important;
-  color: black !important;
-}
 
 /* table */
 .el-table td, .el-table th.is-leaf{
   border-bottom: none!important;
 }
 .el-table{
-  font-size: 12px!important;
+  font-size: 13px!important;
 }
 .el-table .cell{
-  /* line-height: 12px; */
+  line-height: 25px!important;
 }
 .el-table__body tr.current-row>td{
   background-color: #e5e5e5!important;

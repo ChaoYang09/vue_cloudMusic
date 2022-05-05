@@ -4,7 +4,9 @@ import Home from '../views/Home.vue'
 
 import Login from '../views/Login.vue'
 import Test from '../views/Test.vue'
-import SongLists from '../views/SongLists.vue'
+//歌单
+import SongLists from '../views/songlists/SongLists.vue'
+import AlbumList from '../views/albumlist/AlbumList.vue'
 
 import Search from '../views/Search.vue'
 //发现
@@ -43,6 +45,10 @@ const routes = [
       {
         path: '/songLists/:id',
         component: SongLists,
+      },
+      {
+        path: '/albumList/:id',
+        component: AlbumList,
       },
 
       {

@@ -137,9 +137,9 @@
       <!-- 播放列表 -->
       <el-popover
         placement="bottom"
-        width="350"
+        width="400"
         trigger="click"
-        popper-class="list-popover"
+        popper-class="nav-popover"
         ref="popoverRef"
       >
         <div class="playlist-box">
@@ -174,75 +174,73 @@
           <footer>
             <!-- 播放列表 -->
             <el-table
+              highlight-current-row
               :data="playlist"
               stripe
               size="mini"
               @row-dblclick="playMusic"
               v-show="!isHistory"
             >
-              <el-table-column prop="name" width="180px" show-overflow-tooltip>
+              <!-- 标题 -->
+              <el-table-column min-width="220" show-overflow-tooltip>
+                <template v-slot="scope">
+                  <List-title :scope="scope"></List-title>
+                </template>
               </el-table-column>
-              <!-- 歌手名字 -->
+              <!-- 歌手 -->
               <el-table-column
-                prop="ar[0].name"
-                width="110px"
+                min-width="100"
+                label="歌手"
                 show-overflow-tooltip
               >
                 <template v-slot="scope">
-                  <router-link
-                    class="router-link-active"
-                    :to="{
-                      path: '/artist',
-                      query: {
-                        id: scope.row.ar[0].id,
-                      },
-                    }"
-                    ><span @click="closeList">{{ scope.row.ar[0].name }}</span>
-                  </router-link>
+                  <List-Artist :scope="scope"></List-Artist>
                 </template>
               </el-table-column>
-              <!-- 歌曲时间 -->
-              <el-table-column>
+
+              <!-- 时长 -->
+              <el-table-column
+                label="时长"
+                min-width="70"
+                class-name="color-gray "
+              >
                 <template v-slot="scope">
-                  {{ scope.row.dt | timeFormat }}
+                  <List-duration :scope="scope"></List-duration>
                 </template>
               </el-table-column>
             </el-table>
 
             <!-- 历史记录 -->
             <el-table
+              highlight-current-row
               :data="historyList"
               stripe
               size="mini"
               @row-dblclick="playMusic"
               v-show="isHistory"
             >
-              <el-table-column prop="name" width="160px" show-overflow-tooltip>
+              <!-- 标题 -->
+              <el-table-column min-width="220" show-overflow-tooltip>
+                <template v-slot="scope">
+                  <List-title :scope="scope"></List-title>
+                </template>
               </el-table-column>
-              <!-- 歌手名字 -->
+              <!-- 歌手 -->
               <el-table-column
-                prop="ar[0].name"
-                width="100px"
+                min-width="100"
+                label="歌手"
                 show-overflow-tooltip
               >
                 <template v-slot="scope">
-                  <router-link
-                    class="router-link-active"
-                    :to="{
-                      path: '/artist',
-                      query: {
-                        id: scope.row.ar[0].id,
-                      },
-                    }"
-                    ><span @click="closeList">{{ scope.row.ar[0].name }}</span>
-                  </router-link>
+                  <List-Artist :scope="scope"></List-Artist>
                 </template>
               </el-table-column>
+
               <!-- 歌曲时间 -->
-              <el-table-column prop="time" width="90px">
-                <!-- <template v-slot="scope">
-                  {{ scope.row.dt | timeFormat }}
-                </template> -->
+              <el-table-column min-width="90">
+                <template v-slot="scope">
+                  <span class="gray default">{{ scope.row.time }}</span>
+                </template>
               </el-table-column>
               <!-- 播放列表没有数据时显示 -->
             </el-table>
@@ -288,7 +286,12 @@
 
 <script>
 import { mapMutations, mapState } from 'vuex'
+import ListTitle from '@/components/musicList/List-title.vue'
+import ListArtist from '@/components/musicList/List-artist.vue'
+import ListDuration from '@/components/musicList/List-duration.vue'
+
 export default {
+  components: { ListTitle, ListArtist, ListDuration },
   data() {
     return {
       // expand: false,
@@ -525,7 +528,7 @@ export default {
     // playlist前往歌手页后关闭popover
     closeList() {
       // this.toPlayer()
-      this.$refs.popoverRef.doClose()
+      this.$refs.Nav.doClose()
     },
     // 前往歌手页面
     toPlayer() {
@@ -597,9 +600,11 @@ export default {
 }
 </script>
 <style>
-.list-popover {
+.nav-popover {
+  top: -10px !important;
+  /* right: 10px !important; */
   overflow: auto;
-  height: 500px;
+  height: 90%;
   /* overflow: hidden; */
   padding: 0 !important;
 }
@@ -615,7 +620,7 @@ export default {
   position: absolute;
   font-size: 13px;
   header {
-    width: 350px;
+    width: 400px;
     z-index: 2;
     position: fixed;
     padding: 20px 20px 10px 20px;
@@ -628,10 +633,7 @@ export default {
       border: 1px solid #ccc;
       border-radius: 20px;
       display: flex;
-      // justify-content: space-around;
-      // overflow: hidden;
       justify-items: center;
-      // align-items: center;
       span {
         cursor: pointer;
         line-height: 28px;
@@ -669,8 +671,6 @@ export default {
     }
   }
   footer {
-    // font-size: 10px;
-    // position: absolute;
     margin-top: 70px;
   }
 }
@@ -815,5 +815,8 @@ export default {
 }
 .play {
   padding-left: 5px;
+}
+.el-table {
+  font-size: 12px !important;
 }
 </style>

@@ -10,6 +10,23 @@
           MV详情
         </div>
         <video :poster="detail.cover" :src="url" controls="controls"></video>
+        <!-- 创作者区域 -->
+        <div
+          v-if="detail.artists"
+          class="align-center mt-10"
+          @click="common.toArtist(detail.artists[0].id)"
+        >
+          <img
+            class="rounded-50 mr-10 pointer"
+            style="width: 50px; height: 50px"
+            :src="detail.artists[0].img1v1Url"
+            alt=""
+          />
+          <span class="deep-gray pointer mr-10 font-13">{{
+            detail.artists[0].name
+          }}</span>
+        </div>
+
         <div class="function-box">
           <div class="desc-box">
             <!-- 标题区 -->
@@ -64,7 +81,12 @@
       <div class="right">
         <div class="tittle-little">相关推荐</div>
         <div class="mv-recommend">
-          <div class="mv-box" v-for="(item, i) in mv" :key="i">
+          <div
+            class="mv-box"
+            v-for="(item, i) in mv"
+            :key="i"
+            @click="mvid = item.id"
+          >
             <img :src="item.cover" alt="" />
             <div>
               <span
@@ -78,7 +100,11 @@
               >
               <span class="overHidden mt-20 block font-12"
                 ><span class="gray">by </span
-                ><span class="deep-gray">{{ item.artistName }}</span>
+                ><span
+                  class="deep-gray"
+                  @click="common.toUser(item.artists[0].id)"
+                  >{{ item.artistName }}</span
+                >
               </span>
             </div>
             <span class="playCount">
@@ -95,6 +121,7 @@
 </template>
 
 <script>
+import { getMvDetail, getSimiMv, getMvUrl } from '@/api/mv'
 export default {
   data() {
     return {
@@ -104,8 +131,15 @@ export default {
       hidden: true,
       subCount: null, //收藏数量
       mvName: '', //mv名字
-      mvid: '',
+      mvid: this.$route.params.id,
     }
+  },
+  watch: {
+    mvid() {
+      this.getSimiMv()
+      this.getDetailMv()
+      this.getMvUrl()
+    },
   },
   created() {
     this.getSimiMv()
@@ -117,37 +151,23 @@ export default {
   },
   methods: {
     async getSimiMv() {
-      const { data: res } = await this.$http.get('/simi/mv', {
-        params: {
-          mvid: this.$route.params.id,
-        },
-      })
+      const res = await getSimiMv(this.mvid)
       this.mv = res.mvs
-      // console.log(this.mv)
     },
     async getDetailMv() {
-      const { data: res } = await this.$http.get('/mv/detail', {
-        params: {
-          mvid: this.$route.params.id,
-        },
-      })
+      const res = await getMvDetail(this.mvid)
       this.detail = res.data
       this.subCount = res.data.subCount
       this.mvName = res.data.name
-      this.mvid = this.$route.params.id
+
       // console.log(this.mvName)
     },
     async getMvUrl() {
-      const { data: res } = await this.$http.get('/mv/url', {
-        params: {
-          id: this.$route.params.id,
-        },
-      })
+      const res = await getMvUrl(this.mvid)
       this.url = res.data.url
     },
 
     handleCollect() {
-      // console.log(1111)
       this.$refs.collect.handleCollect()
     },
   },

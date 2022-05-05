@@ -29,6 +29,12 @@ export default {
       path: `/songLists/${id}`,
     })
   },
+  // 前往专辑页面
+  toAlbumList(id) {
+    router.push({
+      path: `/albumList/${id}`,
+    })
+  },
   // 前往用户页面
   toUser(id) {
     router.push({

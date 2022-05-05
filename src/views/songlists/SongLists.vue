@@ -8,7 +8,7 @@
         alt=""
       />
 
-      <div class="ml-20" style="width: 700px">
+      <div class="ml-20">
         <div class="align-center">
           <Label :large="true" class="mr-10 default">歌单</Label>
           <span class="font-20 bold">{{ playListInfo.name }}</span>
@@ -27,14 +27,17 @@
           <span class="deep-link mr-10">{{
             playListInfo.creator.nickname
           }}</span>
-          <span class="deeper-gray default"
+          <span class="deeper-gray default font-12"
             >{{ playListInfo.createTime | dateFormat }} 创建</span
           >
         </div>
         <!-- 按钮区域 -->
-        <div class="mb-10 mt-5">
+        <div class="my-10 align-center">
           <!-- 播放全部 -->
-          <Play-Button class="mr-20" @click="PlayFirstSong"></Play-Button>
+          <Play-Button
+            class="mr-20"
+            @click.native="PlayFirstSong"
+          ></Play-Button>
           <!-- 收藏 -->
           <Collect-Button
             @click.native="handleCollect"
@@ -68,6 +71,7 @@
 
           <div
             class="overHidden"
+            style="width: 700px"
             v-if="playListInfo.description ? true : false"
           >
             简介 :
@@ -136,7 +140,7 @@
 </template>
 
 <script>
-import { getPlaylists } from '@/api/playlist'
+import { getPlaylists, getPlaylistDetail } from '@/api/playlist'
 import Comment from '@/components/comment/Comment.vue'
 import Subscribers from '@/components/subscribers/Subscribers.vue'
 import PlayButton from '@/components/button/Play-Button.vue'
@@ -162,22 +166,23 @@ export default {
       id: this.$route.params.id,
     }
   },
-  computed: {},
+  watch: {
+    $route() {
+      this.id = this.$route.params.id
+      this.getPlaylistDetail()
+      this.getPlaylists()
+    },
+  },
   created() {
-    this.getDetail()
+    this.getPlaylistDetail()
     this.getPlaylists()
   },
   methods: {
     // 获取歌单详情
-    async getDetail() {
-      const { data: res } = await this.$http.get('/playlist/detail', {
-        params: {
-          id: this.$route.params.id,
-        },
-      })
+    async getPlaylistDetail() {
+      const res = await getPlaylistDetail(this.id)
       this.playListInfo = res.playlist
       this.tags = res.playlist.tags
-      // console.log(this.playlists)
     },
     // 获取歌曲列表
     async getPlaylists() {
@@ -190,7 +195,7 @@ export default {
     },
     // 点击播放全部 将数据渲染到playlist上面
     PlayFirstSong() {
-      this.playMusic(this.playlists[0])
+      // this.playMusic(this.playlists[0])
       this.toList()
     },
     // 点击播放全部 将数据渲染到playlist上面
@@ -199,33 +204,6 @@ export default {
         item.index = i
       })
       this.$store.commit('setPlaylist', this.playlists)
-    },
-    toPlayer() {
-      // console.log('1')
-      this.$router.push({
-        path: '/player',
-        query: {
-          item,
-        },
-      })
-    },
-    playMusic(song) {
-      this.$store.commit('setCurrentSong', song)
-      this.toList()
-      // console.log(song)
-      const musicObj = {
-        id: song.id, //歌曲id
-        name: song.name, //歌曲名字
-        arName: song.ar[0].name, //歌手名字
-        picUrl: song.al.picUrl, //歌曲封面
-      }
-      this.$store.commit('setMusicInfo', musicObj)
-      this.$store.dispatch('getLyric', song.id)
-      this.$store.commit('setPlayingState', true)
-      this.$store.commit('toggleCover', true)
-      this.$nextTick(() => {
-        this.$store.state.audioRef.play()
-      })
     },
 
     toPlaylist(item) {
@@ -263,13 +241,13 @@ header {
   }
 }
 /deep/.el-tabs__item {
-  font-size: 13px;
+  font-size: 14px;
   color: #373737;
 }
 
 /deep/.el-tabs__item.is-active {
   color: #373737;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
 }
 /deep/.el-tabs__item:hover {

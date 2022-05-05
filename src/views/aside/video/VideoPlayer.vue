@@ -10,6 +10,21 @@
           视频详情
         </div>
         <video :poster="detail.coverUrl" :src="url" controls="controls"></video>
+        <!-- 创作者区域 -->
+        <div
+          class="align-center mt-10"
+          @click="common.toUser(detail.creator.userId)"
+        >
+          <img
+            class="rounded-50 mr-10 pointer"
+            style="width: 50px; height: 50px"
+            :src="detail.creator.avatarUrl"
+            alt=""
+          />
+          <span class="deep-gray pointer mr-10 font-13">{{
+            detail.creator.nickname
+          }}</span>
+        </div>
         <div class="function-box">
           <div class="desc-box">
             <!-- 标题区 -->
@@ -88,7 +103,11 @@
               >
               <span class="overHidden mt-20 block font-12"
                 ><span class="gray">by </span
-                ><span class="deep-gray">{{ item.creator[0].userName }}</span>
+                ><span
+                  class="deep-gray"
+                  @click="common.toUser(item.creator[0].userId)"
+                  >{{ item.creator[0].userName }}</span
+                >
               </span>
             </div>
             <span class="playCount">
@@ -105,6 +124,7 @@
 </template>
 
 <script>
+import { getVideoDetail, getRelatedVideo, getVideoUrl } from '@/api/video'
 export default {
   data() {
     return {
@@ -134,41 +154,27 @@ export default {
     },
   },
   methods: {
+    // 获取推荐video
     async getRelatedVideo() {
-      const { data: res } = await this.$http.get('/related/allvideo', {
-        params: {
-          id: this.id,
-        },
-      })
+      const res = await getRelatedVideo(this.id)
       this.relatedVideo = res.data
-      // console.log(this.mv)
     },
     // 获取video详情信息
     async getVideoDetail() {
-      const { data: res } = await this.$http.get('/video/detail', {
-        params: {
-          id: this.id,
-        },
-      })
+      const res = await getVideoDetail(this.id)
       this.detail = res.data
       this.subCount = res.data.subscribeCount
       this.videoName = res.data.tittle
       this.tags = res.data.videoGroup
-      // this.id = this.$route.params.id
-      // console.log(this.mvName)
     },
     // 获取video播放地址
     async getVideoUrl() {
-      const { data: res } = await this.$http.get('/video/url', {
-        params: {
-          id: this.$route.params.id,
-        },
-      })
+      const res = await getVideoUrl(this.id)
       this.url = res.urls[0].url
-      // console.log(this.mv)
+      // console.log(this.url)
     },
     playVideo(item) {
-      // console.log(item)
+      console.log(item)
       this.id = item.vid
     },
     toVideo(item) {

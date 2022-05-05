@@ -38,7 +38,11 @@
       <!-- 专辑 -->
       <el-table-column min-width="160" label="专辑" show-overflow-tooltip>
         <template v-slot="scope">
-          <span class="deep-gray pointer">{{ scope.row.al.name }}</span>
+          <span
+            class="deep-gray pointer"
+            @click="common.toAlbumList(scope.row.al.id)"
+            >{{ scope.row.al.name }}</span
+          >
         </template>
       </el-table-column>
       <!-- 时长 -->

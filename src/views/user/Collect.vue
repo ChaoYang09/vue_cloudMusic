@@ -50,7 +50,7 @@
       <el-tab-pane label="视频" name="video">
         <el-row>
           <el-col>
-            <span class="main">收藏的视频</span
+            <span class="bold">收藏的视频</span
             ><span class="gray"> ({{ videos.length }})</span></el-col
           ></el-row
         >
@@ -77,7 +77,11 @@
                 >
                   <span
                     class="pointer deep-gray"
-                    @click.stop="common.toArtist(v.userId)"
+                    @click.stop="
+                      item.type == 0
+                        ? common.toArtist(v.userId)
+                        : common.toUser(v.userId)
+                    "
                     >{{ v.userName }}</span
                   >
                 </span>

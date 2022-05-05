@@ -5,7 +5,7 @@
 
       <div class="right">
         <h2>{{ artistDetail.artist.name }}</h2>
-        <div class="btn-wrap my-10">
+        <div class="btn-wrap my-10 align-center">
           <!-- 收藏按钮 -->
           <Collect-Button
             @click.native="handleCollect"
@@ -14,6 +14,9 @@
             :id="$route.query.id"
             :type="'artist'"
           ></Collect-Button>
+          <Button
+            @click.native="common.toUser(artistDetail.user.userId)"
+          ></Button>
         </div>
 
         <div>
@@ -94,14 +97,13 @@
           </el-tab-pane>
           <!-- 歌手详情 -->
           <el-tab-pane label="歌手详情" name="artistDetail">
-            <div class="detail-wrap">
-              <span class="block bold">
-                {{ artistDetail.artist.name }}简介</span
-              >
-
-              <span class="block mt-10" style="text-indent: 24px">{{
-                artistDetail.artist.briefDesc
-              }}</span>
+            <div class="detail-wrap" v-for="(item, i) in introduction" :key="i">
+              <span class="block bold"> {{ item.ti }}简介</span>
+              <div class="pre" v-for="(t, i) in item.txt" :key="i">
+                <p class="deeper-gray">
+                  {{ t }}
+                </p>
+              </div>
             </div>
           </el-tab-pane>
           <!-- 相似歌手 -->
@@ -136,12 +138,13 @@ import {
   getArtistDetail,
   getSimiArtists,
   getTopSongs,
+  getArtistDesc,
 } from '@/api/artist'
 import { getLikeList } from '@/api/music'
-
+import Button from '@/components/button/Base-Button.vue'
 import Video from '@/components/video/Video.vue'
 import Collect from '@/components/button/Collect.vue'
-import ListIndex from '@/components/musicList/List-index'
+import ListIndex from '@/components/musicList/List-index.vue'
 import ListLove from '@/components/musicList/List-love.vue'
 import ListTitle from '@/components/musicList/List-title.vue'
 // import ListArtist from '@/components/musicList/List-artist.vue'
@@ -153,8 +156,8 @@ export default {
     ListIndex,
     ListLove,
     ListTitle,
-
     ListDuration,
+    Button,
   },
   data() {
     return {
@@ -170,6 +173,7 @@ export default {
       mvs: [],
       artists: [], //相似歌手
       likeList: [],
+      introduction: [],
     }
   },
   watch: {
@@ -181,11 +185,16 @@ export default {
         case 'simi':
           this.getSimiArtists()
           break
+        case 'artistDetail':
+          this.getArtistDesc()
+          break
       }
     },
   },
   created() {
-    this.getArtistDetail()
+    this.getArtistDetail().then(() => {
+      this.getArtistDesc()
+    })
     this.getTopSongs()
   },
   methods: {
@@ -221,6 +230,23 @@ export default {
       })
 
       // console.log(res)
+    },
+    //获取歌手详细描述
+    async getArtistDesc() {
+      const res = await getArtistDesc(this.id)
+      if (res.briefDesc) {
+        const base = {
+          ti: `${this.artistDetail.artist.name}`,
+          txt: `${res.briefDesc}`,
+        }
+        // console.log(base)
+        res.introduction.unshift(base)
+      }
+      res.introduction.forEach((item) => {
+        item.txt = item.txt.split('\n')
+      })
+
+      this.introduction = res.introduction
     },
     // 收藏操作
     handleCollect() {
@@ -275,6 +301,21 @@ main {
     display: flex;
     flex-wrap: wrap;
   }
+  .detail-wrap {
+    margin-bottom: 40px;
+    .pre {
+      text-indent: 2em;
+      line-height: 2;
+      width: 100%;
+    }
+    p {
+      // white-space: pre-wrap;
+      // padding-left: 24px;
+      // line-height: 2;
+      // text-indent: 24px;
+      // margin: 10px 0 50px 0;
+    }
+  }
 }
 
 /deep/.el-tabs__item {
@@ -300,8 +341,6 @@ main {
   border-radius: 2px;
 }
 /deep/.el-tabs__nav-scroll {
-  // overflow: hidden;
-  // z-index: 9;
   background-color: #fff;
   width: 100%;
   height: 40px;

@@ -297,15 +297,4 @@ main {
     margin-right: 3%;
   }
 }
-
-// /deep/.color-gray {
-//   color: #c3c3c4;
-// }
-// /deep/.color-gray-deeper {
-//   color: #7c7c7c;
-//   cursor: pointer;
-// }
-// /deep/.color-gray-deeper:hover {
-//   color: #000000;
-// }
 </style>

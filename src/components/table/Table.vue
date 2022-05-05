@@ -135,7 +135,7 @@ export default {
       // console.log(row)
       switch (this.type) {
         case 10:
-          this.getAlbums()
+          this.common.toAlbumList(row.id)
           break
         case 100:
           this.common.toArtist(row.id)

@@ -41,7 +41,7 @@ export default {
 .small {
   // width: 22px;
   padding: 0 1px;
-  height: 12px;
+  height: 13px;
   line-height: 12px;
 
   -webkit-transform: scale(0.9);

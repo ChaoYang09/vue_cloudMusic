@@ -2,11 +2,18 @@
   <!-- 最新评论 -->
   <section class="fantastic-comment">
     <div class="comment-content-box" v-for="(item, i) in comments" :key="i">
-      <img :src="item.user.avatarUrl" alt class="avatar" />
+      <img
+        @click="common.toUser(item.user.userId)"
+        :src="item.user.avatarUrl"
+        alt
+        class="avatar pointer"
+      />
       <div class="right-box">
         <!-- 评论内容 -->
         <div class="comment">
-          <span class="name link">{{ item.user.nickname }}:</span>
+          <span class="name link" @click="common.toUser(item.user.userId)"
+            >{{ item.user.nickname }}:</span
+          >
           <span>{{ item.content }}</span>
         </div>
         <!-- 回复区域 -->
@@ -17,7 +24,7 @@
         <div class="aside-info">
           <!-- 发布时间区域 -->
           <span>
-            <span class="time gray">{{ item.timeStr }}</span>
+            <span class="time gray default">{{ item.timeStr }}</span>
           </span>
           <!-- 操作区域 -->
           <span class="operate-box gray">
