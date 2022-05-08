@@ -19,8 +19,10 @@ const store = new Vuex.Store({
     music: {
       id: 0, //歌曲id
       name: '', //歌曲名字
-      arName: '', //歌手名字
+      artists: '', //歌手名字
       picUrl: '', //歌曲封面
+      album: '', //专辑
+      like: '', //收藏歌曲
     },
     lyric: '', //歌词
     playlist: [], // 播放列表数据
@@ -28,8 +30,8 @@ const store = new Vuex.Store({
     playMode: 1, // 播放模式
     loopPlay: false, //循环播放
     offset: 0, //分页
-    likeList: [], //我喜欢的音乐id
-
+    likeIds: [], //我喜欢的音乐id
+    uid: null, //用户id
     // playMode: playModeMap.sequence.code,
     // 播放列表显示
     isPlaylistShow: false,
@@ -83,8 +85,14 @@ const store = new Vuex.Store({
     setOffset(state, offset) {
       state.offset = offset
     },
-    setLikeList(state, likeList) {
-      state.likeList = likeList
+    setLikeIds(state, ids) {
+      state.likeIds = ids
+    },
+    setUserId(state, id) {
+      state.uid = id
+    },
+    upDataLikeState(state, boolean) {
+      state.music.like = boolean
     },
   },
   actions: {
@@ -98,14 +106,11 @@ const store = new Vuex.Store({
         },
       })
       context.commit('setLyric', res.lrc.lyric)
-      // state.lyric =
-      // this.mv = res.data
-      // console.log(state.lyric)
     },
     // 获取我的喜欢歌曲id
-    async getLikeList(context, uid) {
-      const res = await getLikeList(uid)
-      context.commit('setLikeList', res.ids)
+    async getLikeIds(context, uid) {
+      const res = await getLikeIds(uid)
+      context.commit('setLikeIds', res.ids)
       // this.likeList = res.ids
     },
   },

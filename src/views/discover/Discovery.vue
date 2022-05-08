@@ -2,7 +2,7 @@
   <div class="main-Box">
     <el-tabs v-model="activeName">
       <!-- 个性推荐 -->
-      <el-tab-pane label="个性推荐" name="first">
+      <el-tab-pane label="个性推荐" name="recommend">
         <!-- 轮播图 -->
         <el-carousel :interval="3000" type="card" height="201px">
           <el-carousel-item v-for="(item, i) in banners" :key="i">
@@ -391,7 +391,7 @@ export default {
       playlist: [],
       recommend: [], //每日推荐歌单
       playShow: null,
-      activeName: 'first',
+      activeName: this.$route.params.type,
       artistList: [],
       type: -1, //分类
       area: -1, //语种
@@ -437,6 +437,10 @@ export default {
     tag() {
       this.getTopPlayList()
       this.getHighPlayList()
+    },
+    $route() {
+      // console.log(newVal)
+      this.activeName = this.$route.params.type
     },
   },
   methods: {

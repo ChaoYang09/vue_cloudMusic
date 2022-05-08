@@ -14,6 +14,9 @@
 .deeper-gray{
   color:#676767;
 }
+.black:hover{
+  color: #000;
+}
 /* 网易红 */
 .netEase-red{
   color: #ec4141;
@@ -22,10 +25,10 @@
 .btn {
   display: inline-block;
   cursor: pointer;
-  font-size: 15px;
+  font-size: 14px;
   /* box-sizing: content-box; */
   text-align: center;
-  padding: 6px 16px;
+  padding: 4px 16px;
   border: 1px solid #ccc;
   border-radius: 17px;
 }
@@ -42,6 +45,9 @@ margin-right: 3px;
 }
 
 /* 字体大小 */
+.font-11 {
+  font-size: 11px;
+}
 .font-12 {
   font-size: 12px;
 }
@@ -62,6 +68,9 @@ margin-right: 3px;
 }
 .font-20 {
   font-size: 20px;
+}
+.font-23 {
+  font-size: 23px;
 }
 
 /* 圆角 */
@@ -96,6 +105,9 @@ margin-right: 3px;
 .align-center {
   display: flex;
   align-items: center;
+}
+.flex{
+  display: flex;
 }
 .center{
   margin: 0 auto;
@@ -140,6 +152,7 @@ margin-right: 3px;
 .mt-2{
 margin-top: 2px;
 }
+
 .mt-5 {
   margin-top: 5px;
 }
@@ -149,6 +162,7 @@ margin-top: 2px;
 .mt-20 {
   margin-top: 20px;
 }
+
 .mr-10{
   margin-right: 10px;
 }
@@ -158,18 +172,32 @@ margin-top: 2px;
 .-ml-1{
 margin-left: -1px;
 }
+
+.ml-3{
+  margin-left: 3px;
+}
 .ml-5 {
   margin-left: 5px;
 }
 .ml-10 {
   margin-left: 10px;
 }
+.ml-15 {
+  margin-left: 15px;
+}
 .ml-20 {
   margin-left: 20px;
+}
+.ml-30 {
+  margin-left: 30px;
 }
 .mb-10 {
   margin-bottom: 10px;
 }
+.mb-20 {
+  margin-bottom: 20px;
+}
+
 .my-5 {
   margin-top: 5px;
   margin-bottom: 5px;
@@ -183,7 +211,7 @@ margin-left: -1px;
   margin-bottom: 20px;
 }
 /* 一行文本溢出隐藏： 需要添加width */
-.overHidden {
+.hidden-1 {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -191,7 +219,9 @@ margin-left: -1px;
 /* 多行省略 */
 .hidden-2 {
   overflow: hidden;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;/*设置多行的行数*/
+  -webkit-box-orient: vertical;/*设置对齐模式*/
   display: -webkit-box;
+  text-overflow: ellipsis;
+
 }

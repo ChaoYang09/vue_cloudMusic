@@ -7,12 +7,12 @@ import Test from '../views/Test.vue'
 //歌单
 import SongLists from '../views/songlists/SongLists.vue'
 import AlbumList from '../views/albumlist/AlbumList.vue'
-
+import DjList from '../views/djList/DjList.vue'
+// 搜索
 import Search from '../views/Search.vue'
 //发现
 import Discovery from '../views/discover/Discovery.vue'
 import Artist from '../views/discover/Artist.vue'
-// import Artist from '../views/discover/Artist.vue'
 // 视频
 import Video from '../views/aside/video/Video.vue'
 import VideoPlayer from '@/views/aside/video/VideoPlayer.vue'
@@ -22,7 +22,7 @@ import Collect from '../views/user/Collect.vue'
 import UserInfo from '../views/user/UserInfo.vue'
 import EditUserInfo from '../views/user/EditUserInfo.vue'
 import MyDj from '../views/user/MyDj.vue'
-
+import DailySongs from '@/views/user/DailySongs.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -31,7 +31,11 @@ const routes = [
     component: Home,
     children: [
       {
-        path: '/discovery',
+        path: '/',
+        redirect: '/discovery/recommend',
+      },
+      {
+        path: '/discovery/:type',
         component: Discovery,
       },
       {
@@ -50,10 +54,18 @@ const routes = [
         path: '/albumList/:id',
         component: AlbumList,
       },
+      {
+        path: '/djList/:id',
+        component: DjList,
+      },
 
       {
         path: '/collect',
         component: Collect,
+      },
+      {
+        path: '/dailySongs',
+        component: DailySongs,
       },
       {
         path: '/userInfo/:id',

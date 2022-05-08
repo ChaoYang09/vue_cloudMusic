@@ -11,7 +11,7 @@
       <div class="ml-20">
         <div class="align-center">
           <Label :large="true" class="mr-10 default">歌单</Label>
-          <span class="font-20 bold">{{ playListInfo.name }}</span>
+          <span class="font-23 bold">{{ playListInfo.name }}</span>
         </div>
         <!-- 创作者区域 -->
         <div
@@ -20,7 +20,7 @@
         >
           <img
             class="rounded-50 mr-10"
-            style="width: 22px"
+            style="width: 25px"
             :src="playListInfo.creator.avatarUrl"
             alt=""
           />
@@ -132,7 +132,11 @@
           <Comment style="padding: 0 30px" :id="id" :type="2"></Comment>
         </el-tab-pane>
         <el-tab-pane label="收藏者" name="subUser">
-          <Subscribers style="padding: 0 30px" :id="id"></Subscribers>
+          <Subscribers
+            style="padding: 0 30px"
+            :id="id"
+            :type="'playlist'"
+          ></Subscribers>
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -140,6 +144,7 @@
 </template>
 
 <script>
+import { mapState, mapMutations } from 'vuex'
 import { getPlaylists, getPlaylistDetail } from '@/api/playlist'
 import Comment from '@/components/comment/Comment.vue'
 import Subscribers from '@/components/subscribers/Subscribers.vue'
@@ -166,11 +171,20 @@ export default {
       id: this.$route.params.id,
     }
   },
+  computed: {
+    ...mapState(['likeIds']),
+  },
   watch: {
     $route() {
       this.id = this.$route.params.id
       this.getPlaylistDetail()
       this.getPlaylists()
+    },
+
+    likeIds() {
+      this.playlists.forEach((item) => {
+        item.like = this.likeIds.includes(item.id)
+      })
     },
   },
   created() {
@@ -178,6 +192,8 @@ export default {
     this.getPlaylists()
   },
   methods: {
+    ...mapMutations(['upDataLikeState']),
+
     // 获取歌单详情
     async getPlaylistDetail() {
       const res = await getPlaylistDetail(this.id)
@@ -187,6 +203,9 @@ export default {
     // 获取歌曲列表
     async getPlaylists() {
       const res = await getPlaylists(this.id)
+      res.songs.forEach((item) => {
+        item.like = this.likeIds.includes(item.id)
+      })
       this.playlists = res.songs
       // console.log(this.playlists)
     },

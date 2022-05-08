@@ -17,26 +17,26 @@
       <!-- 收藏爱心 -->
       <el-table-column width="20">
         <template v-slot="scope">
-          <List-love :scope="scope"></List-love>
+          <List-love :scope="scope.row"></List-love>
         </template>
       </el-table-column>
 
       <!-- 标题 -->
-      <el-table-column min-width="400" label="音乐标题" show-overflow-tooltip>
+      <el-table-column min-width="350" label="音乐标题" show-overflow-tooltip>
         <template v-slot="scope">
           <List-title :scope="scope"></List-title>
         </template>
       </el-table-column>
 
       <!-- 歌手 -->
-      <el-table-column min-width="180" label="歌手" show-overflow-tooltip>
+      <el-table-column min-width="160" label="歌手" show-overflow-tooltip>
         <template v-slot="scope">
           <List-Artist :scope="scope"></List-Artist>
         </template>
       </el-table-column>
 
       <!-- 专辑 -->
-      <el-table-column min-width="160" label="专辑" show-overflow-tooltip>
+      <el-table-column min-width="200" label="专辑" show-overflow-tooltip>
         <template v-slot="scope">
           <span
             class="deep-gray pointer"
@@ -57,7 +57,6 @@
 </template>
 
 <script>
-import { likeMusic } from '@/api/music'
 import ListIndex from '@/components/musicList/List-index'
 import ListLove from '@/components/musicList/List-love.vue'
 import ListTitle from '@/components/musicList/List-title.vue'
@@ -93,25 +92,6 @@ export default {
   computed: {},
 
   methods: {
-    // 收藏音乐
-    async likeMusic(row, index) {
-      // console.log(index)
-      // let isLike = this.likeList.includes(row.id)
-      const res = await likeMusic({
-        id: row.id,
-        like: !row.like,
-      })
-      if (res.code !== 200) return this.$message.error('收藏失败')
-      if (!row.like) {
-        row.like = true
-        this.$set(this.songs, index, row)
-        this.$message.success('已添加到我喜欢的音乐')
-      } else {
-        row.like = false
-        this.$set(this.songs, index, row)
-        this.$message('取消喜欢成功')
-      }
-    },
     // 双击歌曲行会触发
   },
 }

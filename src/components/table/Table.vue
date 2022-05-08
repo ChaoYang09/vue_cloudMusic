@@ -44,6 +44,8 @@
           >
         </template>
       </el-table-column>
+      <slot />
+
       <!-- 歌单 -->
       <el-table-column min-width="150" v-if="type === 1000">
         <template v-slot="scope">
@@ -147,7 +149,7 @@ export default {
           this.getUsers()
           break
         case 1009:
-          this.getDjRadios()
+          this.common.toDjList(row.id)
           break
         case 1014:
           this.getVideos()

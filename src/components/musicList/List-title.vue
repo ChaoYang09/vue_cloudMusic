@@ -2,7 +2,7 @@
   <div>
     <span class="default">{{ scope.row.name }}</span>
 
-    <span class="gray default" v-if="scope.row.alia.length !== 0">
+    <span class="gray default" v-if="(scope.row.alia || []).length !== 0">
       &nbsp;({{ scope.row.alia[0] }})</span
     >
     <!-- VIP -->
@@ -41,6 +41,7 @@ export default {
   props: {
     scope: {
       require: true,
+      default: () => ({}),
     },
   },
 }

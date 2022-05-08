@@ -12,16 +12,25 @@
         v-show="isCoverShow"
       />
 
-      <div v-show="isCoverShow">
-        <div style="width: 150px">
-          <span class="overHidden bold font-15">{{ music.name }}</span>
+      <div v-show="isCoverShow" class="ml-10" style="width: 150px">
+        <div class="flex pointer">
+          <div class="hidden-1 pointer font-15 mr-20" @click="togglePlayerShow">
+            {{ music.name }}
+          </div>
+          <Love :scope="music"></Love>
         </div>
-        <span
-          class="pointer overHidden"
-          style="width: 150px"
-          @click="toPlayer"
-          >{{ music.arName }}</span
-        >
+
+        <div class="hidden-1 mt-5">
+          <span
+            class="artist-list font-12"
+            v-for="(item, i) in music.artists"
+            :key="i"
+          >
+            <span class="pointer black" @click="common.toArtist(item.id)">{{
+              item.name
+            }}</span>
+          </span>
+        </div>
       </div>
     </div>
 
@@ -145,7 +154,7 @@
         <div class="playlist-box">
           <!-- 头部区域 -->
           <header>
-            <div class="mode-history">
+            <div class="mode-history border-line">
               <span
                 :class="{ selected: !isHistory, 'pointer-none': !isHistory }"
                 @click="isHistory = false"
@@ -289,9 +298,9 @@ import { mapMutations, mapState } from 'vuex'
 import ListTitle from '@/components/musicList/List-title.vue'
 import ListArtist from '@/components/musicList/List-artist.vue'
 import ListDuration from '@/components/musicList/List-duration.vue'
-
+import Love from '@/components/musicList/List-love.vue'
 export default {
-  components: { ListTitle, ListArtist, ListDuration },
+  components: { ListTitle, ListArtist, ListDuration, Love },
   data() {
     return {
       // expand: false,
@@ -315,6 +324,11 @@ export default {
     }
     // console.log(this.historyList)
   },
+  watch: {
+    likeIds() {
+      this.upDataLikeState(this.likeIds.includes(this.music.id))
+    },
+  },
   mounted() {
     this.$store.state.audioRef = this.$refs.audioRef
   },
@@ -330,6 +344,7 @@ export default {
       'isPlayerShow',
       'playMode',
       'loopPlay',
+      'likeIds',
     ]),
     musicUrl() {
       return `https://music.163.com/song/media/outer/url?id=${this.music.id}.mp3`
@@ -347,6 +362,7 @@ export default {
       'setCurrentSong',
       'setPlayMode',
       'setLoopPlay',
+      'upDataLikeState',
     ]),
     init() {
       this.duration = this.$refs.audioRef.duration
@@ -530,16 +546,6 @@ export default {
       // this.toPlayer()
       this.$refs.Nav.doClose()
     },
-    // 前往歌手页面
-    toPlayer() {
-      this.$router.push({
-        path: '/artist',
-        query: {
-          id: this.$store.state.currentSong.ar[0].id,
-        },
-      })
-      this.$store.commit('setIsPlayerShow', false)
-    },
 
     async checkMusic(id) {
       // console.log(id)
@@ -630,7 +636,7 @@ export default {
       margin: 0 auto;
       height: 30px;
       width: 200px;
-      border: 1px solid #ccc;
+      // border: 1px solid #ccc;
       border-radius: 20px;
       display: flex;
       justify-items: center;
@@ -684,37 +690,12 @@ export default {
 .left {
   width: 200px;
   display: flex;
-  position: relative;
-  img:nth-child(1) {
-    position: relative;
+  align-items: center;
+  img {
     width: 45px;
     height: 45px;
     display: block;
-    // width: 100%;
-    // height: 100%;
     border-radius: 5px;
-  }
-  .expand {
-    display: none;
-    position: absolute;
-    width: 40px;
-    height: 40px;
-
-    top: 3px;
-    left: 3px;
-  }
-
-  // img:hover {
-
-  //   filter: blur(1.3px);
-  // }
-  span {
-    display: block;
-    margin-left: 20px;
-  }
-  span:nth-child(2) {
-    margin-top: 10px;
-    font-size: 12px;
   }
 }
 .middle {
@@ -785,6 +766,7 @@ export default {
   width: 100px;
 }
 .slider_song {
+  height: 0;
   width: 100%;
   position: absolute;
   top: -20px;
@@ -816,7 +798,15 @@ export default {
 .play {
   padding-left: 5px;
 }
-.el-table {
-  font-size: 12px !important;
+
+.artist-list {
+  &::after {
+    display: inline;
+    margin: 5px;
+    content: '/';
+  }
+  &:last-child::after {
+    content: '';
+  }
 }
 </style>

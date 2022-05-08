@@ -17,7 +17,7 @@
       </div>
 
       <!-- 歌曲标题 -->
-      <span class="cover-name hidden-2 position">{{ name }} </span>
+      <span class="cover-name hidden-2 position" style="">{{ name }}</span>
       <!-- user里的歌曲数量占位 -->
       <slot />
       <!-- 播放数量 -->
@@ -63,7 +63,7 @@ export default {
   cursor: pointer;
   .cover-name {
     margin: 5px 0;
-    display: block;
+    // display: block;
     width: 100%;
   }
   .play-svg {

@@ -32,7 +32,6 @@
         </Music-List>
         <div class="flex-center mt-20">
           <el-pagination
-            small
             background
             layout="prev, pager, next"
             :total="count"
@@ -72,7 +71,7 @@
               >MV</Label
             >
             <template #author>
-              <div class="overHidden">
+              <div class="hidden-1">
                 <span
                   class="artist-list"
                   v-for="(v, i) in item.creator"
@@ -102,13 +101,12 @@
 </template>
 
 <script>
+import { mapState, mapMutations } from 'vuex'
 import MusicList from '@/components/musicList/MusicList.vue'
 import Table from '@/components/table/Table.vue'
 import Video from '@/components/video/Video.vue'
 import Label from '@/components/label/Label.vue'
 import { getCloudSearch } from '@/api/search'
-import { getLikeList } from '@/api/music'
-
 export default {
   components: {
     MusicList,
@@ -140,7 +138,9 @@ export default {
       keywords: this.$route.params.keywords,
     }
   },
-  computed: {},
+  computed: {
+    ...mapState(['likeIds']),
+  },
   created() {
     this.getSongsLists()
   },
@@ -170,25 +170,35 @@ export default {
           break
       }
     },
+    $route() {
+      this.keywords = this.$route.params.keywords
+      this.getSongsLists()
+    },
+    likeIds() {
+      this.songs.forEach((item) => {
+        item.like = this.likeIds.includes(item.id)
+      })
+    },
   },
   methods: {
+    ...mapMutations(['upDataLikeState']),
     // 获取单曲
     async getSongsLists() {
-      await getLikeList(297835213).then((res) => {
-        this.likeList = res.ids
-      })
+      // await getLikeList(297835213).then((res) => {
+      //   this.likeList = res.ids
+      // })
+      // console.log(this.$store.state.likeIds)
       await getCloudSearch({
         keywords: this.keywords,
         limit: 30,
         offset: this.offset,
         type: this.type,
       }).then((res) => {
-        let songs = res.result.songs
         this.count = res.result.songCount
-        songs.forEach((item) => {
-          item.like = this.likeList.includes(item.id)
+        res.result.songs.forEach((item) => {
+          item.like = this.likeIds.includes(item.id)
         })
-        this.songs = songs
+        this.songs = res.result.songs
       })
     },
     // 获取歌手

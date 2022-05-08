@@ -100,13 +100,6 @@ video {
 
 
 
-.router-link-active:hover {
-  color: black;
-}
-
-
-
-
 
 /* 播放按钮的css动画 */
 .fade-enter-active,

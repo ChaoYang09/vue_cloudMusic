@@ -9,38 +9,23 @@
       </div>
     </header>
     <footer>
-      <el-table stripe :data="djRadios" style="width: 100%">
-        <!-- picUrl -->
-        <el-table-column width="120">
-          <template v-slot="scope">
-            <!-- {{ scope.row.avatarUrl }} -->
-            <img class="img" :src="scope.row.picUrl" alt="" />
-          </template>
-        </el-table-column>
-
-        <!-- name -->
-        <el-table-column prop="name" width="500"> </el-table-column>
-
-        <!-- nickname -->
-        <el-table-column width="300">
-          <template v-slot="scope"
-            ><span class="gray">by {{ scope.row.dj.nickname }}</span>
-          </template>
-        </el-table-column>
-
+      <Table :tableData="djRadios" :type="1009">
         <!-- programCount -->
         <el-table-column>
           <template v-slot="scope">
             <span class="gray">节目 {{ scope.row.programCount }}</span>
           </template>
-        </el-table-column>
-      </el-table>
+        </el-table-column></Table
+      >
     </footer>
   </div>
 </template>
 
 <script>
+import Table from '@/components/table/Table.vue'
+
 export default {
+  components: { Table },
   data() {
     return {
       djRadios: [],

@@ -10,9 +10,7 @@
         <use xlink:href="#icon-Collections"></use>
       </svg>
       <span v-show="iconShow">已</span>收藏
-      <span style="margin-top: 3px" v-show="subCounts !== 0"
-        >({{ subCounts | playCountFormat }})</span
-      >
+      <span v-show="subCounts !== 0">({{ subCounts | playCountFormat }})</span>
       <!-- {{ subCount }} -->
     </span>
   </span>

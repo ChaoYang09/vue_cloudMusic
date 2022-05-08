@@ -12,7 +12,7 @@
       <div class="ml-20">
         <div class="align-center">
           <Label :large="true" class="mr-10 default">专辑</Label>
-          <span class="font-20 bold"
+          <span class="font-23 bold"
             >{{ albumInfo.name
             }}<span class="deeper-gray" v-if="albumInfo.alias.length !== 0">
               ({{ albumInfo.alias[0] }})</span

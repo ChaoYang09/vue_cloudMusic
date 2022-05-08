@@ -69,7 +69,7 @@
               >MV</Label
             >
             <template #author>
-              <div class="overHidden">
+              <div class="hidden-1">
                 <span
                   class="artist-list"
                   v-for="(v, i) in item.creator"
@@ -411,7 +411,7 @@ export default {
     async getMv() {
       const res = await getMediaSubList()
       this.videos = res.data
-      console.log(this.videos)
+      // console.log(this.videos)
     },
     async getAlbum() {
       const { data: res } = await this.$http.get('/album/sublist')
@@ -433,7 +433,7 @@ export default {
   flex-wrap: wrap;
   // justify-content: space-between;
   .video {
-    width: 31%;
+    width: 23%;
     margin-right: 2%;
   }
 }

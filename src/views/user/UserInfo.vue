@@ -158,7 +158,7 @@ export default {
         if (item.creator.userId == this.id) this.count++
       })
       this.createdList = res.playlist.splice(0, this.count)
-      this.playlist = res.playlist.splice(this.count)
+      this.playlist = res.playlist
     },
     // 分页的钩子
     // handleCurrentChange(val) {

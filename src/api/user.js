@@ -9,3 +9,6 @@ export const getUserPlaylist = ({ uid, limit, offset }) =>
   get('/user/playlist', { uid, limit, offset })
 
 export const getPlaylist = (uid) => get('/user/playlist', { uid })
+
+// 每日推荐
+export const getDailySongs = () => get('/recommend/songs', {})

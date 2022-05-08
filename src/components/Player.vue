@@ -35,13 +35,30 @@
 
       <div class="right">
         <header>
-          <span class="tittle">{{ music.name }}</span>
-          <span class="name gray"
-            >歌手 :
-            <span class="player-color" @click="toPlayer">{{
-              music.arName
-            }}</span>
-          </span>
+          <div class="title hidden-1">{{ music.name }}</div>
+          <div class="mt-10 mb-20 flex">
+            <!-- 专辑 -->
+            <span class="gray" style="margin-right: 40px; width: 40%"
+              ><span class="default">专辑 :</span
+              ><span class="link" @click="common.toAlbumList(music.album.id)">
+                {{ music.album.name }}</span
+              >
+            </span>
+            <!-- 歌手 -->
+            <span class="gray hidden-1"
+              ><span class="default">歌手 :</span>
+              <span
+                class="artist-list pointer font-12"
+                v-for="(item, i) in music.artists"
+                :key="i"
+              >
+                <span class="pointer link" @click="common.toArtist(item.id)">{{
+                  item.name
+                }}</span>
+              </span>
+            </span>
+          </div>
+
           <!-- {{ lrc }} -->
         </header>
 
@@ -119,24 +136,9 @@ export default {
         this.$refs.lyricList.scrollTo(0, 0, 1000)
       }
     },
-    // 前往歌手页面
-    toPlayer() {
-      this.$router.push({
-        path: '/artist',
-        query: {
-          id: this.$store.state.currentSong.ar[0].id,
-        },
-      })
-      this.$store.commit('setIsPlayerShow', false)
-    },
-    test() {
-      console.log('test')
-    },
   },
   watch: {
     lyric() {
-      // console.log(this.lyric)
-      // console.log('1')
       if (this.currentLyric) {
         this.currentLyric.stop()
       }
@@ -258,15 +260,9 @@ export default {
 .right {
   width: 300px;
   header {
-    span {
-      display: block;
-    }
-    .tittle {
+    .title {
       font-size: 30px;
       margin-top: 40px;
-    }
-    .name {
-      margin: 10px 0 30px 0;
     }
   }
 
@@ -275,7 +271,7 @@ export default {
 
     .lyric-wrap {
       width: 100%;
-      height: 380px;
+      height: 350px;
       // background-color: burlywood;
       position: relative;
       mask-image: linear-gradient(
@@ -293,15 +289,25 @@ export default {
           // color: #666666;
           // display: inline-block;
           margin-bottom: 15px;
-          font-size: 15px;
+          font-size: 14px;
         }
         .current {
           color: #000000;
           font-weight: 600;
-          font-size: 17px;
+          font-size: 16px;
         }
       }
     }
+  }
+}
+.artist-list {
+  &::after {
+    display: inline;
+    margin: 5px;
+    content: '/';
+  }
+  &:last-child::after {
+    content: '';
   }
 }
 /*

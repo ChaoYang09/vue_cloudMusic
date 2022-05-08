@@ -67,7 +67,7 @@
               @click.native="common.toVideoPlayer(item.data.vid)"
             >
               <template #author>
-                <div class="overHidden">
+                <div class="hidden-1">
                   <span class="pointer deep-gray">{{
                     item.data.creator.nickname
                   }}</span>
@@ -129,7 +129,7 @@
                 @click.native="common.toMvPlayer(item.id)"
               >
                 <template #author>
-                  <div class="overHidden">
+                  <div class="hidden-1">
                     <span
                       class="artist-list"
                       v-for="(item, i) in item.artists"

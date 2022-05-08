@@ -12,7 +12,7 @@
       >
     </div>
 
-    <span class="overHidden block my-5">
+    <span class="hidden-1 block my-5">
       <slot />
       {{ name }}</span
     >

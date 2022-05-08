@@ -13,7 +13,7 @@
             {{ item.nickname }}<Gender :gender="item.gender"></Gender
           ></span>
           <span
-            class="block mt-10 overHidden font-12 block"
+            class="block mt-10 hidden-1 font-12 block"
             style="width: 150px"
             >{{ item.signature }}</span
           >
@@ -27,10 +27,16 @@
 </template>
 
 <script>
-import { getSubscribers } from '@/api/playlist'
+import { getPlayListSubscribers } from '@/api/playlist'
+import { getDjSubscribers } from '@/api/dj'
+
 import Gender from '@/components/gender/Gender.vue'
 export default {
   props: {
+    type: {
+      type: String,
+      require: true,
+    },
     id: {
       type: [Number, String],
       require: true,
@@ -49,8 +55,13 @@ export default {
   },
   methods: {
     async getSubscribers() {
-      const res = await getSubscribers(this.id)
-      this.subscribers = res.subscribers
+      if (this.type === 'dj') {
+        const res = await getDjSubscribers(this.id)
+        this.subscribers = res.subscribers
+      } else if (this.type === 'playlist') {
+        const res = await getPlayListSubscribers(this.id)
+        this.subscribers = res.subscribers
+      }
     },
   },
 }

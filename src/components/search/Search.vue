@@ -93,7 +93,7 @@
             <p
               v-for="(item, i) in songs"
               :key="i"
-              class="overHidden"
+              class="hidden-1"
               @click="common.playMusic()"
             >
               {{ item.name
@@ -122,7 +122,7 @@
             <p
               v-for="(item, i) in artists"
               :key="i"
-              class="overHidden"
+              class="hidden-1"
               @click="toArtist(item.id)"
             >
               {{ item.name }}
@@ -142,7 +142,7 @@
             <p
               v-for="(item, i) in albums"
               :key="i"
-              class="overHidden"
+              class="hidden-1"
               @click="toAlbumList(item.id)"
             >
               {{ item.name }} - {{ item.artist.name }}
@@ -162,7 +162,7 @@
             <p
               v-for="(item, i) in playlists"
               :key="i"
-              class="overHidden"
+              class="hidden-1"
               @click="toSongsList(item.id)"
             >
               {{ item.name }}
@@ -245,7 +245,7 @@ export default {
       this.$refs.popoverRef.doClose()
 
       this.$router.push({
-        path: `search/${this.searchInput}`,
+        path: `/search/${this.searchInput}`,
       })
     },
     // 在搜索框中输入后按回车 跳转

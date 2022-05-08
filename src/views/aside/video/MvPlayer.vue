@@ -63,7 +63,7 @@
             </div>
 
             <!-- 歌曲介绍 -->
-            <p class="overHidden-more desc" v-show="!hidden">
+            <p class="hidden-1-more desc" v-show="!hidden">
               {{ detail.desc }}
             </p>
 
@@ -98,7 +98,7 @@
                 "
                 >{{ item.name }}</span
               >
-              <span class="overHidden mt-20 block font-12"
+              <span class="hidden-1 mt-20 block font-12"
                 ><span class="gray">by </span
                 ><span
                   class="deep-gray"
