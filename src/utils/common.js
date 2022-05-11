@@ -8,12 +8,7 @@ export default {
       path: `/videoPlayer/${id}`,
     })
   },
-  // 前往Mv页面
-  toMvPlayer(id) {
-    router.push({
-      path: `/mvPlayer/${id}`,
-    })
-  },
+
   // 前往歌手页面
   toArtist(id) {
     router.push({
@@ -53,11 +48,11 @@ export default {
     })
   },
   // 判断是去往Mv还是视频页面
-  toMediaPlayer(type, id) {
-    if (type === 0) this.toMvPlayer(id)
-    else if (type === 1) this.toVideoPlayer(id)
-    else return
-  },
+  // toMediaPlayer(id) {
+  //   if (type === 0) this.toMvPlayer(id)
+  //   else if (type === 1) this.toVideoPlayer(id)
+  //   else return
+  // },
   // 播放音乐
   playMusic(song) {
     store.commit('setCurrentSong', song)

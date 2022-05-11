@@ -9,29 +9,31 @@
         alt=""
       />
 
-      <div class="ml-20">
+      <div class="ml-20" style="width: calc(100% - 200px)">
         <div class="align-center">
           <Label :large="true" class="mr-10 default">专辑</Label>
           <span class="font-23 bold"
             >{{ albumInfo.name
-            }}<span class="deeper-gray" v-if="albumInfo.alias.length !== 0">
+            }}<span style="color: #9f9f9f" v-if="albumInfo.alias.length !== 0">
               ({{ albumInfo.alias[0] }})</span
             ></span
           >
         </div>
 
         <!-- 按钮区域 -->
-        <div class="mb-10 mt-5">
+        <div class="my-10 align-center">
           <!-- 播放全部 -->
-          <!-- <Play-Button class="mr-20" @click="PlayFirstSong"></Play-Button> -->
+          <Play-Button
+            class="mr-20"
+            ref="playBtnRef"
+            @click.native="PlayAllSongs"
+          ></Play-Button>
           <!-- 收藏 -->
-          <!-- <Collect-Button
-            @click.native="handleCollect"
-            ref="collect"
-            :subCount="albumInfo.subscribedCount"
+          <Collect-Button
+            :subCount="subCount"
             :id="id"
-            :type="'playlist'"
-          ></Collect-Button> -->
+            :type="'album'"
+          ></Collect-Button>
         </div>
         <!-- 标签区域 -->
         <div class="tags-box">
@@ -85,15 +87,16 @@
 </template>
 
 <script>
-import { getAlbumDetail } from '@/api/album'
+import { getAlbumDetail, getAlbumDetailDynamic } from '@/api/album'
 import MusicList from '@/components/musicList/MusicList.vue'
-import Comment from '@/components/comment/Comment.vue'
 import Label from '@/components/label/Label.vue'
+import PlayButton from '@/components/button/Play-Button.vue'
+
 export default {
   components: {
-    Comment,
     MusicList,
     Label,
+    PlayButton,
   },
   data() {
     return {
@@ -112,27 +115,37 @@ export default {
       this.id = this.$route.params.id
       this.getAlbumDetail()
     },
+    '$store.state.likeIds'() {
+      this.playlists.forEach((item) => {
+        item.like = this.$store.state.likeIds.includes(item.id)
+      })
+    },
   },
   computed: {},
   created() {
     this.getAlbumDetail()
     // this.getPlaylists()
+    this.getAlbumDetailDynamic()
   },
   methods: {
     // 获取专辑详情
     async getAlbumDetail() {
       const res = await getAlbumDetail(this.id)
+      res.songs.forEach((item) => {
+        item.like = this.$store.state.likeIds.includes(item.id)
+      })
       this.albumInfo = res.album
       this.playlists = res.songs
     },
 
-    async getPlaylists() {
-      const res = await getPlaylists(this.id)
-      this.playlists = res.songs
-      // console.log(this.playlists)
+    // 获取专辑详情
+    async getAlbumDetailDynamic() {
+      const res = await getAlbumDetailDynamic(this.id)
+      // console.log(res)
+      this.subCount = res.subCount
     },
-    handleCollect() {
-      this.$refs.collect.handleCollect()
+    PlayAllSongs() {
+      this.$refs.playBtnRef.PlayFirstSong(this.playlists)
     },
   },
 }
@@ -142,7 +155,7 @@ export default {
 header {
   padding: 20px 30px;
   display: flex;
-  width: 800px;
+  // width: 800px;
 }
 .album-wrap {
   width: 100%;

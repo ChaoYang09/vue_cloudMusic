@@ -65,7 +65,7 @@
             :duration="item.durationms"
             :url="item.coverUrl"
             :name="item.title"
-            @click.native="common.toMediaPlayer(item.type, item.vid)"
+            @click.native="common.toVideoPlayer(item.vid)"
           >
             <Label v-if="item.type === 0 ? true : false" :small="true"
               >MV</Label

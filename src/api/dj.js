@@ -7,4 +7,7 @@ export const getDjLists = ({ rid, limit, offset, asc }) =>
   get('/dj/program', { rid, limit, offset, asc })
 // 电台详情
 export const getDjDetail = (rid) => get('/dj/detail', { rid })
-// 收藏者
+// 收藏的电台
+export const getDjSubList = () => get('dj/sublist')
+// 收藏电台
+export const collectDj = ({ rid, t }) => get('/dj/sub', { rid, t })

@@ -62,7 +62,7 @@
               :key="i"
               :count="item.data.playTime"
               :duration="item.data.durationms"
-              :url="item.data.coverUrl"
+              :url="`${item.data.coverUrl}?params=540y300`"
               :name="item.data.title"
               @click.native="common.toVideoPlayer(item.data.vid)"
             >
@@ -126,7 +126,7 @@
                 :count="item.playCount"
                 :url="item.cover"
                 :name="item.name"
-                @click.native="common.toMvPlayer(item.id)"
+                @click.native="common.toVideoPlayer(item.id)"
               >
                 <template #author>
                   <div class="hidden-1">

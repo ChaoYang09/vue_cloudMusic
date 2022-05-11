@@ -7,3 +7,6 @@ export const getPlayListSubscribers = (id) =>
 export const getPlaylists = (id) => get('/playlist/track/all', { id })
 // 歌单详情
 export const getPlaylistDetail = (id) => get('/playlist/detail', { id })
+// 收藏歌单
+export const collectPlaylist = ({ id, t }) =>
+  get('/playlist/subscribe', { id, t })

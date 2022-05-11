@@ -7,3 +7,5 @@ export const getVideoDetail = (id) => get('/video/detail', { id })
 export const getRelatedVideo = (id) => get('/related/allvideo', { id })
 // 获取video播放地址
 export const getVideoUrl = (id) => get('/video/url', { id })
+// 收藏mv
+export const collectVideo = ({ id, t }) => get('/video/sub', { id, t })

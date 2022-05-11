@@ -29,17 +29,15 @@
           <span class="deep-link mr-10">{{ djInfo.dj.nickname }}</span>
         </div>
         <!-- 按钮区域 -->
-        <div class="my-10">
+        <div class="my-10 align-center">
           <!-- 播放全部 -->
           <Play-Button class="mr-20"></Play-Button>
           <!-- 收藏 -->
-          <!-- <Collect-Button
-            @click.native="handleCollect"
-            ref="collect"
-            :subCount="djInfo.subscribedCount"
-            :id="id"
-            :type="'playlist'"
-          ></Collect-Button> -->
+          <Collect-Button
+            :subCount="djInfo.subCount"
+            :id="djQuery.rid"
+            :type="'dj'"
+          ></Collect-Button>
         </div>
 
         <!-- desc -->
@@ -244,9 +242,6 @@ export default {
     },
     playMusic(song) {
       console.log(song)
-    },
-    handleCollect() {
-      this.$refs.collect.handleCollect()
     },
 
     handleCurrentChange(val) {

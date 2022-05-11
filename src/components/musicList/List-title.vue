@@ -1,9 +1,18 @@
 <template>
   <div>
-    <span class="default">{{ scope.row.name }}</span>
+    <span
+      :class="{
+        default: true,
+        'netEase-red': scope.row.id === $store.state.music.id,
+      }"
+      >{{ scope.row.name }}</span
+    >
 
     <span class="gray default" v-if="(scope.row.alia || []).length !== 0">
       &nbsp;({{ scope.row.alia[0] }})</span
+    >
+    <span class="gray default" v-if="(scope.row.tns || []).length !== 0">
+      &nbsp;({{ scope.row.tns[0] }})</span
     >
     <!-- VIP -->
     <span
@@ -24,7 +33,7 @@
       style="position: relative; top: 1px"
       class="ml-5 pointer position"
       v-if="scope.row.mv !== 0"
-      ><Label :small="true" @click.native="common.toMvPlayer(scope.row.mv)"
+      ><Label :small="true" @click.native="common.toVideoPlayer(scope.row.mv)"
         >MV &nbsp;
         <svg class="icon icon-triangle" aria-hidden="true">
           <use xlink:href="#icon-triangle1-copy" /></svg></Label

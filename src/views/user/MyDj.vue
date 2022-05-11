@@ -22,6 +22,7 @@
 </template>
 
 <script>
+import { getDjSubList } from '@/api/dj'
 import Table from '@/components/table/Table.vue'
 
 export default {
@@ -36,9 +37,8 @@ export default {
   },
   methods: {
     async getDjRadios() {
-      const { data: res } = await this.$http.get('/dj/sublist')
+      const res = await getDjSubList()
       this.djRadios = res.djRadios
-      // console.log(this.djRadios)
     },
   },
 }

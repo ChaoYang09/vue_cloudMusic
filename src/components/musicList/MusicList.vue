@@ -5,7 +5,7 @@
       stripe
       size="mini"
       highlight-current-row
-      @row-dblclick="common.playMusic"
+      @row-dblclick="playMusic"
     >
       <!-- 序号 -->
       <el-table-column align="center" width="45" class-name="color-gray">
@@ -93,6 +93,15 @@ export default {
 
   methods: {
     // 双击歌曲行会触发
+    playMusic(song) {
+      // console.log(song)
+      this.common.playMusic(song)
+      // 将数据渲染到playlist上面
+      this.songs.forEach((item, i) => {
+        item.index = i
+      })
+      this.$store.commit('setPlaylist', this.songs)
+    },
   },
 }
 </script>

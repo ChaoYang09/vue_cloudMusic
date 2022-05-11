@@ -85,11 +85,8 @@ a:hover {
   text-decoration: underline;
 }
 
-img,
-embed,
-object,
-audio,
-video {
+img
+ {
   object-fit: cover;
     /* height: auto; */
     width: 100%

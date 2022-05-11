@@ -9,7 +9,14 @@
           ></span>
           MV详情
         </div>
-        <video :poster="detail.cover" :src="url" controls="controls"></video>
+        <video
+          autoplay
+          :poster="detail.cover"
+          :src="url"
+          controls="controls"
+          ref="videoRef"
+          @play="play"
+        ></video>
         <!-- 创作者区域 -->
         <div
           v-if="detail.artists"
@@ -68,10 +75,8 @@
             </p>
 
             <Collect-Button
-              @click.native="handleCollect"
-              ref="collect"
               :subCount="subCount"
-              :id="$route.params.id"
+              :id="mvid"
               :type="'mv'"
             ></Collect-Button>
           </div>
@@ -132,6 +137,7 @@ export default {
       subCount: null, //收藏数量
       mvName: '', //mv名字
       mvid: this.$route.params.id,
+      reg: /^[0-9]*$/,
     }
   },
   watch: {
@@ -140,8 +146,13 @@ export default {
       this.getDetailMv()
       this.getMvUrl()
     },
+    '$store.state.playing'(newVal) {
+      if (newVal) this.$refs.videoRef.pause()
+    },
   },
   created() {
+    console.log(this.reg.test(this.mvid))
+
     this.getSimiMv()
     this.getDetailMv()
     this.getMvUrl()
@@ -166,9 +177,10 @@ export default {
       const res = await getMvUrl(this.mvid)
       this.url = res.data.url
     },
-
-    handleCollect() {
-      this.$refs.collect.handleCollect()
+    // video播放时会触发这个函数
+    play() {
+      if (!this.$store.state.playing) return
+      this.$store.commit('setPlayingState', false)
     },
   },
 }

@@ -9,3 +9,5 @@ export const getMvDetail = (mvid) => get('/mv/detail', { mvid })
 export const getSimiMv = (mvid) => get('/simi/mv', { mvid })
 // 获取Mv播放地址
 export const getMvUrl = (id) => get('/mv/url', { id })
+// 收藏mv
+export const collectMv = ({ mvid, t }) => get('/mv/sub', { mvid, t })

@@ -7,75 +7,100 @@
             <svg class="icon icon-arrow" aria-hidden="true">
               <use xlink:href="#icon-arrowleft1"></use></svg
           ></span>
-          视频详情
+          <span v-if="mv">MV</span><span v-else>视频</span>详情
         </div>
-        <video :poster="detail.coverUrl" :src="url" controls="controls"></video>
+        <video
+          autoplay
+          :poster="detail.coverUrl ? detail.coverUrl : detail.cover"
+          :src="url"
+          controls="controls"
+          ref="videoRef"
+          @play="play"
+        ></video>
         <!-- 创作者区域 -->
-        <div
-          class="align-center mt-10"
-          @click="common.toUser(detail.creator.userId)"
-        >
+        <!-- mv作者 -->
+        <div v-if="mv" class="align-center mt-10">
+          <img
+            class="rounded-50 mr-10 pointer"
+            style="width: 50px; height: 50px"
+            :src="detail.artists[0].img1v1Url"
+            alt=""
+            @click="common.toArtist(detail.artists[0].id)"
+          />
+          <span
+            class="deep-gray pointer mr-10 font-13"
+            @click="common.toArtist(detail.artists[0].id)"
+            >{{ detail.artists[0].name }}</span
+          >
+        </div>
+        <!-- video创作者 -->
+        <div class="align-center mt-10" v-else>
           <img
             class="rounded-50 mr-10 pointer"
             style="width: 50px; height: 50px"
             :src="detail.creator.avatarUrl"
             alt=""
+            @click="common.toUser(detail.creator.userId)"
           />
-          <span class="deep-gray pointer mr-10 font-13">{{
-            detail.creator.nickname
-          }}</span>
+          <span
+            class="deep-gray pointer mr-10 font-13"
+            @click="common.toUser(detail.creator.userId)"
+            >{{ detail.creator.nickname }}</span
+          >
         </div>
         <div class="function-box">
           <div class="desc-box">
             <!-- 标题区 -->
             <div class="tittle pointer">
-              <span class="tittle-max">{{ detail.title }}</span>
+              <span class="tittle-max">{{
+                mv ? detail.name : detail.title
+              }}</span>
               <!-- up down toggle按钮 -->
-              <svg
-                class="icon icon-down-up"
-                aria-hidden="true"
-                v-show="hidden"
-                @click="hidden = false"
-              >
-                <use xlink:href="#icon-triangledownfill"></use>
-              </svg>
-              <svg
-                class="icon icon-down-up"
-                aria-hidden="true"
-                v-show="!hidden"
-                @click="hidden = true"
-              >
-                <use xlink:href="#icon-triangleupfill"></use>
-              </svg>
+              <span v-if="detail.desc || detail.description">
+                <svg
+                  class="icon icon-down-up"
+                  aria-hidden="true"
+                  v-show="hidden"
+                  @click="hidden = false"
+                >
+                  <use xlink:href="#icon-triangledownfill"></use>
+                </svg>
+                <svg
+                  class="icon icon-down-up"
+                  aria-hidden="true"
+                  v-show="!hidden"
+                  @click="hidden = true"
+                >
+                  <use xlink:href="#icon-triangleupfill"></use></svg
+              ></span>
             </div>
             <!-- detail -->
-            <div>
+            <div class="my-5 play light-gray font-12">
               <!-- 发布日期 -->
-              <span class="play light-gray">
-                发布： {{ detail.publishTime | dateFormat }}
-              </span>
+              <span> 发布： {{ detail.publishTime | dateFormat }} </span>
               <!-- 播放数量 -->
-              <span class="play light-gray">
-                播放： {{ detail.playTime | playCountFormat }}
+              <span>
+                播放：
+                {{ mv ? detail.playCount : detail.playTime | playCountFormat }}
               </span>
             </div>
             <!-- 标签 -->
-            <div class="tag-box">
+            <div class="tag-box" v-if="!mv">
               <span v-for="(item, i) in tags" :key="i" @click="toVideo(item)">{{
                 item.name
               }}</span>
             </div>
             <!-- 介绍 -->
-            <p class="hidden-1-more desc" v-show="!hidden">
-              {{ detail.title }}
+            <p class="hidden-3 desc" v-show="!hidden">
+              {{ mv ? detail.desc : detail.description }}
             </p>
-            <Collect-Button
-              @click.native="handleCollect"
-              ref="collect"
-              :subCount="subCount"
-              :id="$route.params.id"
-              :type="'video'"
-            ></Collect-Button>
+            <div class="mt-5">
+              <Collect-Button
+                :subCount="subCount"
+                :id="id"
+                :type="mv ? 'mv' : 'video'"
+              ></Collect-Button>
+            </div>
           </div>
         </div>
       </div>
@@ -87,35 +112,41 @@
             class="mv-box"
             v-for="(item, i) in relatedVideo"
             :key="i"
-            @click="playVideo(item)"
+            @click="id = mv ? item.id : item.vid"
           >
-            <div class="img-box"><img :src="item.coverUrl" alt="" /></div>
+            <div class="img-box">
+              <img :src="mv ? item.cover : item.coverUrl" alt="" />
+            </div>
 
             <div>
-              <span
-                style="
-                  overflow: hidden;
-                  -webkit-line-clamp: 2;
-                  -webkit-box-orient: vertical;
-                  display: -webkit-box;
-                "
-                >{{ item.title }}</span
-              >
+              <span class="hidden-2">{{ mv ? item.name : item.title }}</span>
               <span class="hidden-1 mt-20 block font-12"
-                ><span class="gray">by </span
-                ><span
+                ><span class="gray">by </span>
+                <!-- 作者 -->
+                <span
+                  v-if="mv"
+                  class="deep-gray"
+                  @click="common.toUser(item.artists[0].id)"
+                  >{{ item.artistName }}</span
+                >
+                <span
+                  v-else
                   class="deep-gray"
                   @click="common.toUser(item.creator[0].userId)"
                   >{{ item.creator[0].userName }}</span
                 >
               </span>
             </div>
+            <!-- 播放数量 -->
             <span class="playCount">
               <svg class="icon icon-right-triangle" aria-hidden="true">
                 <use xlink:href="#icon-triangle"></use></svg
-              >{{ item.playTime | playCountFormat }}</span
+              >{{ mv ? item.playCount : item.playTime | playCountFormat }}</span
             >
-            <span class="durations">{{ item.durationms | timeFormat }}</span>
+            <!-- 播放时间 -->
+            <span class="durations">{{
+              mv ? item.duration : item.durationms | timeFormat
+            }}</span>
           </div>
         </div>
       </div>
@@ -125,35 +156,62 @@
 
 <script>
 import { getVideoDetail, getRelatedVideo, getVideoUrl } from '@/api/video'
+import { getMvDetail, getSimiMv, getMvUrl } from '@/api/mv'
+
 export default {
   data() {
     return {
       relatedVideo: [],
-      detail: {},
+      detail: {
+        creator: {},
+        artists: [
+          {
+            img1v1Url: '',
+          },
+        ],
+      },
       url: '',
       hidden: true,
       subCount: null, //收藏数量
-      videoName: '', //视频名字
+      mediaName: '', //视频名字
       id: this.$route.params.id,
       tags: [],
+      reg: /^[0-9]*$/,
+      mv: null,
     }
   },
   created() {
-    this.getRelatedVideo()
-    this.getVideoDetail()
-    this.getVideoUrl()
+    this.mv = this.reg.test(this.id)
+    this.judgeId()
   },
   mounted() {
     // this.$refs.collect.getIsCollect()
   },
   watch: {
-    id() {
-      this.getRelatedVideo()
-      this.getVideoDetail()
-      this.getVideoUrl()
+    id(newVal) {
+      this.id = newVal
+      console.log(this.id)
+      this.judgeId()
+    },
+    '$store.state.playing'(newVal) {
+      if (newVal) this.$refs.videoRef.pause()
     },
   },
   methods: {
+    // 判断id是Mv还是video
+    judgeId() {
+      if (this.mv) {
+        console.log('mv.....')
+        this.getSimiMv()
+        this.getDetailMv()
+        this.getMvUrl()
+      } else {
+        console.log('video.....')
+        this.getRelatedVideo()
+        this.getVideoDetail()
+        this.getVideoUrl()
+      }
+    },
     // 获取推荐video
     async getRelatedVideo() {
       const res = await getRelatedVideo(this.id)
@@ -164,7 +222,7 @@ export default {
       const res = await getVideoDetail(this.id)
       this.detail = res.data
       this.subCount = res.data.subscribeCount
-      this.videoName = res.data.tittle
+      this.mediaName = res.data.tittle
       this.tags = res.data.videoGroup
     },
     // 获取video播放地址
@@ -173,9 +231,11 @@ export default {
       this.url = res.urls[0].url
       // console.log(this.url)
     },
-    playVideo(item) {
-      console.log(item)
-      this.id = item.vid
+
+    // video播放时会触发这个函数
+    play() {
+      if (!this.$store.state.playing) return
+      this.$store.commit('setPlayingState', false)
     },
     toVideo(item) {
       this.$router.push({
@@ -186,9 +246,23 @@ export default {
         },
       })
     },
-    handleCollect() {
-      // console.log('1')
-      this.$refs.collect.handleCollect()
+
+    async getSimiMv() {
+      const res = await getSimiMv(this.id)
+      this.relatedVideo = res.mvs
+    },
+    async getDetailMv() {
+      const res = await getMvDetail(this.id)
+      this.detail = res.data
+      this.subCount = res.data.subCount
+      this.mediaName = res.data.name
+
+      // console.log(this.mvName)
+    },
+    async getMvUrl() {
+      const res = await getMvUrl(this.id)
+      this.url = res.data.url
+      // console.log(res)
     },
   },
 }
@@ -202,8 +276,9 @@ export default {
 .tag-box {
   span {
     display: inline-block;
+    font-size: 12px;
     background-color: #f7f7f7;
-    padding: 5px 10px;
+    padding: 3px 7px;
     border-radius: 20px;
     margin: 0 10px 10px 0;
     cursor: pointer;
@@ -214,7 +289,7 @@ main {
   display: flex;
   justify-content: flex-start;
   .left {
-    width: 580px;
+    width: 650px;
     margin-right: 5%;
     video {
       width: 100%;

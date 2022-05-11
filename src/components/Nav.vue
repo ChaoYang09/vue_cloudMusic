@@ -187,9 +187,32 @@
               :data="playlist"
               stripe
               size="mini"
-              @row-dblclick="playMusic"
+              @row-dblclick="common.playMusic"
               v-show="!isHistory"
             >
+              <!-- icon -->
+              <el-table-column min-width="17">
+                <template v-slot="scope">
+                  <span v-if="scope.row.id === music.id">
+                    <svg
+                      class="icon netEase-red position"
+                      aria-hidden="true"
+                      style="font-size: 8px; top: 1px; right: 3px"
+                      v-if="!playing"
+                    >
+                      <use xlink:href="#icon-pause1"></use>
+                    </svg>
+                    <svg
+                      class="icon netEase-red position"
+                      aria-hidden="true"
+                      style="font-size: 6px; right: 2px"
+                      v-else
+                    >
+                      <use xlink:href="#icon-triangle1"></use>
+                    </svg>
+                  </span>
+                </template>
+              </el-table-column>
               <!-- 标题 -->
               <el-table-column min-width="220" show-overflow-tooltip>
                 <template v-slot="scope">
@@ -225,7 +248,7 @@
               :data="historyList"
               stripe
               size="mini"
-              @row-dblclick="playMusic"
+              @row-dblclick="common.playMusic"
               v-show="isHistory"
             >
               <!-- 标题 -->
@@ -236,7 +259,7 @@
               </el-table-column>
               <!-- 歌手 -->
               <el-table-column
-                min-width="100"
+                min-width="90"
                 label="歌手"
                 show-overflow-tooltip
               >
@@ -328,6 +351,18 @@ export default {
     likeIds() {
       this.upDataLikeState(this.likeIds.includes(this.music.id))
     },
+    playing(newVal) {
+      // console.log(newVal)
+      if (newVal) {
+        this.$refs.audioRef.play()
+        // 留声机杠杆的旋转与动画
+        this.$store.state.playBarRef.style.transform = 'rotate(5deg)'
+        this.$store.state.playBarRef.style.transition = 'all 0.5s ease'
+      } else {
+        this.$refs.audioRef.pause()
+        this.$store.state.playBarRef.style.transform = 'rotate(-30deg)'
+      }
+    },
   },
   mounted() {
     this.$store.state.audioRef = this.$refs.audioRef
@@ -411,10 +446,6 @@ export default {
       // }, 200)
       // 播放与暂停图标的切换
       // this.playIsShow = !this.playIsShow
-      this.$refs.audioRef.play()
-      // 留声机杠杆的旋转与动画
-      this.$store.state.playBarRef.style.transform = 'rotate(5deg)'
-      this.$store.state.playBarRef.style.transition = 'all 0.5s ease'
     },
 
     // 点击暂停按钮
@@ -423,8 +454,6 @@ export default {
       this.setPlayingState(false)
       // }, 200)
       // this.playIsShow = !this.playIsShow
-      this.$refs.audioRef.pause()
-      this.$store.state.playBarRef.style.transform = 'rotate(-30deg)'
     },
 
     // 音量进度改变触发这个函数
@@ -493,7 +522,7 @@ export default {
       // const history = []
       const index = Math.floor(Math.random() * this.playlist.length)
       // history.push(index)
-      this.playMusic(this.playlist[index])
+      this.common.playMusic(this.playlist[index])
     },
     // audio播放会触发这个函数
     play() {
@@ -518,15 +547,12 @@ export default {
     },
     // 歌曲进度改变触发这个函数
     songChange(val) {
-      // console.log(val)
-      // this.setCurrentTime()
       this.setProgress((val / 700) * this.duration)
       this.$refs.audioRef.currentTime = this.progress
       if (!this.playing) {
         this.playIsShow = !this.playIsShow
-
-        this.$refs.audioRef.play()
-        this.setPlayingState(this.playing)
+        // this.$refs.audioRef.play()
+        this.setPlayingState(true)
       }
     },
 
@@ -554,26 +580,6 @@ export default {
           id: id,
         },
       })
-      // console.log(res)
-    },
-    //双击播放音乐
-    playMusic(song) {
-      // this.checkMusic(song.id)
-      this.setCurrentSong(song)
-      // this.currentSong = song
-      // console.log(song)
-      const musicObj = {
-        id: song.id, //歌曲id
-        name: song.name, //歌曲名字
-        arName: song.ar[0].name, //歌手名字
-        picUrl: song.al.picUrl, //歌曲封面
-      }
-      this.setMusicInfo(musicObj)
-      this.$store.dispatch('getLyric', song.id)
-      this.setPlayingState(true)
-      this.$nextTick(() => {
-        this.$store.state.audioRef.play()
-      })
     },
     // 上一首
     previousSong() {
@@ -584,10 +590,10 @@ export default {
       if (this.playMode === 3) this.randomPlay()
 
       if (this.currentSong.index === 0) {
-        this.playMusic(this.playlist[this.playlist.length - 1])
+        this.common.playMusic(this.playlist[this.playlist.length - 1])
         return
       }
-      this.playMusic(this.playlist[this.currentSong.index - 1])
+      this.common.playMusic(this.playlist[this.currentSong.index - 1])
     },
     // 下一首
     nextSong() {
@@ -597,10 +603,10 @@ export default {
       if (this.playMode === 3) this.randomPlay()
 
       if (this.currentSong.index === this.playlist.length - 1) {
-        this.playMusic(this.playlist[0])
+        this.common.playMusic(this.playlist[0])
         return
       }
-      this.playMusic(this.playlist[this.currentSong.index + 1])
+      this.common.playMusic(this.playlist[this.currentSong.index + 1])
     },
   },
 }
@@ -610,7 +616,7 @@ export default {
   top: -10px !important;
   /* right: 10px !important; */
   overflow: auto;
-  height: 90%;
+  height: calc(100% - 60px);
   /* overflow: hidden; */
   padding: 0 !important;
 }
@@ -764,6 +770,15 @@ export default {
   margin: 0 30px;
   display: inline-block;
   width: 100px;
+  /deep/.el-slider__runway {
+    height: 4px;
+  }
+  /deep/.el-slider__bar {
+    height: 3px;
+  }
+  /deep/.el-slider__button-wrapper {
+    top: -16px;
+  }
 }
 .slider_song {
   height: 0;
@@ -808,5 +823,8 @@ export default {
   &:last-child::after {
     content: '';
   }
+}
+.el-table {
+  font-size: 12px !important;
 }
 </style>

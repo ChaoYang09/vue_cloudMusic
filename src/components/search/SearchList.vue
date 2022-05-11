@@ -1,6 +1,6 @@
 <template>
   <!-- 搜索框区域 -->
-  <div class="search-wrap">
+  <div class="searchList-wrap">
     <input
       type="text"
       class="search-input"
@@ -24,31 +24,61 @@
 
 <script>
 export default {
+  props: {
+    lists: {
+      type: Array,
+      require: true,
+      default: () => [{}],
+    },
+  },
   data() {
     return {
       searchInput: '', //搜索框
       isShow: true,
+      initLists: [],
     }
   },
   created() {},
   watch: {
+    lists(newVal) {
+      if (this.initLists.length !== 0) return
+      else this.initLists = newVal
+    },
     searchInput() {
-      if (this.searchInput === '') this.isShow = true
-      else this.isShow = false
+      if (this.searchInput === '') {
+        this.isShow = true
+        this.$emit('initLists')
+      } else {
+        this.isShow = false
+        const reg1 = /[^0-9a-zA-Z\u4e00-\u9fa5]/
+        if (reg1.test(this.searchInput)) return (this.searchInput = '')
+        // this.lists = this.subLists
+        const reg = eval('/' + this.searchInput + '/i')
+
+        // console.log(reg)
+        let newLists = this.initLists.filter((item) => {
+          const msg = `${item.name}${
+            item.alia.length !== 0 ? item.alia[0] : ''
+          }${item.tns ? item.tns[0] : ''}${item.ar
+            .map((obj) => {
+              return obj.name
+            })
+            .join('')}${item.al.name}`
+          // console.log(typeof msg)
+          if (reg.test(msg)) return item
+        })
+        // console.log(newArr)
+        this.$emit('getNewLists', newLists)
+      }
     },
   },
 }
 </script>
 
 <style lang="less" scoped>
-.suggest-search {
-  padding: 10px;
-  // margin-bottom: 6px;
-}
-
-.search-wrap {
-  position: relative;
+.searchList-wrap {
   .search-input {
+    position: relative;
     width: 200px;
     height: 25px;
     border-radius: 15px;

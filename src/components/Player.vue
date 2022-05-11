@@ -36,11 +36,11 @@
       <div class="right">
         <header>
           <div class="title hidden-1">{{ music.name }}</div>
-          <div class="mt-10 mb-20 flex">
+          <div class="mt-10 mb-20 flex" style="height: 40px; width: 100%">
             <!-- 专辑 -->
-            <span class="gray" style="margin-right: 40px; width: 40%"
-              ><span class="default">专辑 :</span
-              ><span class="link" @click="common.toAlbumList(music.album.id)">
+            <span class="gray hidden-1" style="margin-right: 30px; width: 50%"
+              ><span class="default">专辑 :</span>
+              <span class="link" @click="common.toAlbumList(music.album.id)">
                 {{ music.album.name }}</span
               >
             </span>

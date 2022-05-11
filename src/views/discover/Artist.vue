@@ -8,9 +8,6 @@
         <div class="btn-wrap my-10 align-center">
           <!-- 收藏按钮 -->
           <Collect-Button
-            @click.native="handleCollect"
-            ref="collect"
-            :subCount="0"
             :id="$route.query.id"
             :type="'artist'"
           ></Collect-Button>
@@ -59,7 +56,7 @@
                 <!-- 收藏爱心 -->
                 <el-table-column width="20">
                   <template v-slot="scope">
-                    <List-love :scope="scope"></List-love>
+                    <List-love :scope="scope.row"></List-love>
                   </template>
                 </el-table-column>
 
@@ -90,7 +87,7 @@
                 :url="item.imgurl16v9"
                 :name="item.name"
                 :duration="item.duration"
-                @click.native="common.toMvPlayer(item.id)"
+                @click.native="common.toVideoPlayer(item.id)"
               >
               </Video>
             </div>
@@ -143,7 +140,7 @@ import {
 import { getLikeList } from '@/api/music'
 import Button from '@/components/button/Base-Button.vue'
 import Video from '@/components/video/Video.vue'
-import Collect from '@/components/button/Collect.vue'
+import Collect from '@/components/button/Collect-Button.vue'
 import ListIndex from '@/components/musicList/List-index.vue'
 import ListLove from '@/components/musicList/List-love.vue'
 import ListTitle from '@/components/musicList/List-title.vue'
@@ -190,6 +187,11 @@ export default {
           break
       }
     },
+    '$store.state.likeIds'() {
+      this.topSongs.forEach((item) => {
+        item.like = this.$store.state.likeIds.includes(item.id)
+      })
+    },
   },
   created() {
     this.getArtistDetail().then(() => {
@@ -216,19 +218,13 @@ export default {
     },
     // 获取歌手50首热歌
     async getTopSongs() {
-      await getLikeList(297835213).then((res) => {
-        this.likeList = res.ids
+      const res = await getTopSongs(this.id)
+      // console.log(res)
+      res.songs.forEach((item) => {
+        item.like = this.$store.state.likeIds.includes(item.id)
       })
-      await getTopSongs(this.id).then((res) => {
-        // console.log(res)
-        let songs = res.songs
-
-        songs.forEach((item) => {
-          item.like = this.likeList.includes(item.id)
-        })
-        this.topSongs = res.songs
-      })
-
+      this.topSongs = res.songs
+      // console.log(this.topSongs)
       // console.log(res)
     },
     //获取歌手详细描述
@@ -247,10 +243,6 @@ export default {
       })
 
       this.introduction = res.introduction
-    },
-    // 收藏操作
-    handleCollect() {
-      this.$refs.collect.handleCollect()
     },
   },
 }
@@ -319,13 +311,13 @@ main {
 }
 
 /deep/.el-tabs__item {
-  font-size: 13px;
+  font-size: 14px;
   color: #373737;
 }
 
 /deep/.el-tabs__item.is-active {
   color: #373737;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
 }
 /deep/.el-tabs__item:hover {

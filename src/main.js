@@ -26,10 +26,10 @@ import 'element-ui/lib/theme-chalk/index.css'
 Vue.use(ElementUI)
 
 // 注册全局组件
-import Collect from './components/button/Collect.vue'
+import Collect from './components/button/Collect-Button.vue'
 Vue.component('CollectButton', Collect)
-import Comment from './components/comment/Comment_item.vue'
-Vue.component(Comment)
+import Comment from './components/comment/Comment.vue'
+Vue.component('Comment', Comment)
 
 // import playMusic from './utils/playMusic.js'
 // Vue.prototype.$play = playMusic
@@ -74,7 +74,7 @@ axios.interceptors.response.use((config) => {
 // 媒体时间格式化
 Vue.filter('timeFormat', function (originVal) {
   const date = new Date(originVal)
-  const mm = (date.getMinutes() + 1 + '').padStart(2, '0')
+  const mm = (date.getMinutes() + '').padStart(2, '0')
   const ss = (date.getSeconds() + '').padStart(2, '0')
   return `${mm}:${ss}`
 })

@@ -28,7 +28,7 @@
   font-size: 14px;
   /* box-sizing: content-box; */
   text-align: center;
-  padding: 4px 16px;
+  padding: 5px 16px;
   border: 1px solid #ccc;
   border-radius: 17px;
 }
@@ -220,6 +220,14 @@ margin-left: -1px;
 .hidden-2 {
   overflow: hidden;
   -webkit-line-clamp: 2;/*设置多行的行数*/
+  -webkit-box-orient: vertical;/*设置对齐模式*/
+  display: -webkit-box;
+  text-overflow: ellipsis;
+
+}
+.hidden-3 {
+  overflow: hidden;
+  -webkit-line-clamp: 3;/*设置多行的行数*/
   -webkit-box-orient: vertical;/*设置对齐模式*/
   display: -webkit-box;
   text-overflow: ellipsis;

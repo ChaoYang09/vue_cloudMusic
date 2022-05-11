@@ -8,7 +8,7 @@
         alt=""
       />
 
-      <div class="ml-20">
+      <div class="ml-20" style="width: calc(100% - 200px)">
         <div class="align-center">
           <Label :large="true" class="mr-10 default">歌单</Label>
           <span class="font-23 bold">{{ playListInfo.name }}</span>
@@ -36,12 +36,11 @@
           <!-- 播放全部 -->
           <Play-Button
             class="mr-20"
-            @click.native="PlayFirstSong"
+            ref="playBtnRef"
+            @click.native="PlayAllSongs"
           ></Play-Button>
           <!-- 收藏 -->
           <Collect-Button
-            @click.native="handleCollect"
-            ref="collect"
             :subCount="playListInfo.subscribedCount"
             :id="id"
             :type="'playlist'"
@@ -59,7 +58,7 @@
           </span>
           <div class="my-10">
             <span
-              >歌曲 :<span class="deeper-gray"> {{ playlists.length }}</span>
+              >歌曲 :<span class="deeper-gray"> {{ length }}</span>
             </span>
             <span class="ml-20"
               >播放 :
@@ -69,11 +68,7 @@
             </span>
           </div>
 
-          <div
-            class="overHidden"
-            style="width: 700px"
-            v-if="playListInfo.description ? true : false"
-          >
+          <div class="hidden-2" v-if="playListInfo.description ? true : false">
             简介 :
             <span class="deeper-gray">{{ playListInfo.description }}</span>
           </div>
@@ -82,82 +77,51 @@
     </header>
 
     <!-- <div class="clear"></div> -->
-
-    <div class="tab-wrap">
-      <el-tabs v-model="activeName">
-        <el-tab-pane label="歌曲列表" name="playlist">
-          <Music-List :songs="playlists"> </Music-List>
-          <!-- <div class="bottom">
-            <el-table
-              :data="playlists"
-              stripe
-              size="small"
-              @row-dblclick="playMusic"
-            >
-              <el-table-column type="index" label="#" align="center">
-              </el-table-column>
-
-              <el-table-column prop="name" label="音乐标题" min-width="400">
-              </el-table-column>
-              <el-table-column prop="ar[0].name" min-width="180" label="歌手">
-                <template v-slot="scope">
-                  <router-link
-                    class="router-link-active"
-                    :to="{
-                      path: '/artist',
-                      query: {
-                        id: scope.row.ar[0].id,
-                      },
-                    }"
-                    >{{ scope.row.ar[0].name }}</router-link
-                  >
-                </template>
-              </el-table-column>
-              <el-table-column
-                prop="name"
-                label="专辑"
-                min-width="200"
-                show-overflow-tooltip
-              >
-              </el-table-column>
-              <el-table-column prop="" label="时长">
-                <template v-slot="scope">
-                  {{ scope.row.dt | timeFormat }}
-                </template>
-              </el-table-column>
-            </el-table>
-          </div> -->
-        </el-tab-pane>
-        <el-tab-pane label="评论" name="comment">
-          <Comment style="padding: 0 30px" :id="id" :type="2"></Comment>
-        </el-tab-pane>
-        <el-tab-pane label="收藏者" name="subUser">
-          <Subscribers
-            style="padding: 0 30px"
-            :id="id"
-            :type="'playlist'"
-          ></Subscribers>
-        </el-tab-pane>
-      </el-tabs>
-    </div>
+    <footer class="position">
+      <div class="tab-wrap">
+        <el-tabs v-model="activeName">
+          <el-tab-pane label="歌曲列表" name="playlist">
+            <Music-List :songs="playlists"> </Music-List>
+          </el-tab-pane>
+          <el-tab-pane label="评论" name="comment">
+            <Comment style="padding: 0 30px" :id="id" :type="2"></Comment>
+          </el-tab-pane>
+          <el-tab-pane label="收藏者" name="subUser">
+            <Subscribers
+              style="padding: 0 30px"
+              :id="id"
+              :type="'playlist'"
+            ></Subscribers>
+          </el-tab-pane>
+        </el-tabs>
+      </div>
+      <Search-list
+        class="search-list"
+        v-show="activeName === 'playlist'"
+        :lists="playlists"
+        @getNewLists="getNewLists"
+        @initLists="initLists"
+      ></Search-list>
+    </footer>
   </div>
 </template>
 
 <script>
 import { mapState, mapMutations } from 'vuex'
 import { getPlaylists, getPlaylistDetail } from '@/api/playlist'
-import Comment from '@/components/comment/Comment.vue'
+// import Comment from '@/components/comment/Comment.vue'
 import Subscribers from '@/components/subscribers/Subscribers.vue'
 import PlayButton from '@/components/button/Play-Button.vue'
 import MusicList from '@/components/musicList/MusicList.vue'
 import Label from '@/components/label/Label.vue'
+import SearchList from '@/components/search/SearchList.vue'
 export default {
   components: {
-    Comment,
     Subscribers,
     PlayButton,
     MusicList,
     Label,
+    SearchList,
   },
   data() {
     return {
@@ -166,9 +130,11 @@ export default {
         creator: {},
       },
       playlists: [],
+      subPlaylists: [],
       subCount: '',
       tags: [],
       id: this.$route.params.id,
+      length: 0,
     }
   },
   computed: {
@@ -207,22 +173,21 @@ export default {
         item.like = this.likeIds.includes(item.id)
       })
       this.playlists = res.songs
+      this.subPlaylists = res.songs
+      this.length = res.songs.length
+
       // console.log(this.playlists)
     },
-    handleCollect() {
-      this.$refs.collect.handleCollect()
+    getNewLists(res) {
+      // console.log(res)
+      this.playlists = res
     },
-    // 点击播放全部 将数据渲染到playlist上面
-    PlayFirstSong() {
-      // this.playMusic(this.playlists[0])
-      this.toList()
+    initLists() {
+      this.playlists = this.subPlaylists
     },
-    // 点击播放全部 将数据渲染到playlist上面
-    toList() {
-      this.playlists.forEach((item, i) => {
-        item.index = i
-      })
-      this.$store.commit('setPlaylist', this.playlists)
+
+    PlayAllSongs() {
+      this.$refs.playBtnRef.PlayFirstSong(this.playlists)
     },
 
     toPlaylist(item) {
@@ -244,7 +209,12 @@ export default {
 header {
   padding: 20px 30px;
   display: flex;
-  width: 800px;
+  // width: 800px;
+}
+.search-list {
+  position: absolute;
+  top: 10px;
+  right: 30px;
 }
 .tab-wrap {
   // margin: 0 30px;

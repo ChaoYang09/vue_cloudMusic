@@ -54,6 +54,9 @@
                 >
               </li>
               <li class="user">
+                <router-link class="align-center" to="/test">TEST</router-link>
+              </li>
+              <li class="user">
                 <router-link to="/dailySongs"
                   ><svg
                     class="icon font-11 mr-10 position"

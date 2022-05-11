@@ -12,7 +12,27 @@
 </template>
 
 <script>
-export default {}
+export default {
+  props: {
+    // lists: {
+    //   type: Array,
+    //   default: () => [{}],
+    //   require: true,
+    // },
+  },
+  methods: {
+    // 点击播放全部 将数据渲染到playlist上面
+    PlayFirstSong(lists) {
+      // console.log(lists)
+      this.common.playMusic(lists[0])
+      // 将数据渲染到playlist上面
+      lists.forEach((item, i) => {
+        item.index = i
+      })
+      this.$store.commit('setPlaylist', lists)
+    },
+  },
+}
 </script>
 
 <style lang="less" scoped>

@@ -63,7 +63,7 @@
             :duration="item.durationms"
             :url="item.coverUrl + '?param=600y340'"
             :name="item.title"
-            @click.native="common.toMediaPlayer(item.type, item.vid)"
+            @click.native="common.toVideoPlayer(item.vid)"
           >
             <Label v-if="item.type === 0 ? true : false" :small="true"
               >MV</Label
@@ -380,6 +380,7 @@
 <script>
 import { getArtistSubList } from '@/api/artist'
 import { getMediaSubList } from '@/api/mv'
+import { getAlbumSubList } from '@/api/album'
 import Video from '@/components/video/Video.vue'
 import Table from '@/components/table/Table.vue'
 import Label from '@/components/label/Label.vue'
@@ -414,7 +415,7 @@ export default {
       // console.log(this.videos)
     },
     async getAlbum() {
-      const { data: res } = await this.$http.get('/album/sublist')
+      const res = await getAlbumSubList()
       this.albums = res.data
     },
   },
