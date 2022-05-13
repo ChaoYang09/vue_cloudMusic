@@ -31,11 +31,18 @@ Vue.component('CollectButton', Collect)
 import Comment from './components/comment/Comment.vue'
 Vue.component('Comment', Comment)
 
-// import playMusic from './utils/playMusic.js'
-// Vue.prototype.$play = playMusic
 import { Message } from 'element-ui'
-Vue.prototype.$message = Message
 
+// Vue.prototype.$message = () =>
+//   Message({
+//     center: true,
+//     showClose: true,
+//     offset: 250,
+
+//     duration: 0,
+//   })
+
+//导入iconFont图标文件
 import './assets/icons/iconfont.js'
 
 // 配置全局axios
@@ -92,6 +99,17 @@ Vue.filter('dateFormat', function (originVal) {
   const mm = (date.getMonth() + 1 + '').padStart(2, '0')
   const dd = (date.getDate() + '').padStart(2, '0')
   return `${yy}-${mm}-${dd}`
+})
+
+// 页面跳转后回到顶部位置
+router.beforeEach((to, from, next) => {
+  // chrome
+  document.body.scrollTop = 0
+  // firefox
+  document.documentElement.scrollTop = 0
+  // safari
+  window.pageYOffset = 0
+  next()
 })
 Vue.config.productionTip = false
 

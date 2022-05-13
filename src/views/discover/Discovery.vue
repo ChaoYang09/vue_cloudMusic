@@ -9,7 +9,7 @@
             <img class="bannerImg" :src="item.imageUrl" alt="" />
           </el-carousel-item>
         </el-carousel>
-        <div class="tittle-little pointer" @click="toIndependent">
+        <div class="font-18 bold pointer" @click="toIndependent">
           推荐歌单
           <span class="gray">
             <svg class="icon icon-arrow" aria-hidden="true">
@@ -391,7 +391,7 @@ export default {
       playlist: [],
       recommend: [], //每日推荐歌单
       playShow: null,
-      activeName: this.$route.params.type,
+      activeName: 'recommend',
       artistList: [],
       type: -1, //分类
       area: -1, //语种
@@ -438,10 +438,10 @@ export default {
       this.getTopPlayList()
       this.getHighPlayList()
     },
-    $route() {
-      // console.log(newVal)
-      this.activeName = this.$route.params.type
-    },
+    // $route() {
+    // console.log(newVal)
+    // this.activeName = this.$route.params.type
+    // },
   },
   methods: {
     async getBanners() {

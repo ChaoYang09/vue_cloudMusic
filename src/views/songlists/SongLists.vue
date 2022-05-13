@@ -11,7 +11,7 @@
       <div class="ml-20" style="width: calc(100% - 200px)">
         <div class="align-center">
           <Label :large="true" class="mr-10 default">歌单</Label>
-          <span class="font-23 bold">{{ playListInfo.name }}</span>
+          <span class="font-23 bold hidden-1">{{ playListInfo.name }}</span>
         </div>
         <!-- 创作者区域 -->
         <div
@@ -83,8 +83,13 @@
           <el-tab-pane label="歌曲列表" name="playlist">
             <Music-List :songs="playlists"> </Music-List>
           </el-tab-pane>
-          <el-tab-pane label="评论" name="comment">
-            <Comment style="padding: 0 30px" :id="id" :type="2"></Comment>
+          <el-tab-pane :label="`评论(${commentCount})`" name="comment">
+            <Comment
+              style="padding: 0 30px"
+              :id="id"
+              :type="2"
+              @getCommentCount="getCommentCount"
+            ></Comment>
           </el-tab-pane>
           <el-tab-pane label="收藏者" name="subUser">
             <Subscribers
@@ -116,6 +121,7 @@ import MusicList from '@/components/musicList/MusicList.vue'
 import Label from '@/components/label/Label.vue'
 import SearchList from '@/components/search/SearchList.vue'
 export default {
+  inject: ['reload'],
   components: {
     Subscribers,
     PlayButton,
@@ -135,6 +141,7 @@ export default {
       tags: [],
       id: this.$route.params.id,
       length: 0,
+      commentCount: 0, //评论数量
     }
   },
   computed: {
@@ -145,6 +152,8 @@ export default {
       this.id = this.$route.params.id
       this.getPlaylistDetail()
       this.getPlaylists()
+      this.activeName = 'playlist'
+      // this.reload()
     },
 
     likeIds() {
@@ -197,6 +206,10 @@ export default {
           tag: item,
         },
       })
+    },
+    getCommentCount(res) {
+      // console.log(res)
+      this.commentCount = res
     },
   },
 }

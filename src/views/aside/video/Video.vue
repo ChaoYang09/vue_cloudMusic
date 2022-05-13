@@ -82,7 +82,7 @@
         <div class="tittle-box">
           <!-- 头部区域 -->
           <header>
-            <div class="pointer tittle-little">
+            <div class="pointer font-18 bold">
               最新MV
               <span>
                 <svg class="icon icon-arrow" aria-hidden="true">

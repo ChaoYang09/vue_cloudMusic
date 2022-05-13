@@ -69,6 +69,9 @@ margin-right: 3px;
 .font-20 {
   font-size: 20px;
 }
+.font-22 {
+  font-size: 22px;
+}
 .font-23 {
   font-size: 23px;
 }
@@ -162,9 +165,18 @@ margin-top: 2px;
 .mt-20 {
   margin-top: 20px;
 }
+.mt-30 {
+  margin-top: 30px;
+}
+.mt-40 {
+  margin-top: 40px;
+}
 
 .mr-10{
   margin-right: 10px;
+}
+.mr-15{
+  margin-right: 15px;
 }
 .mr-20{
   margin-right: 20px;
@@ -197,7 +209,13 @@ margin-left: -1px;
 .mb-20 {
   margin-bottom: 20px;
 }
-
+.mb-30 {
+  margin-bottom: 30px;
+}
+.mx-15{
+  margin-left: 15px;
+  margin-right: 15px;
+}
 .my-5 {
   margin-top: 5px;
   margin-bottom: 5px;
@@ -232,4 +250,26 @@ margin-left: -1px;
   display: -webkit-box;
   text-overflow: ellipsis;
 
+}
+.my-message{
+background-color: #000;
+}
+.el-message{
+  top: 40%!important;
+  /* transform:(-50%,-50%)!important; */
+  min-width: 180px!important;
+  border-radius:13px!important; 
+  background-color: #141516!important;
+  opacity:0.8;
+  padding:23px 50px 23px 30px!important;
+  
+}
+.el-message__content{
+  display: flex;
+  align-items: center;
+  font-size: 17px!important;
+  color: #fff!important;
+}
+.el-icon-info:before{
+  content: ""!important;
 }

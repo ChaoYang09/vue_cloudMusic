@@ -73,8 +73,13 @@
               </template> </el-table-column
           ></Music-List>
         </el-tab-pane>
-        <el-tab-pane label="评论" name="comment">
-          <Comment style="padding: 0 30px" :id="id" :type="3"></Comment>
+        <el-tab-pane :label="`评论(${commentCount})`" name="comment">
+          <Comment
+            style="padding: 0 30px"
+            :id="id"
+            :type="3"
+            @getCommentCount="getCommentCount"
+          ></Comment>
         </el-tab-pane>
         <el-tab-pane label="专辑详情" name="detail">
           <p class="deeper-gray des">
@@ -107,6 +112,7 @@ export default {
       playlists: [],
       subCount: '',
       id: this.$route.params.id,
+      commentCount: 0, //评论数量
     }
   },
   watch: {
@@ -146,6 +152,10 @@ export default {
     },
     PlayAllSongs() {
       this.$refs.playBtnRef.PlayFirstSong(this.playlists)
+    },
+    getCommentCount(res) {
+      // console.log(res)
+      this.commentCount = res
     },
   },
 }

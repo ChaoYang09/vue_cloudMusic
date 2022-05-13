@@ -2,7 +2,7 @@
   <div class="main-box">
     <main>
       <div class="left">
-        <div class="tittle-little pointer" @click="$router.back()">
+        <div class="font-18 bold pointer" @click="$router.back()">
           <span>
             <svg class="icon icon-arrow" aria-hidden="true">
               <use xlink:href="#icon-arrowleft1"></use></svg
@@ -51,8 +51,8 @@
         <div class="function-box">
           <div class="desc-box">
             <!-- 标题区 -->
-            <div class="tittle pointer">
-              <span class="tittle-max">{{
+            <div class="title pointer">
+              <span class="font-22 bold">{{
                 mv ? detail.name : detail.title
               }}</span>
               <!-- up down toggle按钮 -->
@@ -77,7 +77,9 @@
             <!-- detail -->
             <div class="my-5 play light-gray font-12">
               <!-- 发布日期 -->
-              <span> 发布： {{ detail.publishTime | dateFormat }} </span>
+              <span class="mr-20">
+                发布： {{ detail.publishTime | dateFormat }}
+              </span>
               <!-- 播放数量 -->
               <span>
                 播放：
@@ -94,6 +96,7 @@
             <p class="hidden-3 desc" v-show="!hidden">
               {{ mv ? detail.desc : detail.description }}
             </p>
+            <!-- 按钮区域 -->
             <div class="mt-5">
               <Collect-Button
                 :subCount="subCount"
@@ -101,12 +104,26 @@
                 :type="mv ? 'mv' : 'video'"
               ></Collect-Button>
             </div>
+            <!-- 评论区域 -->
+            <div style="margin-top: 40px">
+              <div>
+                <span class="font-22 bold">评论</span
+                ><span>({{ commentCount }})</span>
+              </div>
+              <Comment
+                class="mt-10"
+                :id="id"
+                :type="mv ? 1 : 5"
+                @getCommentCount="getCommentCount"
+              ></Comment>
+            </div>
           </div>
         </div>
       </div>
 
+      <!-- 右边区域 -->
       <div class="right">
-        <div class="tittle-little">相关推荐</div>
+        <div class="font-18 bold">相关推荐</div>
         <div class="mv-recommend">
           <div
             class="mv-box"
@@ -178,6 +195,7 @@ export default {
       tags: [],
       reg: /^[0-9]*$/,
       mv: null,
+      commentCount: 0, //评论数量
     }
   },
   created() {
@@ -264,6 +282,10 @@ export default {
       this.url = res.data.url
       // console.log(res)
     },
+    getCommentCount(res) {
+      // console.log(res)
+      this.commentCount = res
+    },
   },
 }
 </script>
@@ -301,7 +323,7 @@ main {
     .function-box {
       margin-top: 20px;
       .desc-box {
-        .tittle {
+        .title {
           .icon-down-up {
             margin-left: 10px;
             font-size: 11px;

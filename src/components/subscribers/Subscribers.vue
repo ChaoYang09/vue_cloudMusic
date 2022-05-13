@@ -50,6 +50,11 @@ export default {
       subscribers: [],
     }
   },
+  watch: {
+    id() {
+      this.getSubscribers()
+    },
+  },
   created() {
     this.getSubscribers()
   },

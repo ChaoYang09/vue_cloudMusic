@@ -1,6 +1,6 @@
 <template>
-  <div class="playerBox">
-    <div class="playBoxMain">
+  <div class="player-wrap">
+    <div class="player-content">
       <div class="left">
         <!-- playBarSupport -->
         <img
@@ -80,6 +80,18 @@
         </div>
       </div>
     </div>
+    <div class="comment">
+      <div class="mb-30">
+        <span class="font-15 bold">评论</span
+        ><span class="font-12 gray"> (已有{{ commentCount }}条评论)</span>
+      </div>
+      <Comment
+        :id="music.id"
+        :type="0"
+        @getCommentCount="getCommentCount"
+      ></Comment>
+    </div>
+    <!-- <el-backtop :bottom="80" :right="20"></el-backtop> -->
   </div>
 </template>
 
@@ -91,9 +103,9 @@ export default {
   components: { Scroll },
   data() {
     return {
-      // lrc: '',
       currentLyric: {},
       currentLineNum: 0,
+      commentCount: 0, //评论数量
     }
   },
   computed: {
@@ -136,6 +148,10 @@ export default {
         this.$refs.lyricList.scrollTo(0, 0, 1000)
       }
     },
+    getCommentCount(res) {
+      // console.log(res)
+      this.commentCount = res
+    },
   },
   watch: {
     lyric() {
@@ -175,21 +191,26 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.playerBox {
+.player-wrap {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
   // padding: 0 20px;
   position: fixed;
   z-index: 11;
   width: 100%;
-  overflow: auto;
+  // overflow: auto;
+  overflow-y: auto;
 
   height: 100%;
-  // margin-top: 200px;
   background-color: #ffffff;
 }
-.playBoxMain {
-  width: 80%;
+.comment {
+  width: 1000px;
+  margin-bottom: 70px;
+}
+.player-content {
+  width: 600px;
   height: 100%;
   display: flex;
   justify-content: center;

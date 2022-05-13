@@ -6,13 +6,14 @@ import Login from '../views/Login.vue'
 import Test from '../views/Test.vue'
 //歌单
 import SongLists from '../views/songlists/SongLists.vue'
-import AlbumList from '../views/albumlist/AlbumList.vue'
+import AlbumList from '../views/albumList/AlbumList.vue'
 import DjList from '../views/djList/DjList.vue'
+import Artist from '../views/artistList/ArtistList.vue'
 // 搜索
 import Search from '../views/Search.vue'
 //发现
 import Discovery from '../views/discover/Discovery.vue'
-import Artist from '../views/discover/Artist.vue'
+
 // 视频
 import Video from '../views/aside/video/Video.vue'
 import VideoPlayer from '@/views/aside/video/VideoPlayer.vue'
@@ -35,7 +36,7 @@ const routes = [
         redirect: '/discovery/recommend',
       },
       {
-        path: '/discovery/:type',
+        path: '/discovery',
         component: Discovery,
       },
       {

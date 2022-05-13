@@ -2,7 +2,7 @@
   <div class="main-box">
     <main>
       <div class="left">
-        <div class="tittle-little pointer" @click="$router.back()">
+        <div class="font-18 bold pointer" @click="$router.back()">
           <span>
             <svg class="icon icon-arrow" aria-hidden="true">
               <use xlink:href="#icon-arrowleft1"></use></svg
@@ -38,7 +38,7 @@
           <div class="desc-box">
             <!-- 标题区 -->
             <div class="tittle pointer">
-              <span class="tittle-max">{{ detail.name }}</span>
+              <span class="font-22 bold">{{ detail.name }}</span>
               <svg
                 class="icon icon-down-up"
                 aria-hidden="true"
@@ -84,7 +84,7 @@
       </div>
 
       <div class="right">
-        <div class="tittle-little">相关推荐</div>
+        <div class="font-18 bold">相关推荐</div>
         <div class="mv-recommend">
           <div
             class="mv-box"

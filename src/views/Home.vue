@@ -15,14 +15,9 @@
         <div class="func-wrap">
           <ul class="func-content">
             <li class="func">
-              <router-link to="/discovery/recommend">发现音乐</router-link>
+              <router-link to="/discovery">发现音乐</router-link>
             </li>
-            <li class="func">
-              <router-link to="/discovery/playlist">歌单</router-link>
-            </li>
-            <li class="func">
-              <router-link to="/discovery/artist">歌手</router-link>
-            </li>
+
             <li class="func"><router-link to="/video">视频</router-link></li>
             <!-- 我的音乐 -->
             <div>
@@ -87,12 +82,15 @@
                 >
               </li>
             </div>
-            <!-- 创建的歌单 -->
+            <!-- 收藏的歌单 -->
             <div>
               <div class="ml-10 mt-20 mb-10 default gray">收藏的歌单</div>
 
               <li class="user hidden-1" v-for="(item, i) in playlist" :key="i">
-                <router-link class="align-center" :to="`/songLists/${item.id}`"
+                <router-link
+                  class="align-center"
+                  :to="`/songLists/${item.id}`"
+                  v-if="isRouterAlive"
                   ><svg class="icon font-11 mr-10 mt-2" aria-hidden="true">
                     <use xlink:href="#icon-Playlist"></use></svg
                   >{{ item.name }}</router-link
@@ -108,14 +106,22 @@
         <!-- <transition name="el-fade-in-linear"> -->
         <router-view></router-view>
         <!-- </transition> -->
-        <el-backtop :bottom="80" :right="20"></el-backtop>
+        <el-backtop
+          :bottom="80"
+          :right="20"
+          v-show="!$store.state.isPlayerShow"
+        ></el-backtop>
       </el-container>
     </el-container>
 
     <!-- 歌词页面 -->
 
     <transition name="slide-fade">
-      <Player v-show="$store.state.isPlayerShow"></Player>
+      <Player
+        :style="{
+          visibility: $store.state.isPlayerShow ? 'visible' : 'hidden',
+        }"
+      ></Player>
     </transition>
 
     <!-- 底部导航栏 -->
@@ -137,6 +143,12 @@ import Nav from '../components/Nav.vue'
 import Player from '../components/Player.vue'
 import Login from '@/components/login/Login.vue'
 export default {
+  name: 'App',
+  provide() {
+    return {
+      reload: this.reload,
+    }
+  },
   data() {
     return {
       nickName: '长草的颜文君',
@@ -146,6 +158,7 @@ export default {
       createdList: [],
       playlist: [],
       count: 0,
+      isRouterAlive: true,
     }
   },
 
@@ -171,6 +184,13 @@ export default {
       // )
       // console.log(this.createdList)
       this.playlist = res.playlist
+    },
+    reload() {
+      console.log('reLoad')
+      this.isRouterAlive = false
+      this.$nextTick(function () {
+        this.isRouterAlive = true
+      })
     },
   },
 
@@ -217,7 +237,7 @@ export default {
       width: 170px;
       margin: 4px 0;
       height: 35px;
-      line-height: 40px;
+      line-height: 35px;
       font-size: 15px;
     }
   }
@@ -253,7 +273,7 @@ header {
   }
   .router-link-active {
     font-size: 17px;
-    line-height: 35px;
+    // line-height: 35px;
     font-weight: 600;
     margin-left: -10px;
     padding-left: 10px;
@@ -271,7 +291,7 @@ header {
     text-overflow: ellipsis;
   }
   .router-link-active {
-    line-height: 35px;
+    // line-height: 35px;
     margin-left: -10px;
     padding-left: 10px;
     background-color: #f6f6f7;
