@@ -2,38 +2,38 @@
   <div class="player-wrap">
     <div class="player-content">
       <div class="left">
-        <!-- playBarSupport -->
-        <img
-          src="../assets/images/play-bar-support.png"
-          alt=""
-          class="play-bar-support"
-        />
-        <!-- playBar -->
-        <transition name="rotate">
+        <div class="cover-wrap">
+          <!-- playBarSupport -->
+          <img
+            src="../assets/images/play-bar-support.png"
+            alt=""
+            class="play-bar-support"
+          />
+          <!-- playBar -->
+
           <img
             src="../assets/images/play-bar.png"
             alt=""
             class="play-bar"
             ref="playBarRef"
           />
-        </transition>
 
-        <!-- <div :class="['coverBox', $store.state.playing ? 'ani' : 'pause']"> -->
-        <div
-          :class="{
-            coverBox: true,
-            ani: true,
-            pause: !playing,
-            run: playing,
-          }"
-        >
-          <div class="cover">
-            <img :src="music.picUrl" alt="" />
+          <div
+            :class="{
+              coverBox: true,
+              ani: true,
+              pause: !playing,
+              run: playing,
+            }"
+          >
+            <div class="cover">
+              <img :src="music.picUrl" alt="" />
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="right">
+      <div class="right" v-if="music.djId === 0">
         <header>
           <div class="title hidden-1">{{ music.name }}</div>
           <div class="mt-10 mb-20 flex" style="height: 40px; width: 100%">
@@ -63,7 +63,7 @@
         </header>
 
         <!-- 歌词部分 -->
-        <div class="lyric">
+        <div class="lyric" v-if="music.djId === 0">
           <Scroll class="lyric-wrap" ref="lyricList" :data="currentLyric">
             <div class="content">
               <p
@@ -79,6 +79,54 @@
           </Scroll>
         </div>
       </div>
+
+      <!-- 电台 -->
+      <div class="right" v-else>
+        <header style="border-bottom: 1px solid #ddd">
+          <div class="title hidden-1">{{ music.name }}</div>
+          <div
+            class="font-16 my-20 black pointer"
+            @click="common.toArtistOrDj(music.artists[0].id)"
+          >
+            {{ music.artists[0].name }}
+          </div>
+        </header>
+        <footer>
+          <div class="sub-wrap font-12">
+            <!-- 主播 -->
+            <div class="sub-content">
+              <span>主播: &nbsp;</span>
+              <span class="link" @click="common.toUser(music.dj.user.userId)">
+                {{ music.dj.user.nickname }}</span
+              >
+            </div>
+            <!-- 来源 -->
+            <div class="sub-content hidden-1">
+              <span>来源: &nbsp;</span>
+              <span
+                class="pointer link"
+                @click="common.toArtistOrDj(music.artists[0].id)"
+                >{{ music.artists[0].name }}</span
+              >
+            </div>
+
+            <!-- 创建时间 -->
+            <div class="sub-content">
+              <span>创建时间: &nbsp;</span>
+              <span> {{ music.dj.createTime | dateFormat }}</span>
+            </div>
+            <!-- 已播放 -->
+            <div class="sub-content">
+              <span>已播放: &nbsp;</span>
+              <span> {{ music.dj.listenerCount | playCountFormat }}次</span>
+            </div>
+          </div>
+          <!-- 电台描述 -->
+          <div class="describe-wrap">
+            <p>{{ music.dj.description }}</p>
+          </div>
+        </footer>
+      </div>
     </div>
     <div class="comment">
       <div class="mb-30">
@@ -86,8 +134,9 @@
         ><span class="font-12 gray"> (已有{{ commentCount }}条评论)</span>
       </div>
       <Comment
-        :id="music.id"
-        :type="0"
+        v-if="JSON.stringify(music) !== '{}'"
+        :id="music.djId === 0 ? music.id : music.djId"
+        :type="music.djId === 0 ? 0 : 4"
         @getCommentCount="getCommentCount"
       ></Comment>
     </div>
@@ -117,6 +166,7 @@ export default {
       'music',
       'lyric',
       'loopPlay',
+      'isProgram',
     ]),
   },
   mounted() {
@@ -127,7 +177,8 @@ export default {
   },
   created() {
     // this.lrc = this.lyric
-    this.getLyric()
+    console.log(this.music)
+    if (this.music.djId == 0) this.getLyric()
   },
   methods: {
     // 监听歌词变化
@@ -155,7 +206,7 @@ export default {
   },
   watch: {
     lyric() {
-      if (this.currentLyric) {
+      if (this.currentLyric && this.music.djId == 0) {
         this.currentLyric.stop()
       }
       this.$nextTick(() => {
@@ -166,13 +217,13 @@ export default {
     // 歌词的滚动与暂停切换
     playing() {
       // console.log('0000')
-      if (this.currentLyric) {
+      if (this.currentLyric && this.music.djId == 0) {
         this.currentLyric.togglePlay()
       }
     },
     // 歌曲进度条改变时 对应的歌词滚动也会改变
     progress() {
-      if (this.currentLyric) {
+      if (this.currentLyric && this.music.djId == 0) {
         this.currentLyric.seek(Math.round(this.progress * 1000))
       }
     },
@@ -206,19 +257,25 @@ export default {
   background-color: #ffffff;
 }
 .comment {
-  width: 1000px;
+  width: calc(100vw - 80px);
+  // margin: 0 60px;
   margin-bottom: 70px;
 }
 .player-content {
-  width: 600px;
+  width: 800px;
   height: 100%;
   display: flex;
-  justify-content: center;
+  // justify-content: center;
   // background-color: rgba(172, 231, 185, 0.959);s
 }
 .left {
-  position: relative;
-  width: 300px;
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  // margin-right: -100px;
+  .cover-wrap {
+    position: relative;
+  }
   .ani {
     animation: turn 35s linear infinite;
   }
@@ -279,14 +336,35 @@ export default {
   }
 }
 .right {
-  width: 300px;
+  width: 50%;
   header {
     .title {
-      font-size: 30px;
+      font-size: 23px;
       margin-top: 40px;
     }
   }
-
+  footer {
+    color: #7e7d7d;
+    .sub-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      .sub-content {
+        margin-top: 13px;
+        width: 50%;
+      }
+    }
+    .describe-wrap {
+      margin-top: 25px;
+      p {
+        color: #7e7d7d;
+        white-space: pre-line;
+        height: calc(100vh - 340px);
+        overflow-y: auto;
+        // line-height: 25px;
+        font-size: 14px;
+      }
+    }
+  }
   .lyric {
     width: 100%;
 
@@ -294,7 +372,7 @@ export default {
       width: 100%;
       height: 350px;
       // background-color: burlywood;
-      position: relative;
+      // position: relative;
       mask-image: linear-gradient(
         180deg,
         hsla(0, 0%, 100%, 0) 0,

@@ -6,6 +6,7 @@
       class="search-input"
       placeholder="搜索歌单音乐"
       v-model.trim="searchInput"
+      ref="inputRef"
     />
     <!-- 搜索图标 -->
     <svg class="icon icon-search" aria-hidden="true" v-if="isShow">
@@ -31,6 +32,11 @@ export default {
     }
   },
   created() {},
+  mounted() {
+    this.$nextTick(() => {
+      console.log(this.$refs.inputRef.width)
+    })
+  },
   watch: {
     searchInput() {
       if (this.searchInput === '') this.isShow = true

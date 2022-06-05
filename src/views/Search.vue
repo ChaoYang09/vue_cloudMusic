@@ -1,7 +1,9 @@
 <template>
   <div class="search-wrap">
     <header>
-      <div class="font-15 bold">找到 {{ count }} 首{{ tag[type] }}</div>
+      <div class="font-15 bold">
+        找到 {{ count }} {{ measure[type] }}{{ tag[type] }}
+      </div>
     </header>
     <main>
       <ul class="tag-wrap">
@@ -18,7 +20,12 @@
     <footer>
       <!-- 单曲 -->
       <section v-if="type === 1">
-        <Music-List :songs="songs" :count="count" :offset="offset">
+        <Music-List
+          :songs="songs"
+          :count="count"
+          :offset="offset"
+          ref="musicList"
+        >
           <!-- 热度 -->
           <el-table-column label="热度">
             <template v-slot="scope">
@@ -39,6 +46,7 @@
             :current-page="currentPage"
             @current-change="handleCurrentChange"
             v-if="songs.length !== 0"
+            ref="paginationRef"
           ></el-pagination>
         </div>
       </section>
@@ -122,7 +130,7 @@ export default {
       videos: [], //视频
       playlists: [], //歌单
       djRadios: [], //电台
-      count: null, //单曲数量
+      count: 0, //单曲数量
       type: 1,
       likeList: [], //喜欢音乐的id
       currentPage: 1,
@@ -135,11 +143,22 @@ export default {
         1000: '歌单',
         1009: '电台',
       },
+      measure: {
+        1: '首',
+        100: '位',
+        10: '张',
+        1014: '个',
+        1000: '个',
+        1009: '个',
+      },
       keywords: this.$route.params.keywords,
     }
   },
   computed: {
     ...mapState(['likeIds']),
+  },
+  mounted() {
+    this.$store.state.paginationRef = this.$refs.paginationRef
   },
   created() {
     this.getSongsLists()
@@ -264,6 +283,9 @@ export default {
       this.currentPage = val
       this.offset = (val - 1) * 30
       this.getSongsLists()
+      this.$store.commit('setPageNum', val)
+      // this.$store.commit('setTitleId', +new Date())
+
       // this.getSongsList()
     },
   },

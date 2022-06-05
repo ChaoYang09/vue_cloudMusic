@@ -24,7 +24,7 @@
       <!-- 标题 -->
       <el-table-column min-width="350" label="音乐标题" show-overflow-tooltip>
         <template v-slot="scope">
-          <List-title :scope="scope"></List-title>
+          <List-title :scope="scope" :key="$store.state.titleId"></List-title>
         </template>
       </el-table-column>
 

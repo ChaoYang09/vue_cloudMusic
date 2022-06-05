@@ -1,5 +1,5 @@
 <template>
-  <span class="button-wrap btn" @click="handleCollect">
+  <span class="button-wrap btn border" @click="handleCollect">
     <span class="align-center">
       <!-- 已收藏 -->
       <svg class="icon icon-common" aria-hidden="true" v-if="iconShow">
@@ -26,6 +26,7 @@ import { getAlbumDetailDynamic, collectAlbum } from '@/api/album'
 import { collectPlaylist } from '@/api/playlist'
 import { getPlaylist } from '@/api/user'
 import { getDjSubList, collectDj } from '@/api/dj'
+import { mapState } from 'vuex'
 export default {
   props: ['subCount', 'id', 'type'],
   data() {
@@ -34,6 +35,9 @@ export default {
       t: null,
       subCounts: this.subCount,
     }
+  },
+  computed: {
+    ...mapState(['isLogin']),
   },
   created() {
     this.judgeType()
@@ -45,6 +49,9 @@ export default {
     id(newVal) {
       // console.log(newVal);
       this.judgeType()
+    },
+    isLogin(newVal) {
+      if (newVal == true) this.judgeType()
     },
   },
 
@@ -74,6 +81,8 @@ export default {
     },
     // 点击收藏按钮 进行收藏和取消收藏操作
     async handleCollect() {
+      if (!this.$store.state.isLogin)
+        return this.$store.commit('setLoginVisible', true)
       switch (this.type) {
         case 'video':
           this.collectVideo()
@@ -163,7 +172,7 @@ export default {
     },
     // 判断歌单是否收藏
     async getPlaylistIsCollect() {
-      const res = await getPlaylist(297835213)
+      const res = await getPlaylist(this.$store.state.uid)
       this.iconShow = res.playlist.some((item) => {
         return item.id == this.id
       })

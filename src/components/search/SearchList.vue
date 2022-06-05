@@ -41,8 +41,9 @@ export default {
   created() {},
   watch: {
     lists(newVal) {
-      if (this.initLists.length !== 0) return
-      else this.initLists = newVal
+      // if (this.initLists.length !== 0) return
+      // else
+      this.initLists = newVal
     },
     searchInput() {
       if (this.searchInput === '') {

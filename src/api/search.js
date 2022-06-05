@@ -13,3 +13,10 @@ import get from '@/service/get'
 //       2000:声音
 export const getCloudSearch = ({ keywords, limit, offset, type }) =>
   get('/cloudsearch', { keywords, limit, offset, type })
+
+// 请求搜索建议数据
+export const getSuggestionInfo = ({ keywords }) =>
+  get('/search/suggest', { keywords })
+
+// 请求热搜榜数据
+export const getHotSearch = () => get('/search/hot/detail')

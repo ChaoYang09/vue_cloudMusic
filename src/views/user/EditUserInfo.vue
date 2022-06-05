@@ -22,44 +22,23 @@
               <el-radio :label="2">女</el-radio>
             </el-radio-group>
           </el-form-item>
-          <!-- <el-form-item label="生日:">
-            <el-select placeholder="请选择活动区域">
-              <el-option label="区域一" value="shanghai"></el-option>
-              <el-option label="区域二" value="beijing"></el-option>
-            </el-select>
-            <el-select placeholder="请选择活动区域" class="select_margin">
-              <el-option label="区域一" value="shanghai"></el-option>
-              <el-option label="区域二" value="beijing"></el-option>
-            </el-select>
-            <el-select placeholder="请选择活动区域">
-              <el-option label="区域一" value="shanghai"></el-option>
-              <el-option label="区域二" value="beijing"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="地区:">
-            <el-select placeholder="请选择活动区域">
-              <el-option label="区域一" value="shanghai"></el-option>
-              <el-option label="区域二" value="beijing"></el-option>
-            </el-select>
-            <el-select placeholder="请选择活动区域" class="select_margin">
-              <el-option label="区域一" value="shanghai"></el-option>
-              <el-option label="区域二" value="beijing"></el-option>
-            </el-select>
-          </el-form-item> -->
         </el-form>
-        <el-button round size="small" @click="editUserInfo">保存</el-button
-        ><el-button round size="small">取消</el-button>
+        <span class="btn btn-l border mr-20">取消</span>
+        <span class="btn btn-l btn-red" @click="editUserInfo">保存</span>
       </div>
       <div class="right">
-        <img :src="accountInfo.avatarUrl" alt="" />
-        <el-button round size="small" @click="dialogVisible = true"
-          >修改头像</el-button
+        <img :src="userInfo.avatarUrl" alt="" />
+        <span
+          class="btn btn-l border block center"
+          style="margin: 15px 30px"
+          @click="editVisible = true"
+          >修改头像</span
         >
       </div>
     </el-main>
 
     <!-- 头像修改对话框 -->
-    <el-dialog :visible.sync="dialogVisible" width="40%">
+    <el-dialog :visible.sync="editVisible" width="40%">
       <!-- <img width="100%" :src="dialogImageUrl" alt="" /> -->
       <el-upload
         class="avatar-uploader"
@@ -72,10 +51,8 @@
         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
       </el-upload>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false"
-          >确 定</el-button
-        >
+        <span class="btn btn-l mr-10" @click="editVisible = false">取消</span>
+        <span class="btn btn-l btn-red">确定</span>
       </span>
     </el-dialog>
   </el-container>
@@ -85,7 +62,7 @@
 export default {
   data() {
     return {
-      accountInfo: {},
+      userInfo: {},
       editForm: {
         gender: null, //性别 0:保密 1:男性 2:女性
 
@@ -99,7 +76,7 @@ export default {
 
         signature: '', //用户签名
       },
-      dialogVisible: false,
+      editVisible: false,
       uploadUrl: 'http://localhost:3000/avatar/upload',
       imageUrl: '',
       // uploadData: {
@@ -118,11 +95,10 @@ export default {
   methods: {
     // 初始化个人信息
     initUserInfo() {
-      this.accountInfo = this.$route.query.accountInfo
-      // console.log(accountInfo)
-      this.editForm.nickname = this.accountInfo.nickname
-      this.editForm.signature = this.accountInfo.signature
-      this.editForm.gender = this.accountInfo.gender
+      this.userInfo = this.$route.query.userInfo
+      this.editForm.nickname = this.userInfo.nickname
+      this.editForm.signature = this.userInfo.signature
+      this.editForm.gender = this.userInfo.gender
       // console.log(this.editForm.gender)
     },
     // 提交个人修改信息
@@ -178,6 +154,9 @@ export default {
     margin: 60px 60px 0 0;
   }
   .right {
+    // display: flex;
+    // justify-content: center;
+    // flex-wrap: wrap;
     margin-top: 85px;
     img {
       display: block;
@@ -185,9 +164,9 @@ export default {
       width: 170px;
       height: 170px;
     }
-    .el-button {
-      margin: 20px 0 0 40px;
-    }
+    // .el-button {
+    //   margin: 20px 0 0 40px;
+    // }
   }
 }
 .select_margin {

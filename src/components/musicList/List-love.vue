@@ -27,6 +27,8 @@ export default {
   methods: {
     // 收藏音乐
     async likeMusic(row) {
+      if (!this.$store.state.isLogin)
+        return this.$store.commit('setLoginVisible', true)
       // console.log(index)
       // let isLike = this.likeList.includes(row.id)
       const res = await likeMusic({

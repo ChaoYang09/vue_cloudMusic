@@ -37,26 +37,32 @@
           </span>
 
           <!-- 操作区域 -->
-          <span class="operate-box gray">
+          <span class="operate-box deeper-gray">
             <!-- 删除icon -->
 
             <svg
               class="icon svg position"
               aria-hidden="true"
               style="top: 0.5px"
-              v-if="item.user.userId == 297835213"
+              v-if="item.user.userId == $store.state.uid"
               @click="deleteComment(item)"
             >
               <use xlink:href="#icon-shanchuDelete" />
             </svg>
-            <span class="mx-15 default" v-if="item.user.userId == 297835213"
+            <span
+              class="mx-15 default"
+              v-if="item.user.userId == $store.state.uid"
               >|</span
             >
 
             <!-- 点赞icon -->
             <span class="svg" @click="likeComment(item)">
               <!-- 点赞成功 -->
-              <svg class="icon icon-like" aria-hidden="true" v-if="item.liked">
+              <svg
+                class="icon icon-like"
+                aria-hidden="true"
+                v-if="item.liked && $store.state.isLogin"
+              >
                 <use xlink:href="#icon-icliked" />
               </svg>
               <!-- 未点赞 -->
@@ -123,6 +129,8 @@ export default {
   methods: {
     // 点赞评论
     async likeComment(item) {
+      if (!this.$store.state.isLogin)
+        return this.$store.commit('setLoginVisible', true)
       const i = this.comments.indexOf(item)
       const res = await likeComment({
         id: this.id,

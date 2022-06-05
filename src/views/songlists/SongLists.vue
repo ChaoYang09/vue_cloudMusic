@@ -145,7 +145,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['likeIds']),
+    ...mapState(['likeIds', 'isLogin']),
   },
   watch: {
     $route() {
@@ -160,6 +160,9 @@ export default {
       this.playlists.forEach((item) => {
         item.like = this.likeIds.includes(item.id)
       })
+    },
+    isLogin(newVal) {
+      if (newVal == true) this.getPlaylists()
     },
   },
   created() {
@@ -178,9 +181,11 @@ export default {
     // 获取歌曲列表
     async getPlaylists() {
       const res = await getPlaylists(this.id)
+
       res.songs.forEach((item) => {
         item.like = this.likeIds.includes(item.id)
       })
+
       this.playlists = res.songs
       this.subPlaylists = res.songs
       this.length = res.songs.length

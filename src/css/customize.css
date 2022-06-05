@@ -21,16 +21,33 @@
 .netEase-red{
   color: #ec4141;
 }
+/* 按钮边框 */
+.border{
+  border: 1px solid #ccc;
+padding: 5px 16px!important;
+}
 /* 按钮 */
 .btn {
   display: inline-block;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
   /* box-sizing: content-box; */
   text-align: center;
-  padding: 5px 16px;
-  border: 1px solid #ccc;
+  padding: 7px 16px;
   border-radius: 17px;
+}
+.btn-l {
+  font-size: 14px;
+  padding: 6px 20px;
+ 
+}
+.btn-red{
+  /* border: none!important; */
+  color: #fff;
+  background-color: #ec4141
+}
+.btn-red:hover{
+  background-color: #d73535!important;
 }
 .btn:hover {
   background-color: #f2f2f2;
@@ -43,8 +60,15 @@ margin-right: 3px;
 .bold {
   font-weight: bold;
 }
+/* 字体变细 */
+.slim{
+  font-weight: 300;
+}
 
 /* 字体大小 */
+.font-10{
+  font-size: 10px;
+}
 .font-11 {
   font-size: 11px;
 }
@@ -171,7 +195,9 @@ margin-top: 2px;
 .mt-40 {
   margin-top: 40px;
 }
-
+.mr-5{
+  margin-right: 5px;
+}
 .mr-10{
   margin-right: 10px;
 }
@@ -253,23 +279,4 @@ margin-left: -1px;
 }
 .my-message{
 background-color: #000;
-}
-.el-message{
-  top: 40%!important;
-  /* transform:(-50%,-50%)!important; */
-  min-width: 180px!important;
-  border-radius:13px!important; 
-  background-color: #141516!important;
-  opacity:0.8;
-  padding:23px 50px 23px 30px!important;
-  
-}
-.el-message__content{
-  display: flex;
-  align-items: center;
-  font-size: 17px!important;
-  color: #fff!important;
-}
-.el-icon-info:before{
-  content: ""!important;
 }

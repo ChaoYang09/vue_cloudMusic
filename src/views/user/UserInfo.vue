@@ -14,8 +14,11 @@
             <span class="level">Lv{{ userInfo.level }}</span>
             <Gender :gender="userInfo.profile.gender"></Gender>
           </div>
-          <el-button round size="small" @click="to_EditUserInfo"
-            ><i class="el-icon-edit"></i> 编辑个人信息</el-button
+          <span
+            class="btn border"
+            @click="toEditUserInfo"
+            v-if="id == $store.state.uid"
+            >编辑个人信息</span
           >
         </div>
 
@@ -128,6 +131,7 @@ export default {
     // this.getAccountInfo()
     // this.getUserInfo()
     this.getPlaylist()
+    // console.log(this.id == this.$store.state.uid)
   },
   methods: {
     async getUserDetail() {
@@ -166,11 +170,12 @@ export default {
     //   this.newInfo.offset = (val - 1) * 20
     //   this.getNewComment()
     // },
-    to_EditUserInfo() {
+    toEditUserInfo() {
+      console.log(this.userInfo)
       this.$router.push({
         path: '/editUserInfo',
         query: {
-          accountInfo: this.accountInfo,
+          userInfo: this.userInfo.profile,
         },
       })
     },

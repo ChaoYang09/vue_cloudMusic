@@ -17,7 +17,11 @@
     <!-- 按钮区域 -->
     <main class="ml-30 mb-10">
       <!-- 播放全部 -->
-      <Play-Button class="mr-10" @click.native="PlayFirstSong"></Play-Button>
+      <Play-Button
+        class="mr-10"
+        ref="playBtnRef"
+        @click.native="PlayAllSongs"
+      ></Play-Button>
     </main>
 
     <footer>
@@ -44,7 +48,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['likeIds']),
+    ...mapState(['likeIds', 'isLogin']),
   },
   watch: {
     likeIds() {
@@ -63,9 +67,11 @@ export default {
     async getDailySongs() {
       const res = await getDailySongs()
       // console.log(res)
-      res.data.dailySongs.forEach((item) => {
-        item.like = this.$store.state.likeIds.includes(item.id)
-      })
+      if (this.$store.state.isLogin)
+        res.data.dailySongs.forEach((item) => {
+          item.like = this.$store.state.likeIds.includes(item.id)
+        })
+
       this.dailySongs = res.data.dailySongs
     },
 
@@ -74,6 +80,9 @@ export default {
       const date = new Date()
       const day = date.getDate()
       this.day = day
+    },
+    PlayAllSongs() {
+      this.$refs.playBtnRef.PlayFirstSong(this.dailySongs)
     },
   },
 }

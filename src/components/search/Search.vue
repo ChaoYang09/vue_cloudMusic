@@ -94,7 +94,7 @@
               v-for="(item, i) in songs"
               :key="i"
               class="hidden-1"
-              @click="common.playMusic()"
+              @click="playMusic(item.id)"
             >
               {{ item.name
               }}<span
@@ -175,6 +175,9 @@
 </template>
 
 <script>
+import { getSuggestionInfo, getHotSearch } from '@/api/search'
+import { getSongDetail } from '@/api/music'
+
 export default {
   data() {
     return {
@@ -218,11 +221,7 @@ export default {
   methods: {
     // 请求搜索建议数据
     async getSuggestionInfo() {
-      const { data: res } = await this.$http.get('/search/suggest', {
-        params: {
-          keywords: this.searchInput,
-        },
-      })
+      const res = await getSuggestionInfo({ keywords: this.searchInput })
       this.songs = res.result.songs
       this.artists = res.result.artists
       this.albums = res.result.albums
@@ -232,7 +231,7 @@ export default {
     },
     // 请求热搜榜数据
     async getHotSearch() {
-      const { data: res } = await this.$http.get('/search/hot/detail')
+      const res = await getHotSearch()
       this.hotSearch = res.data
     },
     // 点击tag标签里面的删除，对应的标签会被移除
@@ -302,6 +301,21 @@ export default {
     toSongsList(id) {
       this.$refs.popoverRef.doClose()
       this.common.toSongsList(id)
+    },
+    async playMusic(id) {
+      // console.log(id)
+      const res = await getSongDetail(id)
+      // console.log(res)
+      if (res.code !== 200)
+        return this.$message({
+          dangerouslyUseHTMLString: true,
+          message:
+            ' <svg class="icon font-23 mr-15"><use xlink:href="#icon-roundclosefill" /></svg>播放失败 !',
+          center: true,
+          duration: 1500,
+        })
+      this.common.playMusic(res.songs[0])
+      this.$refs.popoverRef.doClose()
     },
   },
 }

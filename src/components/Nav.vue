@@ -17,7 +17,7 @@
           <div class="hidden-1 pointer font-15 mr-20" @click="togglePlayerShow">
             {{ music.name }}
           </div>
-          <Love :scope="music"></Love>
+          <Love v-if="music.djId === 0" :scope="music"></Love>
         </div>
 
         <div class="hidden-1 mt-5">
@@ -26,7 +26,7 @@
             v-for="(item, i) in music.artists"
             :key="i"
           >
-            <span class="pointer black" @click="common.toArtist(item.id)">{{
+            <span class="pointer black" @click="common.toArtistOrDj(item)">{{
               item.name
             }}</span>
           </span>
@@ -149,7 +149,7 @@
         width="400"
         trigger="click"
         popper-class="nav-popover"
-        ref="popoverRef"
+        ref="navPopoverRef"
       >
         <div class="playlist-box">
           <!-- 头部区域 -->
@@ -187,6 +187,7 @@
               :data="playlist"
               stripe
               size="mini"
+              :show-header="false"
               @row-dblclick="common.playMusic"
               v-show="!isHistory"
             >
@@ -214,14 +215,14 @@
                 </template>
               </el-table-column>
               <!-- 标题 -->
-              <el-table-column min-width="220" show-overflow-tooltip>
+              <el-table-column min-width="195" show-overflow-tooltip>
                 <template v-slot="scope">
                   <List-title :scope="scope"></List-title>
                 </template>
               </el-table-column>
               <!-- 歌手 -->
               <el-table-column
-                min-width="100"
+                min-width="120"
                 label="歌手"
                 show-overflow-tooltip
               >
@@ -233,7 +234,7 @@
               <!-- 时长 -->
               <el-table-column
                 label="时长"
-                min-width="70"
+                min-width="60"
                 class-name="color-gray "
               >
                 <template v-slot="scope">
@@ -248,18 +249,19 @@
               :data="historyList"
               stripe
               size="mini"
+              :show-header="false"
               @row-dblclick="common.playMusic"
               v-show="isHistory"
             >
               <!-- 标题 -->
-              <el-table-column min-width="220" show-overflow-tooltip>
+              <el-table-column min-width="192" show-overflow-tooltip>
                 <template v-slot="scope">
                   <List-title :scope="scope"></List-title>
                 </template>
               </el-table-column>
               <!-- 歌手 -->
               <el-table-column
-                min-width="90"
+                min-width="120"
                 label="歌手"
                 show-overflow-tooltip
               >
@@ -302,6 +304,7 @@
       v-model="sliderSong"
       class="slider_song"
       @change="songChange"
+      :disabled="JSON.stringify(currentSong) === '{}' ? true : false"
     ></el-slider>
 
     <!-- audio标签 -->
@@ -354,17 +357,29 @@ export default {
     playing(newVal) {
       // console.log(newVal)
       if (newVal) {
-        this.$refs.audioRef.play()
+        // this.$nextTick(() => {
+        // this.$refs.audioRef.play()
+        let playPromise = this.$refs.audioRef.play()
+        if (playPromise) {
+          playPromise
+            .then(() => {
+              this.$refs.audioRef.play()
+            })
+            .catch(() => {})
+        }
+
         // 留声机杠杆的旋转与动画
         this.$store.state.playBarRef.style.transform = 'rotate(5deg)'
         this.$store.state.playBarRef.style.transition = 'all 0.5s ease'
       } else {
         this.$refs.audioRef.pause()
+
         this.$store.state.playBarRef.style.transform = 'rotate(-30deg)'
       }
     },
   },
   mounted() {
+    this.$store.state.navPopoverRef = this.$refs.navPopoverRef
     this.$store.state.audioRef = this.$refs.audioRef
   },
   computed: {
@@ -380,6 +395,7 @@ export default {
       'playMode',
       'loopPlay',
       'likeIds',
+      'isProgram',
     ]),
     musicUrl() {
       return `https://music.163.com/song/media/outer/url?id=${this.music.id}.mp3`
@@ -426,7 +442,7 @@ export default {
       // this.$refs.audioRef.currentTime = 0
       // this.$refs.audioRef.pause()
       this.setCurrentSong({})
-      this.setMusicInfo({})
+      // this.setMusicInfo({})
       if (this.isHistory) {
         // console.log(1111)
         this.historyList = []
@@ -502,8 +518,8 @@ export default {
       this.setPlayMode(count)
     },
     // audio  顺序播放 播放下一首
-    error() {
-      console.log('error')
+    error(err) {
+      // console.log(err)
       // console.log('1');
     },
     // audio结束时的钩子
@@ -529,7 +545,6 @@ export default {
       const res = this.historyList.some((item) => {
         return this.currentSong.id === item.id
       })
-      // console.log(res)
       if (res) return
       const date = new Date()
       const y = date.getFullYear()
@@ -538,7 +553,6 @@ export default {
       let time = `${y}-${m}-${d}`
       let song = this.currentSong
       song.time = time
-      // console.log(song)
       this.historyList.unshift(song)
       window.localStorage.setItem(
         'historyList',
@@ -615,10 +629,11 @@ export default {
 .nav-popover {
   top: -10px !important;
   /* right: 10px !important; */
-  overflow: auto;
+  /* overflow: auto; */
   height: calc(100% - 60px);
-  /* overflow: hidden; */
+  overflow: hidden;
   padding: 0 !important;
+  /* overflow-x: hidden; */
 }
 </style>
 
@@ -629,6 +644,7 @@ export default {
   height: 200px;
 }
 .playlist-box {
+  height: 100%;
   position: absolute;
   font-size: 13px;
   header {
@@ -683,7 +699,9 @@ export default {
     }
   }
   footer {
-    margin-top: 70px;
+    margin-top: 102px;
+    height: calc(100% - 102px);
+    overflow-y: scroll;
   }
 }
 .box {
@@ -784,10 +802,10 @@ export default {
   height: 0;
   width: 100%;
   position: absolute;
-  top: -20px;
+  top: -19px;
   left: 0;
   /deep/.el-slider__bar {
-    height: 3px;
+    height: 2px;
     background-color: #ff4e4e;
   }
   /deep/.el-slider__button {

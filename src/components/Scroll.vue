@@ -113,7 +113,10 @@ export default {
       }, this.refreshDelay)
     },
     isPlayerShow() {
+      // console.log(111)
       // this.scroll.refresh()
+
+      this.refresh()
     },
     playing() {
       // console.log('playing')

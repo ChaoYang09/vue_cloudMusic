@@ -22,7 +22,7 @@
             <!-- 我的音乐 -->
             <div>
               <div class="ml-10 mt-20 mb-10 default gray">我的音乐</div>
-              <li class="user">
+              <li class="user" v-if="isLogin">
                 <router-link to="/collect"
                   ><svg class="icon font-11 mr-10" aria-hidden="true">
                     <use xlink:href="#icon-106collect"></use></svg
@@ -30,7 +30,7 @@
                 >
               </li>
               <!-- 我的电台 -->
-              <li class="user">
+              <li class="user" v-if="isLogin">
                 <router-link to="/myDj"
                   ><svg
                     class="icon font-12 mr-10 position"
@@ -67,30 +67,29 @@
             <!-- 创建的歌单 -->
             <div>
               <div class="ml-10 mt-20 mb-10 default gray">创建的歌单</div>
-              <li class="user" v-for="(item, i) in createdList" :key="i">
-                <router-link :to="`/songLists/${item.id}`"
-                  ><svg
-                    class="icon font-11 mr-10 position"
-                    style="top: 2px"
-                    aria-hidden="true"
-                    v-if="i === 0"
+              <div v-if="isLogin">
+                <li class="user" v-for="(item, i) in createdList" :key="i">
+                  <router-link :to="`/songLists/${item.id}`"
+                    ><svg
+                      class="icon font-11 mr-10 position"
+                      style="top: 2px"
+                      aria-hidden="true"
+                      v-if="i === 0"
+                    >
+                      <use xlink:href="#icon-love1"></use></svg
+                    ><svg class="icon font-11 mr-10" aria-hidden="true" v-else>
+                      <use xlink:href="#icon-Playlist"></use></svg
+                    >{{ item.name }}</router-link
                   >
-                    <use xlink:href="#icon-love1"></use></svg
-                  ><svg class="icon font-11 mr-10" aria-hidden="true" v-else>
-                    <use xlink:href="#icon-Playlist"></use></svg
-                  >{{ item.name }}</router-link
-                >
-              </li>
+                </li>
+              </div>
             </div>
             <!-- 收藏的歌单 -->
-            <div>
+            <div v-if="isLogin">
               <div class="ml-10 mt-20 mb-10 default gray">收藏的歌单</div>
 
               <li class="user hidden-1" v-for="(item, i) in playlist" :key="i">
-                <router-link
-                  class="align-center"
-                  :to="`/songLists/${item.id}`"
-                  v-if="isRouterAlive"
+                <router-link class="align-center" :to="`/songLists/${item.id}`"
                   ><svg class="icon font-11 mr-10 mt-2" aria-hidden="true">
                     <use xlink:href="#icon-Playlist"></use></svg
                   >{{ item.name }}</router-link
@@ -116,13 +115,22 @@
 
     <!-- 歌词页面 -->
 
-    <transition name="slide-fade">
-      <Player
-        :style="{
-          visibility: $store.state.isPlayerShow ? 'visible' : 'hidden',
-        }"
-      ></Player>
-    </transition>
+    <!-- <transition name="slide-fade"> -->
+    <!-- <keep-alive> -->
+    <Player
+      :class="{
+        player: true,
+        'scale-in-bl': isPlayerShow === true,
+        'slide-out-bl': isPlayerShow === false,
+      }"
+    ></Player>
+    <!-- </keep-alive> -->
+
+    <!-- :style="[
+          { opacity: isPlayerShow ? 1 : 0 },
+          { 'z-index': isPlayerShow ? 12 : 0 },
+        ]" -->
+    <!-- </transition> -->
 
     <!-- 底部导航栏 -->
     <Nav class="nav"></Nav>
@@ -130,12 +138,8 @@
 </template>
 
 <script>
-import {
-  getUserDetail,
-  getAccountInfo,
-  getUserInfo,
-  getUserPlaylist,
-} from '@/api/user'
+import { getUserPlaylist } from '@/api/user'
+import { mapState } from 'vuex'
 import Scroll from '@/components/Scroll.vue'
 // import BScroll from 'better-scroll'
 import Search from '@/components/search/Search.vue'
@@ -151,8 +155,8 @@ export default {
   },
   data() {
     return {
-      nickName: '长草的颜文君',
-      uid: 297835213,
+      // nickName: '长草的颜文君',
+
       limit: 20,
       offset: 0,
       createdList: [],
@@ -161,19 +165,28 @@ export default {
       isRouterAlive: true,
     }
   },
-
+  computed: {
+    ...mapState(['isPlayerShow', 'uid', 'isLogin']),
+  },
+  watch: {
+    isLogin(newVal) {
+      if (newVal == true) this.getPlaylist()
+    },
+  },
   created() {
-    this.getPlaylist()
+    // console.log(this.uid)
+    // this.getPlaylist()
   },
   methods: {
     async getPlaylist() {
+      if (!this.$store.state.isLogin) return
       // console.log(this.uid)
       const res = await getUserPlaylist({
         uid: this.uid,
         limit: this.limit,
         offset: 0,
       })
-      // console.log(res)
+      console.log(res)
       res.playlist.forEach((item) => {
         if (item.creator.userId == this.uid) this.count++
       })
@@ -184,6 +197,7 @@ export default {
       // )
       // console.log(this.createdList)
       this.playlist = res.playlist
+      this.count = 0
     },
     reload() {
       console.log('reLoad')
@@ -201,6 +215,7 @@ export default {
 <style lang="less" scoped>
 .right-box {
   // height: 100%;
+  min-width: 700px;
   margin-bottom: 70px;
 }
 
@@ -220,6 +235,7 @@ export default {
   border-right: 1px rgb(221, 220, 220) solid;
   color: #1c1c1c;
   padding: 20px;
+  min-height: 100vh;
 }
 ::-webkit-scrollbar {
   width: 0 !important;
@@ -231,6 +247,7 @@ export default {
     // width: 210px;
     height: calc(100% - 190px);
     overflow-y: auto;
+    overflow-x: hidden;
     position: fixed;
     li {
       padding-left: 10px;
@@ -250,6 +267,55 @@ export default {
 header {
   position: fixed;
   // z-index: 12;
+}
+.player {
+  // opacity: 0;
+  // z-index: 0;
+  visibility: hidden;
+}
+.scale-in-bl {
+  // opacity: 1;
+  // z-index: 12;
+  visibility: visible;
+  animation: scale-in-bl 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+.slide-out-bl {
+  // opacity: 1;
+  // z-index: 12;
+  visibility: visible;
+  animation: slide-out-bl 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+// 0.55, 0.085, 0.68, 0.53
+@keyframes scale-in-bl {
+  0% {
+    transform: scale(0);
+    transform-origin: 0% 100%;
+    opacity: 0;
+    // z-index: 11;
+  }
+  100% {
+    transform: scale(1);
+    transform-origin: 0% 100%;
+    // opacity: 1;
+    // z-index: 11;
+  }
+}
+@keyframes slide-out-bl {
+  0% {
+    // transform: translateY(0) translateX(0);
+    transform: scale(1);
+    transform-origin: 0% 100%;
+    // z-index: -1;
+    // z-index: 11;
+    // opacity: 1;
+  }
+  100% {
+    // transform: translateY(1000px) translateX(-1000px);
+    transform: scale(0);
+    transform-origin: 0% 100%;
+    opacity: 0;
+    // z-index: 11;
+  }
 }
 
 .slide-fade-enter-active {

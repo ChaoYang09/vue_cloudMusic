@@ -16,22 +16,28 @@
           <span class="font-23 bold">{{ djInfo.name }}</span>
         </div>
         <!-- 创作者区域 -->
-        <div
-          class="align-center mt-10"
-          @click="common.toUser(djInfo.dj.userId)"
-        >
+        <div class="align-center mt-10">
           <img
             class="rounded-50 mr-10"
             style="width: 22px"
             :src="djInfo.dj.avatarUrl"
             alt=""
+            @click="common.toUser(djInfo.dj.userId)"
           />
-          <span class="deep-link mr-10">{{ djInfo.dj.nickname }}</span>
+          <span
+            class="deep-link mr-10"
+            @click="common.toUser(djInfo.dj.userId)"
+            >{{ djInfo.dj.nickname }}</span
+          >
         </div>
         <!-- 按钮区域 -->
         <div class="my-10 align-center">
           <!-- 播放全部 -->
-          <Play-Button class="mr-20"></Play-Button>
+          <Play-Button
+            class="mr-20"
+            ref="playBtnRef"
+            @click.native="PlayAllSongs"
+          ></Play-Button>
           <!-- 收藏 -->
           <Collect-Button
             :subCount="djInfo.subCount"
@@ -82,7 +88,7 @@
             stripe
             :show-header="false"
             :row-style="rowStyle"
-            @row-dblclick="playProgram()"
+            @row-dblclick="playMusic"
           >
             <!-- 序号 -->
             <el-table-column min-width="50">
@@ -96,9 +102,9 @@
             <!-- 封面区域 -->
             <el-table-column width="80">
               <template v-slot="scope">
-                <span class="pointer" @click="common.playProgram(scope.row)">
+                <span class="pointer" @click="playMusic(scope.row)">
                   <img
-                    :src="scope.row.coverUrl"
+                    :src="scope.row.al.picUrl"
                     class="rounded-5 block"
                     style="width: 60px; height: 60px"
                     alt=""
@@ -117,7 +123,11 @@
             <el-table-column min-width="100">
               <template v-slot="scope">
                 <span class="gray align-center font-12">
-                  <svg class="icon" aria-hidden="true">
+                  <svg
+                    class="icon position"
+                    aria-hidden="true"
+                    style="bottom: 1.5px"
+                  >
                     <use xlink:href="#icon-play2"></use></svg
                   ><span class="ml-3">{{
                     scope.row.listenerCount | playCountFormat
@@ -129,7 +139,11 @@
             <el-table-column min-width="100">
               <template v-slot="scope">
                 <span class="gray font-12">
-                  <svg class="icon" aria-hidden="true" style="font-size: 10px">
+                  <svg
+                    class="icon position"
+                    aria-hidden="true"
+                    style="font-size: 10px; top: 1px"
+                  >
                     <use xlink:href="#icon-dianzan2"></use></svg
                   ><span class="ml-3">{{ scope.row.likedCount }}</span></span
                 >
@@ -208,26 +222,33 @@ export default {
   watch: {
     $route() {
       // console.log(1)
-      // this.id = this.$route.params.id
-      // this.getDjDetail()
+      this.djQuery.rid = this.$route.params.id
+      this.getDjDetail()
+      this.getDjLists()
     },
   },
   computed: {},
   created() {
+    this.$store.commit('setIsProgram', true)
     this.getDjDetail()
     this.getDjLists()
   },
   methods: {
-    // 获取专辑详情
+    // 获取电台详情
     async getDjDetail() {
       const res = await getDjDetail(this.djQuery.rid)
       this.djInfo = res.data
     },
-
+    // 获取电台节目
     async getDjLists() {
       const res = await getDjLists(this.djQuery)
+      console.log(res)
       this.djLists = res.programs
       this.count = res.count
+      this.djLists.forEach((item, i, arr) => {
+        arr[i] = this.common.programFactory(item)
+        // console.log(item)
+      })
       // console.log(this.djLists)
     },
     // 降序
@@ -240,10 +261,21 @@ export default {
       this.djQuery.asc = true
       this.getDjLists()
     },
-    playMusic(song) {
-      console.log(song)
-    },
 
+    // 点击全部播放
+    PlayAllSongs() {
+      this.$refs.playBtnRef.PlayFirstSong(this.djLists)
+    },
+    // 双击歌曲行会触发
+    playMusic(song) {
+      // console.log(song)
+      this.common.playMusic(song)
+      // 将数据渲染到playlist上面
+      this.djLists.forEach((item, i) => {
+        item.index = i
+      })
+      this.$store.commit('setPlaylist', this.djLists)
+    },
     handleCurrentChange(val) {
       this.currentPage = val
       this.djQuery.offset = (val - 1) * this.djQuery.limit

@@ -1,15 +1,33 @@
 <template>
   <div class="login-wrap">
-    <div class="user" @click="loginVisible = true">
+    <button @click="toggleLoginState">切换登录状态</button>
+
+    <!-- 已登录 -->
+    <div class="user" v-if="isLogin" @click="common.toUser(uid)">
       <span class="user-bg">
         <img v-if="userInfo.avatarUrl" :src="userInfo.avatarUrl" alt="" />
-        <svg class="icon icon-user" aria-hidden="true" v-else>
+      </span>
+
+      <span class="hidden-1" style="width: 100px" v-if="isLogin">{{
+        userInfo.nickname
+      }}</span>
+      <svg
+        class="icon position deep-gray"
+        aria-hidden="true"
+        style="top: 2px"
+        @click.stop="loginOutVisible = true"
+      >
+        <use xlink:href="#icon-close1"></use>
+      </svg>
+    </div>
+    <!-- 未登录 -->
+    <div class="user" v-else @click="$store.commit('setLoginVisible', true)">
+      <span class="user-bg">
+        <svg class="icon icon-user" aria-hidden="true">
           <use xlink:href="#icon-User"></use>
         </svg>
       </span>
-
-      <span v-if="userInfo.nickname">{{ userInfo.nickname }}</span>
-      <span v-else>未登录</span>
+      <span>未登录</span>
     </div>
     <!-- 登录对话框 -->
     <el-dialog
@@ -46,12 +64,29 @@
         </div>
       </div>
     </el-dialog>
+    <!-- 退出对话框 -->
+    <el-dialog
+      title="退出登录"
+      :visible.sync="loginOutVisible"
+      append-to-body
+      width="350px"
+    >
+      <span>是否退出</span>
+
+      <span slot="footer" class="dialog-footer">
+        <span class="btn btn-l mr-10" @click="loginOutVisible = false"
+          >取消</span
+        >
+        <span class="btn btn-l btn-red" @click="loginOut">确定</span>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { phoneLogin } from '@/api/login'
 import { getLikeList } from '@/api/music'
+import { mapState } from 'vuex'
 
 export default {
   data() {
@@ -71,17 +106,17 @@ export default {
       callback(new Error('请输入合法密码'))
     }
     return {
-      loginVisible: false, //登陆对话框
+      loginOutVisible: false, //登陆对话框
       // 登陆表单
       loginForm: {
         phone: '',
         password: '',
       },
       //个人信息
-      userInfo: {
-        nickname: '',
-        avatarUrl: '',
-      },
+      // userInfo: {
+      // nickname: '',
+      // avatarUrl: '',
+      // },
       // 表单规则
       rules: {
         phone: [
@@ -97,15 +132,30 @@ export default {
   },
   mounted() {
     // 获取头像和用户name
-    if (window.localStorage.getItem('userInfo')) {
-      this.userInfo = JSON.parse(window.localStorage.getItem('userInfo'))
-    } else {
-      this.$message.error('获取头像失败，请重新登陆！')
-    }
+    // if (window.localStorage.getItem('userInfo')) {
+    // this.userInfo = JSON.parse(window.localStorage.getItem('userInfo'))
+    // } else {
+    // this.$message.error('获取头像失败，请重新登陆！')
+    // }
   },
-  created() {
-    this.getLikeList()
+  watch: {
+    isLogin(newVal) {
+      if (newVal == true) this.getLikeList()
+    },
   },
+  computed: {
+    ...mapState(['uid', 'userInfo', 'loginVisible', 'isLogin']),
+    loginVisible: {
+      get() {
+        return this.$store.state.loginVisible
+      },
+      set(val) {
+        // console.log(val)
+        this.$store.commit('setLoginVisible', val)
+      },
+    },
+  },
+  created() {},
   methods: {
     //点击登录界面的登录按钮
     login() {
@@ -116,30 +166,68 @@ export default {
           phone: this.loginForm.phone,
           password: this.loginForm.password,
         }).then((res) => {
+          // console.log(res)
           if (res.code === 502) return this.$message.error('密码错误!')
-          window.sessionStorage.setItem('token', res.token)
-          window.sessionStorage.setItem('uid', res.profile.userId)
+          // window.sessionStorage.setItem('token', res.token)
+          // if (window.sessionStorage.getItem('uid'))
+          // window.sessionStorage.removeItem('uid')
+          // window.sessionStorage.setItem('uid', res.profile.userId)
 
           // window.sessionStorage.setItem('cookie', res.cookie)
           const userInfo = {
             nickname: res.profile.nickname,
             avatarUrl: res.profile.avatarUrl,
           }
-          window.localStorage.setItem('userInfo', JSON.stringify(userInfo))
-          this.userInfo = JSON.parse(window.localStorage.getItem('userInfo'))
+          // window.localStorage.setItem('userInfo', JSON.stringify(userInfo))
+          // this.userInfo = JSON.parse(window.localStorage.getItem('userInfo'))
           // this.uid = res.profile.userId
 
           // this.userInfo = res
-          this.$message.success('登陆成功!')
+          this.$message({
+            dangerouslyUseHTMLString: true,
+            message:
+              ' <svg class="icon font-23 mr-15"><use xlink:href="#icon-success-filling" /></svg>登陆成功!',
+            center: true,
+            duration: 1500,
+          })
           this.loginVisible = false
+          this.$store.commit('setUserInfo', userInfo)
+          this.$store.commit('setUid', res.account.id)
+          this.$store.commit('setLoginState', true)
         })
         // await this.getPlaylist()
       })
     },
+    loginOut() {
+      this.$store.commit('setUid', 0)
+      this.$store.commit('setLoginState', false)
+      this.$store.commit('setLikeIds', [])
+
+      this.loginOutVisible = false
+      this.$message({
+        dangerouslyUseHTMLString: true,
+        message:
+          ' <svg class="icon font-23 mr-15"><use xlink:href="#icon-success-filling" /></svg>退出登录成功 !',
+        center: true,
+        duration: 1500,
+      })
+    },
     async getLikeList() {
-      const res = await getLikeList(297835213)
+      const res = await getLikeList(this.uid)
       const ids = res.ids
       this.$store.commit('setLikeIds', ids)
+    },
+    toggleLoginState() {
+      if (this.isLogin == true) {
+        this.$store.commit('setLoginState', false)
+        this.$store.commit('setUid', 0)
+
+        this.$store.commit('setLikeIds', [])
+      } else {
+        this.$store.commit('setUid', 297835213)
+
+        this.$store.commit('setLoginState', true)
+      }
     },
   },
 }

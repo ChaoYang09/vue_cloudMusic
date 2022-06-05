@@ -49,8 +49,31 @@
 .el-table__body tr.current-row>td{
   background-color: #e5e5e5!important;
 }
-
+.el-table::before{
+  height:0!important;
+}
 /* el-backtop */
 .el-backtop{
 color:#ec4141!important;
+}
+
+/* .el-message */
+.el-message{
+  top: 40%!important;
+  /* transform:(-50%,-50%)!important; */
+  min-width: 180px!important;
+  border-radius:13px!important; 
+  background-color: #141516!important;
+  opacity:0.8;
+  padding:23px 50px 23px 30px!important;
+  
+}
+.el-message__content{
+  display: flex;
+  align-items: center;
+  font-size: 17px!important;
+  color: #fff!important;
+}
+.el-icon-info:before{
+  content: ""!important;
 }

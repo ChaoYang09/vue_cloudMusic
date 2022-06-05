@@ -11,9 +11,11 @@
             :id="$route.query.id"
             :type="'artist'"
           ></Collect-Button>
-          <Button
-            @click.native="common.toUser(artistDetail.user.userId)"
-          ></Button>
+          <span class="btn border">
+            <svg class="icon font-10 mr-5" aria-hidden="true">
+              <use xlink:href="#icon-User"></use></svg
+            >个人主页</span
+          >
         </div>
 
         <div>
@@ -137,8 +139,6 @@ import {
   getTopSongs,
   getArtistDesc,
 } from '@/api/artist'
-import { getLikeList } from '@/api/music'
-import Button from '@/components/button/Base-Button.vue'
 import Video from '@/components/video/Video.vue'
 import Collect from '@/components/button/Collect-Button.vue'
 import ListIndex from '@/components/musicList/List-index.vue'
@@ -154,7 +154,6 @@ export default {
     ListLove,
     ListTitle,
     ListDuration,
-    Button,
   },
   data() {
     return {

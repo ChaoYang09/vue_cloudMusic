@@ -1,5 +1,5 @@
 <template>
-  <span class="btn-wrap btn">
+  <span class="btn-wrap btn btn-red">
     <span class="btn-content">
       <!-- 播放全部 -->
       <svg class="icon icon-play" aria-hidden="true">
@@ -37,8 +37,8 @@ export default {
 
 <style lang="less" scoped>
 .btn-wrap {
-  background-color: #ec4141;
-  color: #ffffff;
+  // background-color: #ec4141;
+  // color: #ffffff;
   .btn-content {
     .icon-play {
       font-size: 8px;
@@ -46,8 +46,5 @@ export default {
       margin-right: 3px;
     }
   }
-}
-.btn-wrap:hover {
-  background-color: #cc3232;
 }
 </style>

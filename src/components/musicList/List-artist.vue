@@ -1,7 +1,7 @@
 <template>
   <span>
     <span class="artist-list" v-for="(item, i) in scope.row.ar" :key="i">
-      <span class="pointer deep-gray" @click="common.toArtist(item.id)">{{
+      <span class="pointer deep-gray" @click="common.toArtistOrDj(item)">{{
         item.name
       }}</span>
     </span></span
@@ -15,6 +15,7 @@ export default {
       require: true,
     },
   },
+  methods: {},
 }
 </script>
 

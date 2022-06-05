@@ -10,7 +10,7 @@
       />
 
       <div class="ml-20" style="width: calc(100% - 200px)">
-        <div class="align-center">
+        <div class="align-center hidden-1">
           <Label :large="true" class="mr-10 default">专辑</Label>
           <span class="font-23 bold"
             >{{ albumInfo.name

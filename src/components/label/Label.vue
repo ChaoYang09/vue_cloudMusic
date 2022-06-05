@@ -30,19 +30,19 @@ export default {
   display: inline-block;
   // color: #ec4141;
   text-align: center;
-  border: 1px solid;
+  border: 1.5px solid;
   border-radius: 2px;
 }
 .large {
   width: 33px;
   height: 17px;
-  line-height: 17px;
+  line-height: 15px;
 }
 .small {
   // width: 22px;
   padding: 0 1px;
-  height: 13px;
-  line-height: 12px;
+  height: 15px;
+  line-height: 14px;
 
   -webkit-transform: scale(0.9);
 }

@@ -1,29 +1,33 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
 
-import Login from '../views/Login.vue'
-import Test from '../views/Test.vue'
+const Home = () => import('@/views/Home.vue')
+const Login = () => import('@/views/Login.vue')
+const Test = () => import('@/views/Test.vue')
+
 //歌单
-import SongLists from '../views/songlists/SongLists.vue'
-import AlbumList from '../views/albumList/AlbumList.vue'
-import DjList from '../views/djList/DjList.vue'
-import Artist from '../views/artistList/ArtistList.vue'
+const SongLists = () => import('@/views/songlists/SongLists.vue')
+const AlbumList = () => import('@/views/albumList/AlbumList.vue')
+const DjList = () => import('@/views/djList/DjList.vue')
+const Artist = () => import('@/views/artistList/ArtistList.vue')
+
 // 搜索
-import Search from '../views/Search.vue'
+const Search = () => import('@/views/Search.vue')
+
 //发现
-import Discovery from '../views/discover/Discovery.vue'
+const Discovery = () => import('@/views/discover/Discovery.vue')
 
 // 视频
-import Video from '../views/aside/video/Video.vue'
-import VideoPlayer from '@/views/aside/video/VideoPlayer.vue'
-import MvPlayer from '../views/aside/video/MvPlayer.vue'
+const Video = () => import('@/views/aside/video/Video.vue')
+const VideoPlayer = () => import('@/views/aside/video/VideoPlayer.vue')
+
 // 个人相关
-import Collect from '../views/user/Collect.vue'
-import UserInfo from '../views/user/UserInfo.vue'
-import EditUserInfo from '../views/user/EditUserInfo.vue'
-import MyDj from '../views/user/MyDj.vue'
-import DailySongs from '@/views/user/DailySongs.vue'
+const Collect = () => import('@/views/user/Collect.vue')
+const UserInfo = () => import('@/views/user/UserInfo.vue')
+const EditUserInfo = () => import('@/views/user/EditUserInfo.vue')
+const MyDj = () => import('@/views/user/MyDj.vue')
+const DailySongs = () => import('@/views/user/DailySongs.vue')
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -33,7 +37,7 @@ const routes = [
     children: [
       {
         path: '/',
-        redirect: '/discovery/recommend',
+        redirect: '/discovery',
       },
       {
         path: '/discovery',
@@ -91,10 +95,6 @@ const routes = [
       {
         path: '/videoPlayer/:id',
         component: VideoPlayer,
-      },
-      {
-        path: '/mvPlayer/:id',
-        component: MvPlayer,
       },
     ],
   },

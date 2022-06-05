@@ -102,15 +102,15 @@ Vue.filter('dateFormat', function (originVal) {
 })
 
 // 页面跳转后回到顶部位置
-router.beforeEach((to, from, next) => {
-  // chrome
-  document.body.scrollTop = 0
-  // firefox
-  document.documentElement.scrollTop = 0
-  // safari
-  window.pageYOffset = 0
-  next()
-})
+// router.beforeEach((to, from, next) => {
+//   // chrome
+//   document.body.scrollTop = 0
+//   // firefox
+//   document.documentElement.scrollTop = 0
+//   // safari
+//   window.pageYOffset = 0
+//   next()
+// })
 Vue.config.productionTip = false
 
 new Vue({

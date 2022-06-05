@@ -21,39 +21,47 @@
         </div>
         <span class="btn" @click="comment">评论</span>
       </div>
-      <!-- 精彩评论 -->
-      <div v-if="currentPage == 1" class="mt-40">
-        <span class="font-14 bold">精彩评论</span>
-        <Comment-Item
-          :comments="hotComments"
-          :type="type"
-          :id="id"
-          @replyComment="replyComment"
-        ></Comment-Item>
+
+      <!-- 评论区域 -->
+      <div class="font-14 gray slim flex-center mt-30" v-if="totalCount == 0">
+        还没有评论, 快来抢沙发~
       </div>
+      <div v-else>
+        <!-- 精彩评论 -->
+        <div v-if="currentPage == 1 && hotComments.length !== 0" class="mt-40">
+          <span class="font-14 bold">精彩评论</span>
+          <Comment-Item
+            :comments="hotComments"
+            :type="type"
+            :id="id"
+            @replyComment="replyComment"
+          ></Comment-Item>
+        </div>
 
-      <!-- <div class="flex-center"><div class="btn">更多精彩评论 ></div></div> -->
+        <!-- <div class="flex-center"><div class="btn">更多精彩评论 ></div></div> -->
 
-      <!-- 最新评论 -->
-      <div ref="newRef">
-        <div class="font-14 bold mt-40">最新评论({{ totalCount }})</div>
-        <Comment-item
-          :comments="newComments"
-          :type="type"
-          :id="id"
-          @replyComment="replyComment"
-          @subCommentCount="subCommentCount"
-        ></Comment-item>
-        <div class="flex-center">
-          <el-pagination
-            background
-            layout="prev, pager, next"
-            :page-size="20"
-            :total="totalCount"
-            :current-page="currentPage"
-            @current-change="handleCurrentChange"
-          >
-          </el-pagination>
+        <!-- 最新评论 -->
+        <div ref="newRef">
+          <div class="font-14 bold mt-40">最新评论({{ totalCount }})</div>
+          <Comment-item
+            :comments="newComments"
+            :type="type"
+            :id="id"
+            @replyComment="replyComment"
+            @subCommentCount="subCommentCount"
+          ></Comment-item>
+          <div class="flex-center">
+            <el-pagination
+              v-if="currentPage > 1"
+              background
+              layout="prev, pager, next"
+              :page-size="20"
+              :total="totalCount"
+              :current-page="currentPage"
+              @current-change="handleCurrentChange"
+            >
+            </el-pagination>
+          </div>
         </div>
       </div>
     </div>
@@ -108,10 +116,17 @@ export default {
   },
   watch: {
     id() {
+      // console.log(this.type)
+      // console.log(this.id)
       this.hotInfo.id = this.id
       this.newInfo.id = this.id
+      this.hotInfo.type = this.type
+      this.newInfo.type = this.type
       this.getHotComment()
       this.getNewComment()
+    },
+    type(newVal) {
+      // console.log(newVal)
     },
   },
   created() {
@@ -129,6 +144,8 @@ export default {
           center: true,
           duration: 1500,
         })
+      if (!this.$store.state.isLogin)
+        return this.$store.commit('setLoginVisible', true)
       if (this.commentId === 0) {
         console.log('发送评论。。。')
         var res = await comment({
@@ -191,6 +208,7 @@ export default {
     },
     // 获取精彩评论
     async getHotComment() {
+      // console.log('hot......')
       const res = await getHotComment(this.hotInfo)
       this.hotComments = res.hotComments
     },
