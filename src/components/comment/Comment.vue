@@ -19,7 +19,7 @@
           <span class="gray" @click="textInput += '@'">@</span
           ><span class="gray" @click="textInput += '#输入想说的话题#'">#</span>
         </div>
-        <span class="btn" @click="comment">评论</span>
+        <span class="btn border" @click="comment">评论</span>
       </div>
 
       <!-- 评论区域 -->

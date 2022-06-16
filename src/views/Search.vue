@@ -213,6 +213,7 @@ export default {
         offset: this.offset,
         type: this.type,
       }).then((res) => {
+        if (res.code !== 200) return
         this.count = res.result.songCount
         res.result.songs.forEach((item) => {
           item.like = this.likeIds.includes(item.id)
@@ -228,6 +229,7 @@ export default {
         offset: this.offset,
         type: this.type,
       })
+      if (res.code !== 200) return
       this.artists = res.result.artists
       this.count = res.result.artistCount
     },
@@ -239,6 +241,7 @@ export default {
         offset: this.offset,
         type: this.type,
       })
+      if (res.code !== 200) return
       this.albums = res.result.albums
       this.count = res.result.albumCount
       // console.log(this.albums)
@@ -251,6 +254,7 @@ export default {
         offset: this.offset,
         type: this.type,
       })
+      if (res.code !== 200) return
       this.videos = res.result.videos
       console.log(this.videos)
       this.count = res.result.videoCount
@@ -263,6 +267,7 @@ export default {
         offset: this.offset,
         type: this.type,
       })
+      if (res.code !== 200) return
       this.playlists = res.result.playlists
       this.count = res.result.playlistCount
     },
@@ -274,6 +279,7 @@ export default {
         offset: this.offset,
         type: this.type,
       })
+      if (res.code !== 200) return
       this.djRadios = res.result.djRadios
       this.count = res.result.djRadiosCount
     },

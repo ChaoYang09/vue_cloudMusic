@@ -43,7 +43,7 @@ export default {
   padding: 0 1px;
   height: 15px;
   line-height: 14px;
-
+  font-size: 12px;
   -webkit-transform: scale(0.9);
 }
 </style>

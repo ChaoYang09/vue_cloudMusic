@@ -37,7 +37,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['isLogin']),
+    ...mapState(['isLogin', 'userPlaylists']),
   },
   created() {
     this.judgeType()
@@ -51,7 +51,7 @@ export default {
       this.judgeType()
     },
     isLogin(newVal) {
-      if (newVal == true) this.judgeType()
+      if (newVal) this.judgeType()
     },
   },
 
@@ -76,6 +76,28 @@ export default {
           break
         case 'dj':
           this.getDjSubList()
+          break
+      }
+    },
+    updatedUserCollect() {
+      switch (this.type) {
+        case 'video':
+          this.$store.dispatch('getMv')
+          break
+        case 'mv':
+          this.$store.dispatch('getMv')
+          break
+        case 'playlist':
+          this.$store.dispatch('getPlaylist')
+          break
+        case 'artist':
+          this.$store.dispatch('getArtist')
+          break
+        case 'album':
+          this.$store.dispatch('getAlbum')
+          break
+        case 'dj':
+          this.$store.dispatch('getDjRadios')
           break
       }
     },
@@ -106,16 +128,36 @@ export default {
     },
     // 收藏后的message
     collectMessage(res) {
-      if (res.code !== 200) return this.$message.error('收藏操作失败')
-
+      if (res.code !== 200)
+        return this.$message({
+          dangerouslyUseHTMLString: true,
+          message:
+            ' <svg class="icon font-23 mr-15"><use xlink:href="#icon-roundclosefill" /></svg>收藏操作失败 !',
+          center: true,
+          duration: 1500,
+        })
+      this.updatedUserCollect()
       if (this.t === 1) {
-        this.$message.success('取消收藏成功')
+        this.$message({
+          dangerouslyUseHTMLString: true,
+          message:
+            ' <svg class="icon font-23 mr-15"><use xlink:href="#icon-success-filling" /></svg>取消收藏成功 !',
+          center: true,
+          duration: 1500,
+        })
+
         this.iconShow = false
         this.t = -1
         if (this.type === 'artist') return
         this.subCounts--
       } else if (this.t === -1) {
-        this.$message.success('收藏成功')
+        this.$message({
+          dangerouslyUseHTMLString: true,
+          message:
+            ' <svg class="icon font-23 mr-15"><use xlink:href="#icon-success-filling" /></svg>收藏成功 !',
+          center: true,
+          duration: 1500,
+        })
         this.iconShow = true
         this.t = 1
         if (this.type === 'artist') return
@@ -142,6 +184,15 @@ export default {
         id: this.id,
         t: -this.t,
       })
+      // if (res.code !== 200) return
+      // if (this.t == 1) {
+      // const cancel = this.userPlaylists.some((list) => {
+      // return list.id == this.id
+      // })
+      // if (cancel) {
+      // }
+      // console.log(cancel)
+      // }
       this.collectMessage(res)
     },
     // 收藏歌手
@@ -151,6 +202,8 @@ export default {
           id: this.id,
           t: -this.t,
         })
+        // if (res.code !== 200) return
+
         this.collectMessage(res)
       }
     },
@@ -173,6 +226,7 @@ export default {
     // 判断歌单是否收藏
     async getPlaylistIsCollect() {
       const res = await getPlaylist(this.$store.state.uid)
+      if (res.code !== 200) return
       this.iconShow = res.playlist.some((item) => {
         return item.id == this.id
       })
@@ -182,6 +236,7 @@ export default {
     // 判断mv和视频是否收藏
     async getMediaSubList() {
       const res = await getMediaSubList()
+      if (res.code !== 200) return
       this.iconShow = res.data.some((item) => {
         return item.vid == this.id
       })
@@ -191,6 +246,7 @@ export default {
     // 判断歌手是否收藏
     async getArtistSubList() {
       const res = await getArtistSubList()
+      if (res.code !== 200) return
       this.iconShow = res.data.some((item) => {
         return item.id == this.id
       })
@@ -200,6 +256,7 @@ export default {
     // 判断专辑是否收藏
     async getAlbumDetailDynamic() {
       const res = await getAlbumDetailDynamic(this.id)
+      if (res.code !== 200) return
       this.iconShow = res.isSub
       if (this.iconShow) this.t = 1
       else this.t = -1
@@ -207,6 +264,7 @@ export default {
     // 判断电台是否收藏
     async getDjSubList() {
       const res = await getDjSubList()
+      if (res.code !== 200) return
       this.iconShow = res.djRadios.some((item) => {
         return item.id == this.id
       })

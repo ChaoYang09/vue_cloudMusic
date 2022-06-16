@@ -5,7 +5,7 @@
         v-if="albumInfo.blurPicUrl"
         class="rounded-5 border-line"
         style="width: 180px; height: 180px"
-        :src="albumInfo.blurPicUrl"
+        v-lazy="albumInfo.blurPicUrl"
         alt=""
       />
 
@@ -137,6 +137,8 @@ export default {
     // 获取专辑详情
     async getAlbumDetail() {
       const res = await getAlbumDetail(this.id)
+      if (res.code !== 200) return
+
       res.songs.forEach((item) => {
         item.like = this.$store.state.likeIds.includes(item.id)
       })
@@ -147,6 +149,8 @@ export default {
     // 获取专辑详情
     async getAlbumDetailDynamic() {
       const res = await getAlbumDetailDynamic(this.id)
+      if (res.code !== 200) return
+
       // console.log(res)
       this.subCount = res.subCount
     },

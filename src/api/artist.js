@@ -1,6 +1,7 @@
 import get from '@/service/get'
 
-export const getArtistSubList = () => get('/artist/sublist')
+export const getArtistSubList = () =>
+  get('/artist/sublist', { timestamp: Date.now() })
 
 // 获取歌手Mv
 export const getArtistMv = (id) => get('/artist/mv', { id })
@@ -15,3 +16,12 @@ export const getTopSongs = (id) => get('/artist/top/song', { id })
 export const collectArtist = ({ id, t }) => get('/artist/sub', { id, t })
 // 歌手描述
 export const getArtistDesc = (id) => get('/artist/desc', { id })
+
+// 获取歌手封面信息
+export const getArtistList = ({ limit, area, type, initial }) =>
+  get('/artist/list', {
+    limit,
+    area,
+    type,
+    initial,
+  })

@@ -3,6 +3,11 @@ import Vuex from 'vuex'
 import axios from 'axios'
 import { getLikeList } from '@/api/music'
 import createPersistedState from 'vuex-persistedstate'
+import { getUserPlaylist } from '@/api/user'
+import { getArtistSubList } from '@/api/artist'
+import { getMediaSubList } from '@/api/mv'
+import { getAlbumSubList } from '@/api/album'
+import { getDjSubList } from '@/api/dj'
 
 //挂载Vuex
 Vue.use(Vuex)
@@ -51,16 +56,12 @@ const store = new Vuex.Store({
     likeIds: [], //我喜欢的音乐id
     uid: null, //用户id
     page: 1,
-    // playMode: playModeMap.sequence.code,
-    // 播放列表显示
-    isPlaylistShow: false,
-    // 播放提示显示
-    isPlaylistPromptShow: false,
-
-    // 播放历史数据
-    // playHistory: storage.get(PLAY_HISTORY_KEY, []),
-    // 菜单显示
-    isMenuShow: true,
+    userPlaylists: [], //用户收藏歌单
+    userCreatedLists: [], //用户创建歌单
+    artists: [], //用户收藏的歌手
+    videos: [], //用户收藏的视频
+    albums: [], //用户收藏的专辑
+    djRadios: [], //用户收藏的电台
   },
   mutations: {
     setLoginState(state, boolean) {
@@ -131,10 +132,28 @@ const store = new Vuex.Store({
     setPageNum(state, page) {
       state.page = page
     },
+    setUserPlaylists(state, lists) {
+      state.userPlaylists = lists
+    },
+    setUserCreatedLists(state, lists) {
+      state.userCreatedLists = lists
+    },
+    setUserAlbums(state, albums) {
+      state.albums = albums
+    },
+    setUserArtists(state, artists) {
+      state.artists = artists
+    },
+    setUserVideos(state, videos) {
+      state.videos = videos
+    },
+    setUserDjRadios(state, djRadios) {
+      state.djRadios = djRadios
+    },
   },
   actions: {
     // 获取歌词
-    async getLyric(context, id) {
+    async getLyric({ commit }, id) {
       const { data: res } = await axios({
         method: 'get',
         url: '/lyric',
@@ -142,13 +161,81 @@ const store = new Vuex.Store({
           id: id,
         },
       })
-      context.commit('setLyric', res.lrc.lyric)
+      if (res.code !== 200)
+        return this.$message({
+          dangerouslyUseHTMLString: true,
+          message:
+            ' <svg class="icon font-23 mr-15"><use xlink:href="#icon-roundclosefill" /></svg>获取歌词失败 !',
+          center: true,
+          duration: 1500,
+        })
+      commit('setLyric', res.lrc.lyric)
     },
     // 获取我的喜欢歌曲id
-    async getLikeIds(context, uid) {
-      const res = await getLikeIds(uid)
-      context.commit('setLikeIds', res.ids)
+    async getLikeIds({ state, commit }) {
+      const res = await getLikeIds(state.uid)
+      if (res.code !== 200)
+        return this.$message({
+          dangerouslyUseHTMLString: true,
+          message:
+            ' <svg class="icon font-23 mr-15"><use xlink:href="#icon-roundclosefill" /></svg>获取喜欢ID失败 !',
+          center: true,
+          duration: 1500,
+        })
+      commit('setLikeIds', res.ids)
       // this.likeList = res.ids
+    },
+    // 获取User音乐列表
+    async getPlaylist({ state, commit }) {
+      if (!state.isLogin) return
+      let count = 0
+      const res = await getUserPlaylist({
+        uid: state.uid,
+        limit: 999,
+        offset: 0,
+      })
+      if (res.code !== 200) return
+      // console.log(res)
+      res.playlist.forEach((item) => {
+        if (item.creator.userId == state.uid) count++
+      })
+      // this.createdList =
+      // this.createdList[0].name = this.createdList[0].name.replace(
+      //   this.nickName,
+      //   '我'
+      // )
+      // console.log(this.createdList)
+      commit('setUserCreatedLists', res.playlist.splice(0, count))
+
+      commit('setUserPlaylists', res.playlist)
+      // this.playlist = res.playlist
+      count = 0
+    },
+    async getArtist({ commit }) {
+      const res = await getArtistSubList()
+      if (res.code !== 200) return
+      commit('setUserArtists', res.data)
+      // this.artists = res.data
+      // console.log(this.artists)
+    },
+    async getMv({ commit }) {
+      const res = await getMediaSubList()
+      if (res.code !== 200) return
+      commit('setUserVideos', res.data)
+      // this.videos = res.data
+      // console.log(this.videos)
+    },
+    async getAlbum({ commit }) {
+      const res = await getAlbumSubList()
+      if (res.code !== 200) return
+      commit('setUserAlbums', res.data)
+      // this.albums = res.data
+    },
+    async getDjRadios({ commit }) {
+      const res = await getDjSubList()
+      if (res.code !== 200) return
+      commit('setUserDjRadios', res.djRadios)
+      // this.djRadios = res.djRadios
     },
   },
   getters: {},
@@ -162,6 +249,9 @@ const store = new Vuex.Store({
           isLogin: val.isLogin,
           uid: val.uid,
           userInfo: val.userInfo,
+          userPlaylists: val.userPlaylists,
+          userCreatedLists: val.userCreatedLists,
+          likeIds: val.likeIds,
         }
       },
     }),

@@ -1,7 +1,7 @@
 <template>
   <div class="artist-wrap">
     <header>
-      <img :src="artistDetail.artist.cover" alt="" />
+      <img v-lazy="artistDetail.artist.cover" alt="" />
 
       <div class="right">
         <h2>{{ artistDetail.artist.name }}</h2>
@@ -118,7 +118,7 @@
                 <img
                   class="rounded-5 block"
                   style="border: 0.01rem solid #ddd"
-                  :src="item.img1v1Url"
+                  v-lazy="item.img1v1Url"
                   alt=""
                 />
                 <span class="block mt-5 deep-gray">{{ item.name }}</span>
@@ -191,6 +191,12 @@ export default {
         item.like = this.$store.state.likeIds.includes(item.id)
       })
     },
+    id() {
+      this.getArtistDetail().then(() => {
+        this.getArtistDesc()
+      })
+      this.getTopSongs()
+    },
   },
   created() {
     this.getArtistDetail().then(() => {
@@ -202,22 +208,30 @@ export default {
     //获取歌手详细信息
     async getArtistDetail() {
       const res = await getArtistDetail(this.id)
+      if (res.code !== 200) return
+
       this.artistDetail = res.data
     },
     //获取歌手详细信息
     async getSimiArtists() {
       const res = await getSimiArtists(this.id)
+      if (res.code !== 200) return
+
       this.artists = res.artists
     },
     // 获取歌手mv
     async getArtistMv() {
       const res = await getArtistMv(this.id)
+      if (res.code !== 200) return
+
       // console.log(res)
       this.mvs = res.mvs
     },
     // 获取歌手50首热歌
     async getTopSongs() {
       const res = await getTopSongs(this.id)
+      if (res.code !== 200) return
+
       // console.log(res)
       res.songs.forEach((item) => {
         item.like = this.$store.state.likeIds.includes(item.id)
@@ -229,6 +243,8 @@ export default {
     //获取歌手详细描述
     async getArtistDesc() {
       const res = await getArtistDesc(this.id)
+      if (res.code !== 200) return
+
       if (res.briefDesc) {
         const base = {
           ti: `${this.artistDetail.artist.name}`,

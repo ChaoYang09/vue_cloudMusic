@@ -96,9 +96,9 @@
               class="hidden-1"
               @click="playMusic(item.id)"
             >
-              {{ item.name
-              }}<span
-                class="gray"
+              {{ item.name }}
+              <span
+                class="gray slim"
                 v-if="item.alias.length !== 0 || item.transNames"
                 >({{
                   item.alias[0] ? item.alias[0] : item.transNames[0]
@@ -222,6 +222,8 @@ export default {
     // 请求搜索建议数据
     async getSuggestionInfo() {
       const res = await getSuggestionInfo({ keywords: this.searchInput })
+      if (res.code !== 200) return
+
       this.songs = res.result.songs
       this.artists = res.result.artists
       this.albums = res.result.albums
@@ -232,6 +234,8 @@ export default {
     // 请求热搜榜数据
     async getHotSearch() {
       const res = await getHotSearch()
+      if (res.code !== 200) return
+
       this.hotSearch = res.data
     },
     // 点击tag标签里面的删除，对应的标签会被移除
@@ -338,6 +342,7 @@ export default {
 .albumsBox,
 .playlistsBox {
   .search-tittle {
+    font-size: 12px;
     padding-left: 20px;
     display: flex;
     align-items: center;
@@ -347,6 +352,7 @@ export default {
   }
   .content {
     p {
+      font-size: 12px;
       line-height: 30px;
       height: 30px;
       cursor: pointer;

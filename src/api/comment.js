@@ -24,7 +24,13 @@ export const getNewComment = ({ id, limit, type, offset }) => {
     /*mv*/ case 1:
       return get('/comment/mv', { id, type, limit, offset })
     /*歌单*/ case 2:
-      return get('/comment/playlist', { id, type, limit, offset })
+      return get('/comment/playlist', {
+        id,
+        type,
+        limit,
+        offset,
+        timestamp: Date.now(),
+      })
     /*专辑*/ case 3:
       return get('/comment/album', { id, type, limit, offset })
     /*电台*/ case 4:

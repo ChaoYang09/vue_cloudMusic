@@ -23,7 +23,7 @@
             class="cover"
             v-for="(item, i) in recommend"
             :key="i"
-            :count="item.playcount"
+            :count="item.playCount ? item.playCount : item.playcount"
             :url="item.picUrl ? item.picUrl : item.coverImgUrl"
             :name="item.name"
             :i="i"
@@ -224,7 +224,7 @@
                 class="cover"
                 v-for="(item, i) in topPlayList"
                 :key="i"
-                :count="item.playCount"
+                :count="item.playCount ? item.playCount : item.playcount"
                 :url="item.picUrl ? item.picUrl : item.coverImgUrl"
                 :name="item.name"
                 :i="i"
@@ -380,6 +380,16 @@
 </template>
 
 <script>
+import {
+  getTopPlayList,
+  getBanners,
+  getRecommendPlaylist,
+  getHighPlayList,
+  getTags,
+  getPersonalized,
+} from '@/api/playlist'
+import { getArtistList } from '@/api/artist'
+import { mapState } from 'vuex'
 import Cover from '@/components/cover/Cover.vue'
 export default {
   components: {
@@ -409,7 +419,9 @@ export default {
       theme: [], //主题
     }
   },
-  computed: {},
+  computed: {
+    ...mapState(['isLogin']),
+  },
   created() {
     if (this.$route.query.tag !== undefined) {
       // console.log(this.$route.query.tag)
@@ -417,12 +429,13 @@ export default {
       this.tag = this.$route.query.tag
     }
     this.getBanners()
-    this.getCatList()
+    // this.getCatList()
     this.getArtistList()
     this.getTopPlayList()
     this.getHighPlayList()
     this.getTags()
-    this.getRecommendPlaylist()
+    // this.getRecommendPlaylist()
+    this.isLogin ? this.getRecommendPlaylist() : this.getPersonalized()
   },
   watch: {
     area() {
@@ -442,43 +455,60 @@ export default {
     // console.log(newVal)
     // this.activeName = this.$route.params.type
     // },
+
+    isLogin(newVal) {
+      newVal ? this.getRecommendPlaylist() : this.getPersonalized()
+    },
   },
   methods: {
     async getBanners() {
-      const { data: res } = await this.$http.get('/banner')
-      // console.log(res)
+      const res = await getBanners()
+      if (res.code !== 200) return
       this.banners = res.banners
-      // console.log(this.banners)
     },
-    async getCatList() {
-      const { data: res } = await this.$http.get('/top/playlist')
-      this.playlist = res.playlists
-      // console.log(this.playlist)
+    // async getCatList() {
+    //   const { data: res } = await this.$http.get('/top/playlist')
+    //   this.playlist = res.playlists
+    //   // console.log(this.playlist)
+    // },
+    // 获取推荐歌单
+    async getPersonalized() {
+      const res = await getPersonalized()
+      // console.log(2222222)
+      if (res.code !== 200) return
+
+      this.recommend = res.result
+      this.recommend.splice(15)
+      // console.log()
     },
-    // 获取精选歌单
+    // 获取推荐歌单
     async getRecommendPlaylist() {
-      const { data: res } = await this.$http.get('/recommend/resource')
+      const res = await getRecommendPlaylist()
+      // console.log(res)
+      if (res.code !== 200) return
+
       this.recommend = res.recommend
       this.recommend.splice(15)
       // console.log()
     },
     // 获取精选歌单
     async getTopPlayList() {
-      const { data: res } = await this.$http.get('/top/playlist', {
-        params: {
-          cat: this.tag,
-        },
+      const res = await getTopPlayList({
+        cat: this.tag,
       })
+      if (res.code !== 200) return
+
       this.topPlayList = res.playlists
     },
     // 获取精品歌单
     async getHighPlayList() {
-      const { data: res } = await this.$http.get('/top/playlist/highquality', {
-        params: {
-          cat: this.tag,
-        },
+      const res = await getHighPlayList({
+        cat: this.tag,
       })
+
       this.$refs.popoverRef.doClose()
+      if (res.code !== 200) return
+
       if (res.playlists.length === 0) {
         this.isCoverShow = false
       } else {
@@ -488,7 +518,9 @@ export default {
     },
     // 获取歌单tag
     async getTags() {
-      const { data: res } = await this.$http.get('/playlist/catlist')
+      const res = await getTags()
+      if (res.code !== 200) return
+
       const tags = res.sub
       tags.forEach((item) => {
         if (item.category === 0) this.language.push(item)
@@ -503,19 +535,15 @@ export default {
 
     // 获取歌手封面信息
     async getArtistList() {
-      const { data: res } = await this.$http.get('/artist/list', {
-        params: {
-          limit: 100,
-          area: this.area,
-          type: this.type,
-          initial: this.initial,
-        },
+      const res = await getArtistList({
+        limit: 100,
+        area: this.area,
+        type: this.type,
+        initial: this.initial,
       })
+      if (res.code !== 200) return
+
       this.artistList = res.artists
-      // this.$nextTick(() => {
-      //   this.loading = false
-      // })
-      // console.log(this.playlist)
     },
 
     toIndependent() {

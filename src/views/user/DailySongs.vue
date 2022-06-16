@@ -66,6 +66,8 @@ export default {
 
     async getDailySongs() {
       const res = await getDailySongs()
+      if (res.code !== 200) return
+
       // console.log(res)
       if (this.$store.state.isLogin)
         res.data.dailySongs.forEach((item) => {

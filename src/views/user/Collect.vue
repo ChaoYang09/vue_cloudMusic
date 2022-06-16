@@ -378,13 +378,12 @@
 </template>
 
 <script>
-import { getArtistSubList } from '@/api/artist'
-import { getMediaSubList } from '@/api/mv'
-import { getAlbumSubList } from '@/api/album'
+import { mapState } from 'vuex'
 import Video from '@/components/video/Video.vue'
 import Table from '@/components/table/Table.vue'
 import Label from '@/components/label/Label.vue'
 export default {
+  name: 'userCollect',
   components: {
     Table,
     Video,
@@ -393,32 +392,20 @@ export default {
   data() {
     return {
       activeName: 'album',
-      artists: [],
-      videos: [],
-      albums: [],
+      // artists: [],
+      // videos: [],
+      // albums: [],
     }
   },
+  computed: {
+    ...mapState(['artists', 'videos', 'albums']),
+  },
   created() {
-    this.getArtist()
-    this.getMv()
-    this.getAlbum()
+    this.$store.dispatch('getArtist')
+    this.$store.dispatch('getMv')
+    this.$store.dispatch('getAlbum')
   },
-  methods: {
-    async getArtist() {
-      const res = await getArtistSubList()
-      this.artists = res.data
-      // console.log(this.artists)
-    },
-    async getMv() {
-      const res = await getMediaSubList()
-      this.videos = res.data
-      // console.log(this.videos)
-    },
-    async getAlbum() {
-      const res = await getAlbumSubList()
-      this.albums = res.data
-    },
-  },
+  methods: {},
 }
 </script>
 

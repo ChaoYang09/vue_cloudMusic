@@ -8,6 +8,6 @@ export const getDjLists = ({ rid, limit, offset, asc }) =>
 // 电台详情
 export const getDjDetail = (rid) => get('/dj/detail', { rid })
 // 收藏的电台
-export const getDjSubList = () => get('dj/sublist')
+export const getDjSubList = () => get('dj/sublist', { timestamp: Date.now() })
 // 收藏电台
 export const collectDj = ({ rid, t }) => get('/dj/sub', { rid, t })

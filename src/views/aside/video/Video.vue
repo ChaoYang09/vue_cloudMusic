@@ -68,7 +68,7 @@
             >
               <template #author>
                 <div class="hidden-1">
-                  <span class="pointer deep-gray">{{
+                  <span class="pointer deep-gray" v-if="item.data.creator">{{
                     item.data.creator.nickname
                   }}</span>
                 </div>
@@ -153,6 +153,12 @@
 </template>
 
 <script>
+import {
+  getVideoGroup,
+  getVideoCategory,
+  getVideos,
+  getAllVideos,
+} from '@/api/video'
 import Video from '@/components/video/Video.vue'
 import { getNewMv } from '@/api/mv'
 export default {
@@ -193,23 +199,27 @@ export default {
   methods: {
     // 获取视频标签
     async getVideoGroup() {
-      const { data: res } = await this.$http.get('/video/group/list')
+      const res = await getVideoGroup()
+      if (res.code !== 200) return
+
       this.group = res.data
       // console.log(this.group)
     },
     // 获取视频分类
     async getVideoCategory() {
-      const { data: res } = await this.$http.get('/video/category/list')
+      const res = await getVideoCategory()
+      if (res.code !== 200) return
+
       this.category = res.data
       // console.log(this.category)
     },
     // 获取视频
     async getVideos() {
-      const { data: res } = await this.$http.get('/video/group', {
-        params: {
-          id: this.id,
-        },
+      const res = await getVideos({
+        id: this.id,
       })
+      if (res.code !== 200) return
+
       this.videos = res.datas
       // console.log(this.videos)
       this.$refs.popoverRef.doClose()
@@ -222,7 +232,9 @@ export default {
     },
     // 获取全部视频
     async getAllVideos() {
-      const { data: res } = await this.$http.get('/video/timeline/all')
+      const res = await getAllVideos()
+      if (res.code !== 200) return
+
       this.videos = res.datas
       if (this.$route.query.id === undefined) this.tag = ''
       this.$refs.popoverRef.doClose()
@@ -234,6 +246,8 @@ export default {
         limit: 31,
         area: this.area,
       })
+      if (res.code !== 200) return
+
       this.mv = res.data
     },
     // 点击对应的低于获取不同地区的MV

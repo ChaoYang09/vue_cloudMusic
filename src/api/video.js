@@ -9,3 +9,14 @@ export const getRelatedVideo = (id) => get('/related/allvideo', { id })
 export const getVideoUrl = (id) => get('/video/url', { id })
 // 收藏mv
 export const collectVideo = ({ id, t }) => get('/video/sub', { id, t })
+
+// 获取视频标签
+export const getVideoGroup = () => get('/video/group/list')
+// 获取视频分类
+export const getVideoCategory = () => get('/video/category/list')
+
+// 获取视频
+export const getVideos = ({ id }) => get('/video/group', { id })
+
+// 获取全部视频
+export const getAllVideos = () => get('/video/timeline/all')

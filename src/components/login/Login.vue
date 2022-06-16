@@ -1,7 +1,7 @@
 <template>
   <div class="login-wrap">
-    <button @click="toggleLoginState">切换登录状态</button>
-
+    <!-- <button @click="toggleLoginState">切换登录状态</button> -->
+    <!-- {{ JSON.stringify($store.state.music) !== '{}' }} -->
     <!-- 已登录 -->
     <div class="user" v-if="isLogin" @click="common.toUser(uid)">
       <span class="user-bg">
@@ -84,7 +84,7 @@
 </template>
 
 <script>
-import { phoneLogin } from '@/api/login'
+import { phoneLogin, loginOut } from '@/api/login'
 import { getLikeList } from '@/api/music'
 import { mapState } from 'vuex'
 
@@ -161,18 +161,40 @@ export default {
     login() {
       this.$refs.loginFormRef.validate(async (valid) => {
         // console.log(valid)
-        if (!valid) return this.$message.info('请输入完整信息!')
+        if (!valid)
+          return this.$message({
+            dangerouslyUseHTMLString: true,
+            message:
+              ' <svg class="icon font-23 mr-15"><use xlink:href="#icon-roundclosefill" /></svg>请输入完整信息 !',
+            center: true,
+            duration: 1500,
+          })
+
         await phoneLogin({
           phone: this.loginForm.phone,
           password: this.loginForm.password,
         }).then((res) => {
           // console.log(res)
-          if (res.code === 502) return this.$message.error('密码错误!')
+          if (res.code === 502)
+            return this.$message({
+              dangerouslyUseHTMLString: true,
+              message:
+                ' <svg class="icon font-23 mr-15"><use xlink:href="#icon-roundclosefill" /></svg>密码错误 !',
+              center: true,
+              duration: 1500,
+            })
           // window.sessionStorage.setItem('token', res.token)
           // if (window.sessionStorage.getItem('uid'))
           // window.sessionStorage.removeItem('uid')
           // window.sessionStorage.setItem('uid', res.profile.userId)
-
+          if (res.code !== 200)
+            return this.$message({
+              dangerouslyUseHTMLString: true,
+              message:
+                ' <svg class="icon font-23 mr-15"><use xlink:href="#icon-roundclosefill" /></svg>登陆失败 !',
+              center: true,
+              duration: 1500,
+            })
           // window.sessionStorage.setItem('cookie', res.cookie)
           const userInfo = {
             nickname: res.profile.nickname,
@@ -198,7 +220,11 @@ export default {
         // await this.getPlaylist()
       })
     },
-    loginOut() {
+    async loginOut() {
+      const res = await loginOut()
+      // console.log(res)
+      if (res.code !== 200) return
+
       this.$store.commit('setUid', 0)
       this.$store.commit('setLoginState', false)
       this.$store.commit('setLikeIds', [])
@@ -211,9 +237,19 @@ export default {
         center: true,
         duration: 1500,
       })
+      this.$router.push('/discovery')
     },
     async getLikeList() {
       const res = await getLikeList(this.uid)
+
+      if (res.code !== 200)
+        return this.$message({
+          dangerouslyUseHTMLString: true,
+          message:
+            ' <svg class="icon font-23 mr-15"><use xlink:href="#icon-roundclosefill" /></svg>获取喜欢ID失败 !',
+          center: true,
+          duration: 1500,
+        })
       const ids = res.ids
       this.$store.commit('setLikeIds', ids)
     },
@@ -223,6 +259,7 @@ export default {
         this.$store.commit('setUid', 0)
 
         this.$store.commit('setLikeIds', [])
+        this.$router.push('/discovery')
       } else {
         this.$store.commit('setUid', 297835213)
 

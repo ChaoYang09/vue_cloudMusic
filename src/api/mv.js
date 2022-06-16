@@ -1,6 +1,7 @@
 import get from '@/service/get'
 // 获取视频和Mv收藏Id
-export const getMediaSubList = () => get('/mv/sublist')
+export const getMediaSubList = () =>
+  get('/mv/sublist', { timestamp: Date.now() })
 // 获取Mv
 export const getNewMv = ({ limit, area }) => get('/mv/first', { limit, area })
 // 获取Mv详情信息

@@ -12,7 +12,7 @@
         <video
           autoplay
           :poster="detail.coverUrl ? detail.coverUrl : detail.cover"
-          :src="url"
+          v-lazy="url"
           controls="controls"
           ref="videoRef"
           @play="play"
@@ -23,7 +23,7 @@
           <img
             class="rounded-50 mr-10 pointer"
             style="width: 50px; height: 50px"
-            :src="detail.artists[0].img1v1Url"
+            v-lazy="detail.artists[0].img1v1Url"
             alt=""
             @click="common.toArtist(detail.artists[0].id)"
           />
@@ -38,7 +38,7 @@
           <img
             class="rounded-50 mr-10 pointer"
             style="width: 50px; height: 50px"
-            :src="detail.creator.avatarUrl"
+            v-lazy="detail.creator.avatarUrl"
             alt=""
             @click="common.toUser(detail.creator.userId)"
           />
@@ -132,7 +132,7 @@
             @click="id = mv ? item.id : item.vid"
           >
             <div class="img-box">
-              <img :src="mv ? item.cover : item.coverUrl" alt="" />
+              <img v-lazy="mv ? item.cover : item.coverUrl" alt="" />
             </div>
 
             <div>
@@ -233,11 +233,15 @@ export default {
     // 获取推荐video
     async getRelatedVideo() {
       const res = await getRelatedVideo(this.id)
+      if (res.code !== 200) return
+
       this.relatedVideo = res.data
     },
     // 获取video详情信息
     async getVideoDetail() {
       const res = await getVideoDetail(this.id)
+      if (res.code !== 200) return
+
       this.detail = res.data
       this.subCount = res.data.subscribeCount
       this.mediaName = res.data.tittle
@@ -246,6 +250,8 @@ export default {
     // 获取video播放地址
     async getVideoUrl() {
       const res = await getVideoUrl(this.id)
+      if (res.code !== 200) return
+
       this.url = res.urls[0].url
       // console.log(this.url)
     },
@@ -267,10 +273,14 @@ export default {
 
     async getSimiMv() {
       const res = await getSimiMv(this.id)
+      if (res.code !== 200) return
+
       this.relatedVideo = res.mvs
     },
     async getDetailMv() {
       const res = await getMvDetail(this.id)
+      if (res.code !== 200) return
+
       this.detail = res.data
       this.subCount = res.data.subCount
       this.mediaName = res.data.name
@@ -279,6 +289,8 @@ export default {
     },
     async getMvUrl() {
       const res = await getMvUrl(this.id)
+      if (res.code !== 200) return
+
       this.url = res.data.url
       // console.log(res)
     },

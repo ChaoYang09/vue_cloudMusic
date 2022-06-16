@@ -105,7 +105,7 @@
               <span>来源: &nbsp;</span>
               <span
                 class="pointer link"
-                @click="common.toArtistOrDj(music.artists[0].id)"
+                @click="common.toArtistOrDj(music.artists[0])"
                 >{{ music.artists[0].name }}</span
               >
             </div>
@@ -124,6 +124,7 @@
           <!-- 电台描述 -->
           <div class="describe-wrap">
             <p>{{ music.dj.description }}</p>
+            <!-- {{ music }} -->
           </div>
         </footer>
       </div>
@@ -134,7 +135,7 @@
         ><span class="font-12 gray"> (已有{{ commentCount }}条评论)</span>
       </div>
       <Comment
-        v-if="JSON.stringify(music) !== '{}'"
+        v-if="music.id !== 0"
         :id="music.djId === 0 ? music.id : music.djId"
         :type="music.djId === 0 ? 0 : 4"
         @getCommentCount="getCommentCount"
@@ -147,7 +148,7 @@
 <script>
 import Lyric from 'lyric-parser'
 import { mapState } from 'vuex'
-import Scroll from './Scroll.vue'
+import Scroll from '@/components/Scroll.vue'
 export default {
   components: { Scroll },
   data() {
@@ -177,7 +178,7 @@ export default {
   },
   created() {
     // this.lrc = this.lyric
-    console.log(this.music)
+    // console.log(this.music)
     if (this.music.djId == 0) this.getLyric()
   },
   methods: {
@@ -257,7 +258,7 @@ export default {
   background-color: #ffffff;
 }
 .comment {
-  width: calc(100vw - 80px);
+  width: calc(100vw - 170px);
   // margin: 0 60px;
   margin-bottom: 70px;
 }

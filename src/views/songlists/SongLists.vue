@@ -4,7 +4,7 @@
       <img
         class="rounded-5 border-line"
         style="width: 180px; height: 180px"
-        :src="playListInfo.coverImgUrl"
+        v-lazy="playListInfo.coverImgUrl"
         alt=""
       />
 
@@ -157,6 +157,7 @@ export default {
     },
 
     likeIds() {
+      this.getPlaylists()
       this.playlists.forEach((item) => {
         item.like = this.likeIds.includes(item.id)
       })
@@ -175,12 +176,15 @@ export default {
     // 获取歌单详情
     async getPlaylistDetail() {
       const res = await getPlaylistDetail(this.id)
+      if (res.code !== 200) return
+
       this.playListInfo = res.playlist
       this.tags = res.playlist.tags
     },
     // 获取歌曲列表
     async getPlaylists() {
       const res = await getPlaylists(this.id)
+      if (res.code !== 200) return
 
       res.songs.forEach((item) => {
         item.like = this.likeIds.includes(item.id)

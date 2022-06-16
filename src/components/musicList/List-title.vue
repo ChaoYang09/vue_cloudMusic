@@ -18,14 +18,14 @@
         v-if="(scope.row.alia || []).length !== 0"
         ref="aliaRef"
       >
-        &nbsp;({{ scope.row.alia[0] }})</span
+        &nbsp;( {{ scope.row.alia[0] }} )</span
       >
       <span
         class="gray default"
         v-if="(scope.row.tns || []).length !== 0"
         ref="tnsRef"
       >
-        &nbsp;({{ scope.row.tns[0] }})</span
+        &nbsp;( {{ scope.row.tns[0] }} )</span
       >
     </div>
 

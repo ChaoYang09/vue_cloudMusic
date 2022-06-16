@@ -16,7 +16,7 @@
           </div>
           <span
             class="btn border"
-            @click="toEditUserInfo"
+            @click="$router.push('/editUserInfo')"
             v-if="id == $store.state.uid"
             >编辑个人信息</span
           >
@@ -170,15 +170,15 @@ export default {
     //   this.newInfo.offset = (val - 1) * 20
     //   this.getNewComment()
     // },
-    toEditUserInfo() {
-      console.log(this.userInfo)
-      this.$router.push({
-        path: '/editUserInfo',
-        query: {
-          userInfo: this.userInfo.profile,
-        },
-      })
-    },
+    // toEditUserInfo() {
+    //   console.log(this.userInfo)
+    //   this.$router.push({
+    //     path: '/editUserInfo',
+    //     query: {
+    //       userInfo: this.userInfo.profile,
+    //     },
+    //   })
+    // },
   },
 }
 </script>
@@ -186,7 +186,7 @@ export default {
 <style lang="less" scoped>
 header {
   display: flex;
-  justify-content: start;
+  justify-content: flex-start;
   .left {
     width: 180px;
     img {

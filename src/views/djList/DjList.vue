@@ -5,7 +5,7 @@
         v-if="djInfo.picUrl"
         class="rounded-5 border-line"
         style="width: 185px; height: 185px"
-        :src="djInfo.picUrl"
+        v-lazy="djInfo.picUrl"
         alt=""
       />
 
@@ -175,7 +175,7 @@
         </el-tab-pane>
       </el-tabs>
       <!-- 分页 -->
-      <div class="flex-center mt-10">
+      <!-- <div class="flex-center mt-10">
         <el-pagination
           background
           layout="prev, pager, next"
@@ -184,7 +184,7 @@
           :current-page="currentPage"
           @current-change="handleCurrentChange"
         ></el-pagination>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -237,12 +237,16 @@ export default {
     // 获取电台详情
     async getDjDetail() {
       const res = await getDjDetail(this.djQuery.rid)
+      if (res.code !== 200) return
+
       this.djInfo = res.data
     },
     // 获取电台节目
     async getDjLists() {
       const res = await getDjLists(this.djQuery)
-      console.log(res)
+      // console.log(res)
+      if (res.code !== 200) return
+
       this.djLists = res.programs
       this.count = res.count
       this.djLists.forEach((item, i, arr) => {

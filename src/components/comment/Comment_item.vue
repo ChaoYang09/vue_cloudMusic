@@ -138,7 +138,14 @@ export default {
         type: this.type,
         t: item.liked ? 0 : 1,
       })
-      if (res.code !== 200) return this.$message.error('点赞失败')
+      if (res.code !== 200)
+        return this.$message({
+          dangerouslyUseHTMLString: true,
+          message:
+            ' <svg class="icon font-23 mr-15"><use xlink:href="#icon-roundclosefill" /></svg>点赞失败 !',
+          center: true,
+          duration: 1500,
+        })
       if (!item.liked) {
         this.$set(
           this.comments[i],

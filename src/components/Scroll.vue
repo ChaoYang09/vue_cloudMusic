@@ -7,7 +7,7 @@
 <script>
 // type="text/ecmascript-6"
 import { mapState } from 'vuex'
-import BScroll from 'better-scroll'
+import BScroll from '@better-scroll/core'
 import MouseWheel from '@better-scroll/mouse-wheel'
 import ScrollBar from '@better-scroll/scroll-bar'
 

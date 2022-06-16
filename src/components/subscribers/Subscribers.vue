@@ -62,9 +62,13 @@ export default {
     async getSubscribers() {
       if (this.type === 'dj') {
         const res = await getDjSubscribers(this.id)
+        if (res.code !== 200) return
+
         this.subscribers = res.subscribers
       } else if (this.type === 'playlist') {
         const res = await getPlayListSubscribers(this.id)
+        if (res.code !== 200) return
+
         this.subscribers = res.subscribers
       }
     },

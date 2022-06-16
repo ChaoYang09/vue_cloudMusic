@@ -35,21 +35,43 @@ export default {
         id: row.id,
         like: !row.like,
       })
-      if (res.code !== 200) return this.$message.error('收藏失败')
+      if (res.code !== 200)
+        return this.$message({
+          dangerouslyUseHTMLString: true,
+          message:
+            ' <svg class="icon font-23 mr-15"><use xlink:href="#icon-roundclosefill" /></svg>收藏失败 !',
+          center: true,
+          duration: 1500,
+        })
+      // this.$message.error('收藏失败')
       if (!row.like) {
         let newIds = this.$store.state.likeIds
         newIds.unshift(row.id)
         this.$store.commit('setLikeIds', newIds)
         row.like = true
         // this.$set(this.songs, index, row)
-        this.$message.success('已添加到我喜欢的音乐')
+        this.$message({
+          dangerouslyUseHTMLString: true,
+          message:
+            ' <svg class="icon font-23 mr-15"><use xlink:href="#icon-success-filling" /></svg>已添加到我喜欢的音乐 !',
+          center: true,
+          duration: 1500,
+        })
+        // this.$message.success('已添加到我喜欢的音乐')
       } else {
         let newIds = this.$store.state.likeIds
         newIds.splice(newIds.indexOf(row.id), 1)
         this.$store.commit('setLikeIds', newIds)
         row.like = false
         // this.$set(this.songs, index, row)
-        this.$message('取消喜欢成功')
+        this.$message({
+          dangerouslyUseHTMLString: true,
+          message:
+            ' <svg class="icon font-23 mr-15"><use xlink:href="#icon-success-filling" /></svg>取消喜欢成功 !',
+          center: true,
+          duration: 1500,
+        })
+        // this.$message('取消喜欢成功')
       }
     },
   },

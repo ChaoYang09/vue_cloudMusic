@@ -7,13 +7,20 @@ import store from './store'
 import common from '@/utils/common'
 Vue.prototype.common = common
 
-Vue.prototype.$bus = new Vue()
+/* 引入全局过滤器*/
+import '@/utils/filters'
 
 import VueLazyload from 'vue-lazyload'
-Vue.use(VueLazyload)
 
-import Scroll from './components/Scroll.vue'
-Vue.component('Scroll', Scroll)
+Vue.use(VueLazyload, {
+  preLoad: 1.3,
+  error: require('./assets/images/404.png'),
+  loading: require('./assets/images/loading.gif'),
+  attempt: 5,
+})
+
+// import Scroll from './components/Scroll.vue'
+// Vue.component('Scroll', Scroll)
 
 // import './plugins/element.js'
 // 引入全局样式
@@ -31,86 +38,9 @@ Vue.component('CollectButton', Collect)
 import Comment from './components/comment/Comment.vue'
 Vue.component('Comment', Comment)
 
-import { Message } from 'element-ui'
-
-// Vue.prototype.$message = () =>
-//   Message({
-//     center: true,
-//     showClose: true,
-//     offset: 250,
-
-//     duration: 0,
-//   })
-
 //导入iconFont图标文件
 import './assets/icons/iconfont.js'
 
-// 配置全局axios
-import axios from 'axios'
-// 配置请求根路径
-axios.defaults.baseURL = 'http://localhost:3000'
-// 使用withCredentials属性，当该属性为true时，会携带用户凭证
-axios.defaults.withCredentials = true
-import { Loading } from 'element-ui'
-
-Vue.prototype.$http = axios
-let loadingInstance
-// NProgress.start()
-// console.log(config)
-// config.headers.Authorization = window.sessionStorage.getItem('token')
-axios.interceptors.request.use((config) => {
-  loadingInstance = Loading.service({
-    lock: true,
-    text: '载入中...',
-    spinner: 'el-icon-loading',
-    background: 'rgba(255,255,255,0)',
-  })
-  return config
-})
-//   NProgress.done()
-axios.interceptors.response.use((config) => {
-  // $nextTick(() => {
-  // 以服务的方式调用的 Loading 需要异步关闭
-  // setTimeout(() => {
-  loadingInstance.close()
-  // }, 1000)
-  // })
-  return config
-})
-
-// 媒体时间格式化
-Vue.filter('timeFormat', function (originVal) {
-  const date = new Date(originVal)
-  const mm = (date.getMinutes() + '').padStart(2, '0')
-  const ss = (date.getSeconds() + '').padStart(2, '0')
-  return `${mm}:${ss}`
-})
-//媒体播放量格式化
-Vue.filter('playCountFormat', function (originVal) {
-  if (originVal > 10000) {
-    return Math.floor(originVal / 10000) + '万'
-  }
-  return originVal
-})
-// 媒体时间格式化
-Vue.filter('dateFormat', function (originVal) {
-  const date = new Date(originVal)
-  const yy = date.getFullYear()
-  const mm = (date.getMonth() + 1 + '').padStart(2, '0')
-  const dd = (date.getDate() + '').padStart(2, '0')
-  return `${yy}-${mm}-${dd}`
-})
-
-// 页面跳转后回到顶部位置
-// router.beforeEach((to, from, next) => {
-//   // chrome
-//   document.body.scrollTop = 0
-//   // firefox
-//   document.documentElement.scrollTop = 0
-//   // safari
-//   window.pageYOffset = 0
-//   next()
-// })
 Vue.config.productionTip = false
 
 new Vue({

@@ -14,13 +14,17 @@
           <img
             :src="scope.row.picUrl ? scope.row.picUrl : scope.row.coverImgUrl"
             class="rounded-5 block ml-20"
-            style="width: 55px; height: 55px"
+            style="width: 60px; height: 60px"
             alt=""
           />
         </template>
       </el-table-column>
       <!-- name -->
-      <el-table-column prop="name" min-width="300"> </el-table-column>
+      <el-table-column min-width="300">
+        <template v-slot="scope">
+          <span class="font-14">{{ scope.row.name }}</span>
+        </template>
+      </el-table-column>
       <!-- 专辑 -->
 
       <el-table-column min-width="200" v-if="type === 10">
@@ -36,9 +40,9 @@
       <!-- 主播电台 -->
       <el-table-column min-width="200" v-if="type === 1009">
         <template v-slot="scope">
-          <span class="deep-gray" v-if="scope.row.dj"
-            ><span class="light-gray">by </span
-            ><span @click="common.toUser(scope.row.dj.userId)">{{
+          <span class="deep-gray slim" v-if="scope.row.dj"
+            ><span class="gray">by </span
+            ><span @click.stop="common.toUser(scope.row.dj.userId)">{{
               scope.row.dj.nickname
             }}</span></span
           >

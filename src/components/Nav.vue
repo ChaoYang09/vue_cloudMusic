@@ -426,15 +426,15 @@ export default {
       this.$refs.imgFilter.style.filter = ''
       // this.$refs.expand.style.display = ''
     },
-    async getSong() {
-      const { data: res } = await this.$http.get('/song/url', {
-        params: {
-          id: 1900923198,
-        },
-      })
-      this.song = res.data
-      // console.log(this.song)
-    },
+    // async getSong() {
+    //   const { data: res } = await this.$http.get('/song/url', {
+    //     params: {
+    //       id: 1900923198,
+    //     },
+    //   })
+    //   this.song = res.data
+    //   // console.log(this.song)
+    // },
     // 删除列表歌曲
     clearList() {
       this.toggleCover(false)
@@ -587,14 +587,14 @@ export default {
       this.$refs.Nav.doClose()
     },
 
-    async checkMusic(id) {
-      // console.log(id)
-      const { data: res } = await this.$http.get('/check/music', {
-        params: {
-          id: id,
-        },
-      })
-    },
+    // async checkMusic(id) {
+    //   // console.log(id)
+    //   const { data: res } = await this.$http.get('/check/music', {
+    //     params: {
+    //       id: id,
+    //     },
+    //   })
+    // },
     // 上一首
     previousSong() {
       // if (JSON.stringify(this.currentSong) === '{}') return
@@ -749,7 +749,7 @@ export default {
 }
 .right {
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
   align-items: center;
   width: 250px;
   .play-mode {

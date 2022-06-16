@@ -18,7 +18,9 @@
               <router-link to="/discovery">发现音乐</router-link>
             </li>
 
-            <li class="func"><router-link to="/video">视频</router-link></li>
+            <li class="func">
+              <router-link to="/video">视频</router-link>
+            </li>
             <!-- 我的音乐 -->
             <div>
               <div class="ml-10 mt-20 mb-10 default gray">我的音乐</div>
@@ -31,7 +33,7 @@
               </li>
               <!-- 我的电台 -->
               <li class="user" v-if="isLogin">
-                <router-link to="/myDj"
+                <router-link to="/userDj"
                   ><svg
                     class="icon font-12 mr-10 position"
                     style="top: 3px"
@@ -43,14 +45,14 @@
                   ><span>我的电台</span></router-link
                 >
               </li>
-              <li class="user">
+              <!-- <li class="user">
                 <router-link class="align-center" to="/userInfo/297835213"
                   >用户界面</router-link
                 >
-              </li>
-              <li class="user">
+              </li> -->
+              <!-- <li class="user">
                 <router-link class="align-center" to="/test">TEST</router-link>
-              </li>
+              </li> -->
               <li class="user">
                 <router-link to="/dailySongs"
                   ><svg
@@ -68,7 +70,7 @@
             <div>
               <div class="ml-10 mt-20 mb-10 default gray">创建的歌单</div>
               <div v-if="isLogin">
-                <li class="user" v-for="(item, i) in createdList" :key="i">
+                <li class="user" v-for="(item, i) in userCreatedLists" :key="i">
                   <router-link :to="`/songLists/${item.id}`"
                     ><svg
                       class="icon font-11 mr-10 position"
@@ -88,7 +90,11 @@
             <div v-if="isLogin">
               <div class="ml-10 mt-20 mb-10 default gray">收藏的歌单</div>
 
-              <li class="user hidden-1" v-for="(item, i) in playlist" :key="i">
+              <li
+                class="user hidden-1"
+                v-for="(item, i) in userPlaylists"
+                :key="i"
+              >
                 <router-link class="align-center" :to="`/songLists/${item.id}`"
                   ><svg class="icon font-11 mr-10 mt-2" aria-hidden="true">
                     <use xlink:href="#icon-Playlist"></use></svg
@@ -103,7 +109,10 @@
       <!-- 右侧内容区域 -->
       <el-container class="right-box">
         <!-- <transition name="el-fade-in-linear"> -->
-        <router-view></router-view>
+        <keep-alive include="userCollect,userDj">
+          <router-view></router-view>
+        </keep-alive>
+
         <!-- </transition> -->
         <el-backtop
           :bottom="80"
@@ -141,10 +150,9 @@
 import { getUserPlaylist } from '@/api/user'
 import { mapState } from 'vuex'
 import Scroll from '@/components/Scroll.vue'
-// import BScroll from 'better-scroll'
 import Search from '@/components/search/Search.vue'
-import Nav from '../components/Nav.vue'
-import Player from '../components/Player.vue'
+import Nav from '@/components/Nav.vue'
+import Player from '@/components/Player.vue'
 import Login from '@/components/login/Login.vue'
 export default {
   name: 'App',
@@ -157,7 +165,7 @@ export default {
     return {
       // nickName: '长草的颜文君',
 
-      limit: 20,
+      limit: 999,
       offset: 0,
       createdList: [],
       playlist: [],
@@ -166,11 +174,17 @@ export default {
     }
   },
   computed: {
-    ...mapState(['isPlayerShow', 'uid', 'isLogin']),
+    ...mapState([
+      'isPlayerShow',
+      'uid',
+      'isLogin',
+      'userPlaylists',
+      'userCreatedLists',
+    ]),
   },
   watch: {
     isLogin(newVal) {
-      if (newVal == true) this.getPlaylist()
+      if (newVal) this.$store.dispatch('getPlaylist')
     },
   },
   created() {
@@ -186,17 +200,24 @@ export default {
         limit: this.limit,
         offset: 0,
       })
-      console.log(res)
+      if (res.code !== 200) return
+      // console.log(res)
       res.playlist.forEach((item) => {
         if (item.creator.userId == this.uid) this.count++
       })
-      this.createdList = res.playlist.splice(0, this.count)
+      // this.createdList =
       // this.createdList[0].name = this.createdList[0].name.replace(
       //   this.nickName,
       //   '我'
       // )
       // console.log(this.createdList)
-      this.playlist = res.playlist
+      this.$store.commit(
+        'setUserCreatedLists',
+        res.playlist.splice(0, this.count)
+      )
+
+      this.$store.commit('setUserPlaylists', res.playlist)
+      // this.playlist = res.playlist
       this.count = 0
     },
     reload() {
