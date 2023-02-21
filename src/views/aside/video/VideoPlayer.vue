@@ -5,14 +5,15 @@
         <div class="font-18 bold pointer" @click="$router.back()">
           <span>
             <svg class="icon icon-arrow" aria-hidden="true">
-              <use xlink:href="#icon-arrowleft1"></use></svg
-          ></span>
+              <use xlink:href="#icon-arrowleft1"></use>
+            </svg>
+          </span>
           <span v-if="mv">MV</span><span v-else>视频</span>详情
         </div>
         <video
           autoplay
           :poster="detail.coverUrl ? detail.coverUrl : detail.cover"
-          v-lazy="url"
+          :src="url"
           controls="controls"
           ref="videoRef"
           @play="play"
@@ -71,8 +72,9 @@
                   v-show="!hidden"
                   @click="hidden = true"
                 >
-                  <use xlink:href="#icon-triangleupfill"></use></svg
-              ></span>
+                  <use xlink:href="#icon-triangleupfill"></use>
+                </svg>
+              </span>
             </div>
             <!-- detail -->
             <div class="my-5 play light-gray font-12">
@@ -157,8 +159,9 @@
             <!-- 播放数量 -->
             <span class="playCount">
               <svg class="icon icon-right-triangle" aria-hidden="true">
-                <use xlink:href="#icon-triangle"></use></svg
-              >{{ mv ? item.playCount : item.playTime | playCountFormat }}</span
+                <use xlink:href="#icon-triangle"></use>
+              </svg>
+              {{ mv ? item.playCount : item.playTime | playCountFormat }}</span
             >
             <!-- 播放时间 -->
             <span class="durations">{{
@@ -251,7 +254,7 @@ export default {
     async getVideoUrl() {
       const res = await getVideoUrl(this.id)
       if (res.code !== 200) return
-
+      console.log(res)
       this.url = res.urls[0].url
       // console.log(this.url)
     },

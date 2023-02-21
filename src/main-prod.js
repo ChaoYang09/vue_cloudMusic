@@ -14,7 +14,7 @@ import VueLazyload from 'vue-lazyload'
 
 Vue.use(VueLazyload, {
   preLoad: 1.3,
-  error: require('./assets/images/404.png'),
+  // error: require('./assets/images/404.png'),
   loading: require('./assets/images/loading.gif'),
   attempt: 5,
 })

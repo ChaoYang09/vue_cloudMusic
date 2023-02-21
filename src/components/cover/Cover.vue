@@ -11,8 +11,9 @@
         <transition name="fade">
           <span class="play-svg" v-show="playShow === i">
             <svg class="icon icon-play" aria-hidden="true">
-              <use xlink:href="#icon-play"></use></svg
-          ></span>
+              <use xlink:href="#icon-play"></use>
+            </svg>
+          </span>
         </transition>
       </div>
 
@@ -23,8 +24,9 @@
       <!-- 播放数量 -->
       <span class="cover-count">
         <svg class="icon icon-right-triangle" aria-hidden="true">
-          <use xlink:href="#icon-triangle"></use></svg
-        >{{ count | playCountFormat }}</span
+          <use xlink:href="#icon-triangle"></use>
+        </svg>
+        {{ count | playCountFormat }}</span
       >
     </div>
   </div>

@@ -14,7 +14,7 @@ const resolve = (dir) => path.join(__dirname, dir)
 module.exports = {
   publicPath: './',
   // devServer: {
-  //   proxy: 'http://localhost:3000',
+  //   proxy: 'http://43.139.26.63:3000',
   // },
 
   chainWebpack: (config) => {

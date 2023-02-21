@@ -19,9 +19,9 @@
   </span>
   <span class="light-gray" v-else>
     {{
-              scope.$index + 1 + offset &lt; 10
-                ? '0' + (scope.$index + 1 + offset)
-                : scope.$index + 1 + offset
+      scope.$index + 1 + offset < 10
+        ? '0' + (scope.$index + 1 + offset)
+        : scope.$index + 1 + offset
     }}
   </span>
 </template>

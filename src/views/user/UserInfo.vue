@@ -15,7 +15,7 @@
             <Gender :gender="userInfo.profile.gender"></Gender>
           </div>
           <span
-            class="btn border"
+            class="btn border edit-btn"
             @click="$router.push('/editUserInfo')"
             v-if="id == $store.state.uid"
             >编辑个人信息</span
@@ -185,10 +185,11 @@ export default {
 
 <style lang="less" scoped>
 header {
+  // height: 208px;
   display: flex;
   justify-content: flex-start;
   .left {
-    width: 180px;
+    width: 204px;
     img {
       width: 100%;
       border-radius: 50%;
@@ -197,7 +198,8 @@ header {
   }
   .right {
     margin-left: 25px;
-    width: 120vh;
+    width: 100%;
+    // width: 120vw;
     // min-width: 300px;
     .levelBox {
       display: flex;

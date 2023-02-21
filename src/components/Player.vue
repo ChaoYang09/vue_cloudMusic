@@ -249,10 +249,12 @@ export default {
   flex-wrap: wrap;
   // padding: 0 20px;
   position: fixed;
+  top: 0;
   z-index: 11;
   width: 100%;
   // overflow: auto;
   overflow-y: auto;
+  visibility: hidden;
 
   height: 100%;
   background-color: #ffffff;

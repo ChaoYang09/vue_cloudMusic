@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
-import { getLikeList } from '@/api/music'
+import { getLikeList, getLyric } from '@/api/music'
 import createPersistedState from 'vuex-persistedstate'
 import { getUserPlaylist } from '@/api/user'
 import { getArtistSubList } from '@/api/artist'
@@ -154,13 +154,7 @@ const store = new Vuex.Store({
   actions: {
     // 获取歌词
     async getLyric({ commit }, id) {
-      const { data: res } = await axios({
-        method: 'get',
-        url: '/lyric',
-        params: {
-          id: id,
-        },
-      })
+      const res = await getLyric(id)
       if (res.code !== 200)
         return this.$message({
           dangerouslyUseHTMLString: true,
@@ -172,8 +166,8 @@ const store = new Vuex.Store({
       commit('setLyric', res.lrc.lyric)
     },
     // 获取我的喜欢歌曲id
-    async getLikeIds({ state, commit }) {
-      const res = await getLikeIds(state.uid)
+    async getLikeList({ state, commit }) {
+      const res = await getLikeList(state.uid)
       if (res.code !== 200)
         return this.$message({
           dangerouslyUseHTMLString: true,

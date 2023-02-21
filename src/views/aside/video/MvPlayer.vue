@@ -5,8 +5,9 @@
         <div class="font-18 bold pointer" @click="$router.back()">
           <span>
             <svg class="icon icon-arrow" aria-hidden="true">
-              <use xlink:href="#icon-arrowleft1"></use></svg
-          ></span>
+              <use xlink:href="#icon-arrowleft1"></use>
+            </svg>
+          </span>
           MV详情
         </div>
         <video
@@ -114,8 +115,9 @@
             </div>
             <span class="playCount">
               <svg class="icon icon-right-triangle" aria-hidden="true">
-                <use xlink:href="#icon-right-triangle"></use></svg
-              >{{ item.playCount | playCountFormat }}</span
+                <use xlink:href="#icon-right-triangle"></use>
+              </svg>
+              {{ item.playCount | playCountFormat }}</span
             >
             <span class="durations">{{ item.duration | timeFormat }}</span>
           </div>

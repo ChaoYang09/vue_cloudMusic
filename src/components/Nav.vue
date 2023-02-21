@@ -115,27 +115,28 @@
             <use xlink:href="#icon-suijibofang"></use>
           </svg> </el-tooltip
       ></span>
-
-      <!-- 音量播放控件 -->
-      <svg
-        class="icon volume"
-        aria-hidden="true"
-        ref="volumeRef"
-        v-show="volumeIsShow"
-        @click="vIsShow"
-      >
-        <use xlink:href="#icon-volume "></use>
-      </svg>
       <!-- 静音控件 -->
       <svg
         class="icon volume"
         aria-hidden="true"
         ref="volumeOffRef"
-        v-show="!volumeIsShow"
-        @click="vIsShow"
+        v-if="mute"
+        @click="muteClick"
       >
         <use xlink:href="#icon-volume-off "></use>
       </svg>
+
+      <!-- 音量控件 -->
+      <svg
+        class="icon volume"
+        aria-hidden="true"
+        ref="volumeRef"
+        v-else
+        @click="muteClick"
+      >
+        <use xlink:href="#icon-volume "></use>
+      </svg>
+
       <!-- 音量播放控件 -->
       <el-slider
         v-model="sliderVolume"
@@ -271,7 +272,7 @@
               </el-table-column>
 
               <!-- 歌曲时间 -->
-              <el-table-column min-width="90">
+              <el-table-column min-width="100">
                 <template v-slot="scope">
                   <span class="gray default">{{ scope.row.time }}</span>
                 </template>
@@ -334,7 +335,7 @@ export default {
       sliderSong: 0, //歌曲进度条
       song: {},
       volumeIsShow: true, //音量和静音svg的切换
-      volumeRecord: 0,
+      volumeRecord: 70,
       // playIsShow: true, //播放和暂停svg的切换
       duration: 0,
       // currentSong: {}, //当前播放的歌曲
@@ -399,6 +400,9 @@ export default {
     ]),
     musicUrl() {
       return `https://music.163.com/song/media/outer/url?id=${this.music.id}.mp3`
+    },
+    mute() {
+      return this.sliderVolume === 0 ? true : false
     },
   },
   methods: {
@@ -475,22 +479,18 @@ export default {
     // 音量进度改变触发这个函数
     volumeChange(val) {
       this.$refs.audioRef.volume = val / 100
-      // console.log(val)
-      if (val === 0) {
-        this.vIsShow()
-        // this.$refs.audio.volume = 0
+      // 音量>0时记录 volumeRecord
+      if (val > 0) {
+        this.volumeRecord = val
+      } else if (val === 0) {
+        this.sliderVolume = 0
+        this.$refs.audioRef.volume = 0
       }
-      this.volumeIsShow = true
     },
     // 点击音量或者静音svg都会触发这个函数
-    vIsShow() {
-      // 显示音量svg时记录 volumeRecord
-      if (this.volumeIsShow === true) {
-        this.volumeRecord = this.sliderVolume
-      }
-
-      this.volumeIsShow = !this.volumeIsShow
-      if (this.volumeIsShow === false) {
+    muteClick() {
+      // this.volumeIsShow = !this.volumeIsShow
+      if (!this.mute) {
         this.sliderVolume = 0
         this.$refs.audioRef.volume = 0
       } else {
@@ -502,7 +502,7 @@ export default {
     updateTime() {
       this.setCurrentTime(this.$refs.audioRef.currentTime)
       this.sliderSong = Math.round((this.currentTime / this.duration) * 700)
-      if ((this, this.playing)) this.setPlayingState(true)
+      // if ((this, this.playing)) this.setPlayingState(true)
     },
 
     // 切换播放模式
@@ -563,8 +563,8 @@ export default {
     songChange(val) {
       this.setProgress((val / 700) * this.duration)
       this.$refs.audioRef.currentTime = this.progress
+
       if (!this.playing) {
-        this.playIsShow = !this.playIsShow
         // this.$refs.audioRef.play()
         this.setPlayingState(true)
       }

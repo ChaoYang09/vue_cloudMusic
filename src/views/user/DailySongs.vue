@@ -66,6 +66,7 @@ export default {
 
     async getDailySongs() {
       const res = await getDailySongs()
+      console.log(res)
       if (res.code !== 200) return
 
       // console.log(res)

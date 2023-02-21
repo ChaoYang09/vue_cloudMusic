@@ -86,8 +86,9 @@
               最新MV
               <span>
                 <svg class="icon icon-arrow" aria-hidden="true">
-                  <use xlink:href="#icon-arrowright"></use></svg
-              ></span>
+                  <use xlink:href="#icon-arrowright"></use>
+                </svg>
+              </span>
             </div>
             <div class="area-box gray">
               <span

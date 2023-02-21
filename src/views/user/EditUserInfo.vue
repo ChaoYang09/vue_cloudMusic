@@ -88,14 +88,24 @@ export default {
       const res = await getUserDetail(this.$store.state.uid)
       // console.log(res)
       if (res.code !== 200) return
-
-      this.editForm.nickname = res.profile.nickname
-      this.editForm.signature = res.profile.signature
-      this.editForm.gender = res.profile.gender
-      this.editForm.birthday = res.profile.birthday
-      this.editForm.province = res.profile.province
-      this.editForm.city = res.profile.city
-      this.avatarUrl = res.profile.avatarUrl
+      const {
+        nickname,
+        signature,
+        gender,
+        birthday,
+        province,
+        city,
+        avatarUrl,
+      } = res.profile
+      this.editForm = {
+        nickname,
+        signature,
+        gender,
+        birthday,
+        province,
+        city,
+      }
+      this.avatarUrl = avatarUrl
 
       // console.log(this.editForm.gender)
     },
@@ -128,7 +138,7 @@ export default {
         data: this.formData,
         imgSize: this.imgSize.width,
       })
-      // console.log(res)
+      console.log(res)
       if (res.code !== 200)
         return this.$message({
           dangerouslyUseHTMLString: true,

@@ -111,8 +111,9 @@
                   />
                   <span class="play-svg">
                     <svg class="icon icon-play" aria-hidden="true">
-                      <use xlink:href="#icon-play"></use></svg
-                  ></span>
+                      <use xlink:href="#icon-play"></use>
+                    </svg>
+                  </span>
                 </span>
               </template>
             </el-table-column>
@@ -128,8 +129,9 @@
                     aria-hidden="true"
                     style="bottom: 1.5px"
                   >
-                    <use xlink:href="#icon-play2"></use></svg
-                  ><span class="ml-3">{{
+                    <use xlink:href="#icon-play2"></use>
+                  </svg>
+                  <span class="ml-3">{{
                     scope.row.listenerCount | playCountFormat
                   }}</span></span
                 >
@@ -144,8 +146,11 @@
                     aria-hidden="true"
                     style="font-size: 10px; top: 1px"
                   >
-                    <use xlink:href="#icon-dianzan2"></use></svg
-                  ><span class="ml-3">{{ scope.row.likedCount }}</span></span
+                    <use xlink:href="#icon-dianzan2"></use>
+                  </svg>
+                  <span class="ml-3">{{
+                    scope.row.likedCount || 999
+                  }}</span></span
                 >
               </template>
             </el-table-column>
@@ -162,7 +167,7 @@
             <el-table-column min-width="100">
               <template v-slot="scope">
                 <span class="gray font-12">{{
-                  scope.row.duration | timeFormat
+                  scope.row.duration || 160000 | timeFormat
                 }}</span>
               </template>
             </el-table-column>
@@ -244,7 +249,7 @@ export default {
     // 获取电台节目
     async getDjLists() {
       const res = await getDjLists(this.djQuery)
-      // console.log(res)
+      console.log(res)
       if (res.code !== 200) return
 
       this.djLists = res.programs

@@ -13,8 +13,9 @@
           推荐歌单
           <span class="gray">
             <svg class="icon icon-arrow" aria-hidden="true">
-              <use xlink:href="#icon-arrowright"></use></svg
-          ></span>
+              <use xlink:href="#icon-arrowright"></use>
+            </svg>
+          </span>
         </div>
 
         <!-- 推荐歌单 -->
@@ -48,8 +49,9 @@
                 <div class="right">
                   <span class="high-playlist">
                     <svg class="icon icon-crown" aria-hidden="true">
-                      <use xlink:href="#icon-crown"></use></svg
-                    >精品歌单</span
+                      <use xlink:href="#icon-crown"></use>
+                    </svg>
+                    精品歌单</span
                   >
                   <p>{{ cover.name }}</p>
                 </div>
@@ -108,8 +110,9 @@
                 <div class="language">
                   <div class="aside light-gray">
                     <svg class="icon icon-aside" aria-hidden="true">
-                      <use xlink:href="#icon-iconfonticon-xitong"></use></svg
-                    >风格
+                      <use xlink:href="#icon-iconfonticon-xitong"></use>
+                    </svg>
+                    风格
                   </div>
                   <div class="tag">
                     <div class="span-box" v-for="(item, i) in style" :key="i">
@@ -125,8 +128,9 @@
                 <div class="language">
                   <div class="aside light-gray">
                     <svg class="icon icon-aside" aria-hidden="true">
-                      <use xlink:href="#icon-icon-test"></use></svg
-                    >场景
+                      <use xlink:href="#icon-icon-test"></use>
+                    </svg>
+                    场景
                   </div>
                   <div class="tag">
                     <div class="span-box" v-for="(item, i) in scene" :key="i">
@@ -143,8 +147,9 @@
                 <div class="language">
                   <div class="aside light-gray">
                     <svg class="icon icon-aside" aria-hidden="true">
-                      <use xlink:href="#icon-pa_happy"></use></svg
-                    >情感
+                      <use xlink:href="#icon-pa_happy"></use>
+                    </svg>
+                    情感
                   </div>
                   <div class="tag">
                     <div class="span-box" v-for="(item, i) in feeling" :key="i">
@@ -161,8 +166,9 @@
                 <div class="language">
                   <div class="aside light-gray">
                     <svg class="icon icon-aside" aria-hidden="true">
-                      <use xlink:href="#icon-041siyecao"></use></svg
-                    >主题
+                      <use xlink:href="#icon-041siyecao"></use>
+                    </svg>
+                    主题
                   </div>
                   <div class="tag">
                     <div class="span-box" v-for="(item, i) in theme" :key="i">
@@ -484,7 +490,7 @@ export default {
     // 获取推荐歌单
     async getRecommendPlaylist() {
       const res = await getRecommendPlaylist()
-      // console.log(res)
+      console.log(res)
       if (res.code !== 200) return
 
       this.recommend = res.recommend
@@ -519,6 +525,7 @@ export default {
     // 获取歌单tag
     async getTags() {
       const res = await getTags()
+      // console.log(res)
       if (res.code !== 200) return
 
       const tags = res.sub

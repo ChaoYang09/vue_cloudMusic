@@ -1,26 +1,9 @@
 <template>
-  <!-- 搜索框区域 -->
-  <div class="search-wrap">
-    <input
-      type="text"
-      class="search-input"
-      placeholder="搜索歌单音乐"
-      v-model.trim="searchInput"
-      ref="inputRef"
-    />
-    <!-- 搜索图标 -->
-    <svg class="icon icon-search" aria-hidden="true" v-if="isShow">
-      <use xlink:href="#icon-search"></use>
-    </svg>
-    <svg
-      class="icon icon-close"
-      aria-hidden="true"
-      v-else
-      @click="searchInput = ''"
-    >
-      <use xlink:href="#icon-close-bold"></use>
-    </svg>
-  </div>
+  <video
+    autoplay
+    src="http://vodkgeyttp9.vod.126.net/vodkgeyttp8/bK96iJBE_2666694525_shd.mp4?ts=1666065377&rid=80E22906E210C96DE62457F83D45C441&rl=3&rs=ftoMFfRiYgCwNcEyYUQyryBawXzeSxlu&sign=a2e34ff531adab2797e86145f68fb6c3&ext=I5YyZL03cdJT3M%2Bn7mU%2BABnVO6Rllsm%2BMkyDY700tK0QQlcnCokPUN%2BcBccW3eR19BQ%2BTCXtWWAhv8TDgTckfaCq2z1SC2lMqwnYCfFWlpdEjV6HgzcZWIyhAT699QXdJHPJ5RIvvXmRy6TiObU27RXG3JFAGXWKXk5uJRkdXwwRLNeaICFFSMx2y8qNUaSOxJIU%2B6LJhHqEzHbpY7d0Sf2hVS9b7xBEXLfsrnt6%2FIuorsAU4xNqVQJAa9TXbeGS"
+    controls="controls"
+  ></video>
 </template>
 
 <script>
@@ -32,17 +15,8 @@ export default {
     }
   },
   created() {},
-  mounted() {
-    this.$nextTick(() => {
-      console.log(this.$refs.inputRef.width)
-    })
-  },
-  watch: {
-    searchInput() {
-      if (this.searchInput === '') this.isShow = true
-      else this.isShow = false
-    },
-  },
+  mounted() {},
+  watch: {},
 }
 </script>
 

@@ -1,7 +1,5 @@
 <template>
-  <div class="login-wrap">
-    <!-- <button @click="toggleLoginState">切换登录状态</button> -->
-    <!-- {{ JSON.stringify($store.state.music) !== '{}' }} -->
+  <div class="login-by-qr">
     <!-- 已登录 -->
     <div class="user" v-if="isLogin" @click="common.toUser(uid)">
       <span class="user-bg">
@@ -21,7 +19,7 @@
       </svg>
     </div>
     <!-- 未登录 -->
-    <div class="user" v-else @click="$store.commit('setLoginVisible', true)">
+    <div class="user" v-else @click="openLoginDialog">
       <span class="user-bg">
         <svg class="icon icon-user" aria-hidden="true">
           <use xlink:href="#icon-User"></use>
@@ -35,34 +33,31 @@
       :visible.sync="loginVisible"
       width="350px"
       append-to-body
-      @closed="$refs.loginFormRef.resetFields()"
+      lock-scroll
+      custom-class="dialog-style"
+      @closed="loginDialogClosed"
     >
-      <div class="loginBox">
-        <div class="icon-login">
-          <svg class="icon" aria-hidden="true">
-            <use xlink:href="#icon-undraw_login_re_4vu2"></use>
-          </svg>
-        </div>
-        <div class="loginForm">
-          <el-form
-            ref="loginFormRef"
-            :model="loginForm"
-            :rules="rules"
-            label-width="65px"
-            size="small"
-            label-position="left"
-          >
-            <el-form-item label="手机号" prop="phone">
-              <el-input v-model="loginForm.phone"></el-input> </el-form-item
-            ><el-form-item label="密码" prop="password">
-              <el-input
-                v-model="loginForm.password"
-                show-password
-              ></el-input> </el-form-item
-          ></el-form>
-          <el-button @click="login" size="small">登录</el-button>
+      <!-- @closed="$refs.loginFormRef.resetFields()" -->
+      <div class="msg-wrap">
+        打开<a
+          style="text-decoration: none; color: blue"
+          href="https://music.163.com/#/download"
+          target="_blank"
+          >网易云音乐手机端</a
+        >扫码登录
+      </div>
+      <div class="img-wrap">
+        <img class="img img-h" :src="imgData" />
+        <div
+          class="btn-refresh pointer"
+          @click="getKey"
+          v-show="qrType === 800"
+        >
+          <i class="el-icon-refresh-left"></i>
         </div>
       </div>
+
+      <div class="msg-wrap">状态：{{ message }}</div>
     </el-dialog>
     <!-- 退出对话框 -->
     <el-dialog
@@ -84,141 +79,71 @@
 </template>
 
 <script>
-import { phoneLogin, loginOut } from '@/api/login'
+import { getQrKey, createQr, checkQr, getAccountInfo } from '@/api/user'
+import { loginOut } from '@/api/login'
 import { getLikeList } from '@/api/music'
 import { mapState } from 'vuex'
-
 export default {
   data() {
-    var checkPhone = (rule, value, callback) => {
-      const regPhone =
-        /^1(3\d|4[5-8]|5[0-35-9]|6[567]|7[01345-8]|8\d|9[025-9])\d{8}$/
-      if (regPhone.test(value)) {
-        return callback()
-      }
-      callback(new Error('请输入合法手机号'))
-    }
-    var checkPassword = (rule, value, callback) => {
-      const regPassword = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,20}$/
-      if (regPassword.test(value)) {
-        return callback()
-      }
-      callback(new Error('请输入合法密码'))
-    }
     return {
+      key: '',
+      imgData: '',
+      qrType: '',
+      message: '',
       loginOutVisible: false, //登陆对话框
-      // 登陆表单
-      loginForm: {
-        phone: '',
-        password: '',
-      },
-      //个人信息
-      // userInfo: {
-      // nickname: '',
-      // avatarUrl: '',
-      // },
-      // 表单规则
-      rules: {
-        phone: [
-          { required: true, trigger: 'blur' },
-          { validator: checkPhone, trigger: 'blur' },
-        ],
-        password: [
-          { required: true, trigger: 'blur' },
-          { validator: checkPassword, trigger: 'blur' },
-        ],
-      },
     }
   },
-  mounted() {
-    // 获取头像和用户name
-    // if (window.localStorage.getItem('userInfo')) {
-    // this.userInfo = JSON.parse(window.localStorage.getItem('userInfo'))
-    // } else {
-    // this.$message.error('获取头像失败，请重新登陆！')
-    // }
-  },
-  watch: {
-    isLogin(newVal) {
-      if (newVal == true) this.getLikeList()
-    },
-  },
-  computed: {
-    ...mapState(['uid', 'userInfo', 'loginVisible', 'isLogin']),
-    loginVisible: {
-      get() {
-        return this.$store.state.loginVisible
-      },
-      set(val) {
-        // console.log(val)
-        this.$store.commit('setLoginVisible', val)
-      },
-    },
-  },
-  created() {},
   methods: {
-    //点击登录界面的登录按钮
-    login() {
-      this.$refs.loginFormRef.validate(async (valid) => {
-        // console.log(valid)
-        if (!valid)
-          return this.$message({
-            dangerouslyUseHTMLString: true,
-            message:
-              ' <svg class="icon font-23 mr-15"><use xlink:href="#icon-roundclosefill" /></svg>请输入完整信息 !',
-            center: true,
-            duration: 1500,
-          })
-
-        await phoneLogin({
-          phone: this.loginForm.phone,
-          password: this.loginForm.password,
-        }).then((res) => {
-          // console.log(res)
-          if (res.code === 502)
-            return this.$message({
-              dangerouslyUseHTMLString: true,
-              message:
-                ' <svg class="icon font-23 mr-15"><use xlink:href="#icon-roundclosefill" /></svg>密码错误 !',
-              center: true,
-              duration: 1500,
-            })
-          // window.sessionStorage.setItem('token', res.token)
-          // if (window.sessionStorage.getItem('uid'))
-          // window.sessionStorage.removeItem('uid')
-          // window.sessionStorage.setItem('uid', res.profile.userId)
-          if (res.code !== 200)
-            return this.$message({
-              dangerouslyUseHTMLString: true,
-              message:
-                ' <svg class="icon font-23 mr-15"><use xlink:href="#icon-roundclosefill" /></svg>登陆失败 !',
-              center: true,
-              duration: 1500,
-            })
-          // window.sessionStorage.setItem('cookie', res.cookie)
-          const userInfo = {
-            nickname: res.profile.nickname,
-            avatarUrl: res.profile.avatarUrl,
-          }
-          // window.localStorage.setItem('userInfo', JSON.stringify(userInfo))
-          // this.userInfo = JSON.parse(window.localStorage.getItem('userInfo'))
-          // this.uid = res.profile.userId
-
-          // this.userInfo = res
-          this.$message({
-            dangerouslyUseHTMLString: true,
-            message:
-              ' <svg class="icon font-23 mr-15"><use xlink:href="#icon-success-filling" /></svg>登陆成功!',
-            center: true,
-            duration: 1500,
-          })
-          this.loginVisible = false
-          this.$store.commit('setUserInfo', userInfo)
-          this.$store.commit('setUid', res.account.id)
-          this.$store.commit('setLoginState', true)
+    /* 获取二维码key */
+    async getKey() {
+      const res = await getQrKey()
+      if (res.code !== 200) return this.$message.error('获取二维码失败')
+      this.key = res.data.unikey
+      this.createQr()
+    },
+    /* 生成二维码 */
+    async createQr() {
+      const res = await createQr(this.key)
+      if (res.code !== 200) return this.$message.error('生成二维码失败')
+      this.imgData = res.data.qrimg
+      this.checkQr()
+    },
+    /* 800 为二维码过期,801 为等待扫码,802 为待确认,803 为授权登录成功(803 状态码下会返回 cookies) */
+    /* 检查二维码状态 */
+    async checkQr() {
+      console.log(11)
+      const res = await checkQr(this.key)
+      this.qrType = res.code
+      this.message = res.message
+      if (res.code === 801 || res.code === 802) {
+        this.timer = window.setTimeout(() => {
+          this.checkQr()
+        }, 5000)
+      } else if (res.code === 803) {
+        const { cookie } = res
+        // localStorage.setItem('Music_Cookie', res.cookie)
+        const {
+          profile: { nickname, avatarUrl, userId },
+        } = await getAccountInfo(cookie)
+        // console.log(accountInfo)
+        const userInfo = {
+          nickname,
+          avatarUrl,
+        }
+        this.$message({
+          dangerouslyUseHTMLString: true,
+          message:
+            ' <svg class="icon font-23 mr-15"><use xlink:href="#icon-success-filling" /></svg>登陆成功!',
+          center: true,
+          duration: 1500,
         })
-        // await this.getPlaylist()
-      })
+        this.loginVisible = false
+        this.$store.dispatch('getLikeList')
+        this.$store.commit('setUserInfo', userInfo)
+        this.$store.commit('setUid', userId)
+        this.$store.commit('setLoginState', true)
+        window.clearTimeout(this.timer)
+      }
     },
     async loginOut() {
       const res = await loginOut()
@@ -253,24 +178,62 @@ export default {
       const ids = res.ids
       this.$store.commit('setLikeIds', ids)
     },
-    toggleLoginState() {
-      if (this.isLogin == true) {
-        this.$store.commit('setLoginState', false)
-        this.$store.commit('setUid', 0)
-
-        this.$store.commit('setLikeIds', [])
-        this.$router.push('/discovery')
-      } else {
-        this.$store.commit('setUid', 297835213)
-
-        this.$store.commit('setLoginState', true)
-      }
+    openLoginDialog() {
+      this.$store.commit('setLoginVisible', true)
+      this.getKey()
     },
+    loginDialogClosed() {
+      window.clearTimeout(this.timer)
+    },
+  },
+  computed: {
+    ...mapState(['uid', 'userInfo', 'loginVisible', 'isLogin']),
+    loginVisible: {
+      get() {
+        return this.$store.state.loginVisible
+      },
+      set(val) {
+        // console.log(val)
+        this.$store.commit('setLoginVisible', val)
+      },
+    },
+  },
+  created() {},
+  beforeDestroy() {
+    window.clearTimeout(this.timer)
   },
 }
 </script>
 
 <style lang="less" scoped>
+.login-by-qr {
+  position: relative;
+}
+.img-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto;
+  .btn-refresh {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background-color: #ccc;
+    opacity: 0.8;
+    color: red;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    i {
+      font-size: 30px;
+    }
+  }
+}
+.msg-wrap {
+  text-align: center;
+}
 .user {
   display: flex;
   align-items: center;
@@ -296,28 +259,9 @@ export default {
     }
   }
 }
-.loginBox {
-  display: flex;
-  // justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  .icon-login {
-    // color: #ea4848;
-    color: cadetblue;
-    font-size: 90px;
-  }
-  .el-button--small {
-    margin-left: 10px;
-    color: #ffffff;
-    background-color: #ea4848;
-    padding: 9px 115px;
-  }
-  .el-button:hover {
-    color: #ffffff !important;
-    background-color: #c72e2e !important;
-  }
-}
-.el-dialog {
-  // z-index: 100;
+</style>
+<style>
+.dialog-style {
+  /* height: 30%; */
 }
 </style>

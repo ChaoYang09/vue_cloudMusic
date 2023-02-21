@@ -19,6 +19,7 @@
           >
         </div>
       </div>
+      <i class="subscribers-replace"></i>
     </div>
     <div v-else class="deeper-gray default" style="margin: 40px auto">
       暂无收藏者
@@ -86,8 +87,8 @@ export default {
   .subscribers-content {
     display: flex;
     align-items: center;
-    width: 350px;
-    height: 100px;
+    width: 300px;
+    height: 120px;
     img {
       width: 80px;
       height: 80px;
@@ -95,6 +96,10 @@ export default {
     .nickname:hover {
       color: #000000;
     }
+  }
+  .subscribers-replace {
+    width: 300px;
+    height: 120px;
   }
 }
 </style>

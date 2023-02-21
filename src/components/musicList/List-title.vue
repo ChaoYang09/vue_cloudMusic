@@ -49,7 +49,8 @@
         style="position: relative; top: 1px"
         class="ml-5 pointer position"
         v-if="scope.row.mv !== 0"
-        ><Label :small="true" @click.native="common.toVideoPlayer(scope.row.mv)"
+      >
+        <Label :small="true" @click.native="common.toVideoPlayer(scope.row.mv)"
           >MV &nbsp;
           <svg class="icon icon-triangle" aria-hidden="true">
             <use xlink:href="#icon-triangle1-copy" /></svg></Label

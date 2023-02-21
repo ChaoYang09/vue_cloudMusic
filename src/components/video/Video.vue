@@ -7,8 +7,9 @@
       }}</span>
       <span class="count">
         <svg class="icon icon-right-triangle" aria-hidden="true">
-          <use xlink:href="#icon-triangle"></use></svg
-        >{{ count | playCountFormat }}</span
+          <use xlink:href="#icon-triangle"></use>
+        </svg>
+        {{ count | playCountFormat }}</span
       >
     </div>
 
